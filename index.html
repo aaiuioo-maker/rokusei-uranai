@@ -114,6 +114,8 @@
         /* === Claude Code のキャラクター（「保存した履歴」の右横を歩く） === */
         .cc-hist-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .cc-hist-head h1 { margin: 0; }
+        /* 右端に寄せる。右へ歩く幅（24px）の分だけ余白を空けて、はみ出さないようにする */
+        .cc-hist-head .cc-mascot { margin-left: auto; margin-right: 24px; }
         .cc-mascot { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; text-decoration: none; }
         .cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
         /* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
