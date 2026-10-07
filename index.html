@@ -112,9 +112,9 @@
         }
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         /* === Claude Code のキャラクター（ヘッダーの上を歩く） === */
-        .cc-row { height: 34px; margin: -4px 0 2px; }
+        .cc-row { height: 40px; margin: -4px 0 2px; }
         .cc-mascot { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; text-decoration: none; }
-        .cc-mascot svg { width: 36px; height: 21px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
+        .cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
         /* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
         .cc-mascot .cc-label { font-family: -apple-system, "Segoe UI", sans-serif; font-size: 7px; letter-spacing: 0.05em; color: #d97757; opacity: 0.8; white-space: nowrap; }
         .cc-body { fill: #d97757; }
@@ -122,8 +122,6 @@
         /* ときどきまばたき */
         .cc-eye { animation: cc-blink 4s infinite; }
         @keyframes cc-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(0.1); } }
-        /* 動きを減らす設定の端末では止める（スクリプト側も動かさない） */
-        @media (prefers-reduced-motion: reduce) { .cc-eye { animation: none; } }
         h1 { font-size: 17px; margin: 0 0 8px 0; font-weight: 600; }
         .sound-toggle { background-color: #e5e5ea; color: #333; border: none; border-radius: 15px; padding: 6px 12px; font-size: 12px; font-weight: bold; cursor: pointer; }
         .sound-toggle.active { background-color: var(--accent-orange); color: white; }
@@ -362,17 +360,17 @@
     <div class="container" id="mainContainer" style="display: none;">
         <div class="cc-row">
             <a class="cc-mascot" href="https://claude.com/claude-code" target="_blank" rel="noopener" title="Claude Code で作成" aria-label="Claude Code で作成">
-                <!-- 1マス＝1ドットのドット絵（横12×縦6マス） -->
-                <svg viewBox="0 -1 12 7" aria-hidden="true">
+                <!-- 1マス＝1ドットのドット絵（横12×縦8マス：体6段＋足2段。元のアイコンと同じ比率） -->
+                <svg viewBox="0 -1 12 9" aria-hidden="true">
                     <!-- 足（左から順に4本）。上げるときは高さを1マスにする -->
-                    <rect class="cc-body cc-leg" x="2" y="4" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="4" y="4" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="7" y="4" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="9" y="4" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="2" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="4" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="7" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="9" y="6" width="1" height="2"/>
                     <g class="cc-hop">
-                        <rect class="cc-body" x="2" y="0" width="8" height="4"/>
-                        <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="1"/>
-                        <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="1"/>
+                        <rect class="cc-body" x="2" y="0" width="8" height="6"/>
+                        <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="2"/>
+                        <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="2"/>
                         <rect class="cc-eye" x="3" y="1" width="1" height="1"/>
                         <rect class="cc-eye" x="8" y="1" width="1" height="1"/>
                     </g>
@@ -2970,8 +2968,7 @@
     (function ccMascot() {
       const svg = document.querySelector(".cc-mascot svg");
       if (!svg) return;
-      // 「動きを減らす」設定の端末では動かさない
-      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      // 小さくゆっくりした動きなので、端末の「動きを減らす」設定に関係なく動かす
 
       const body = svg.querySelector(".cc-hop");
       const armL = svg.querySelector(".cc-arm-l");
