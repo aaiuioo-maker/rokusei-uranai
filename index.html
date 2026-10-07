@@ -111,8 +111,9 @@
             box-sizing: border-box; margin-bottom: 6px;
         }
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        /* === Claude Code のキャラクター（ヘッダーの上を歩く） === */
-        .cc-row { height: 40px; margin: -4px 0 2px; }
+        /* === Claude Code のキャラクター（「保存した履歴」の右横を歩く） === */
+        .cc-hist-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
+        .cc-hist-head h1 { margin: 0; }
         .cc-mascot { display: inline-flex; flex-direction: column; align-items: flex-start; gap: 3px; text-decoration: none; }
         .cc-mascot svg { width: 36px; height: 27px; shape-rendering: crispEdges; overflow: visible; transform-origin: center; }
         /* 歩く・立ち止まる・手足の動きは、下のスクリプト（ccMascot）で1コマずつ動かしている */
@@ -358,26 +359,6 @@
     </div>
     <!-- ===== MAIN APP ===== -->
     <div class="container" id="mainContainer" style="display: none;">
-        <div class="cc-row">
-            <a class="cc-mascot" href="https://claude.com/claude-code" target="_blank" rel="noopener" title="Claude Code で作成" aria-label="Claude Code で作成">
-                <!-- 1マス＝1ドットのドット絵（横12×縦8マス：体6段＋足2段。元のアイコンと同じ比率） -->
-                <svg viewBox="0 -1 12 9" aria-hidden="true">
-                    <!-- 足（左から順に4本）。上げるときは高さを1マスにする -->
-                    <rect class="cc-body cc-leg" x="2" y="6" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="4" y="6" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="7" y="6" width="1" height="2"/>
-                    <rect class="cc-body cc-leg" x="9" y="6" width="1" height="2"/>
-                    <g class="cc-hop">
-                        <rect class="cc-body" x="2" y="0" width="8" height="6"/>
-                        <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="2"/>
-                        <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="2"/>
-                        <rect class="cc-eye" x="3" y="1" width="1" height="1"/>
-                        <rect class="cc-eye" x="8" y="1" width="1" height="1"/>
-                    </g>
-                </svg>
-                <span class="cc-label">Claude Code</span>
-            </a>
-        </div>
         <div class="header-area">
             <h1>六星占術 × カバラ 判定</h1>
             <button id="soundToggleBtn" class="sound-toggle active" onclick="toggleSound()">🔊 音: ON</button>
@@ -436,7 +417,27 @@
         </div>
     </div>
     <div class="container" id="historyContainer" style="display: none;">
-        <h1>保存した履歴</h1>
+        <div class="cc-hist-head">
+            <h1>保存した履歴</h1>
+            <a class="cc-mascot" href="https://claude.com/claude-code" target="_blank" rel="noopener" title="Claude Code で作成" aria-label="Claude Code で作成">
+                <!-- 1マス＝1ドットのドット絵（横12×縦8マス：体6段＋足2段。元のアイコンと同じ比率） -->
+                <svg viewBox="0 -1 12 9" aria-hidden="true">
+                    <!-- 足（左から順に4本）。上げるときは高さを1マスにする -->
+                    <rect class="cc-body cc-leg" x="2" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="4" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="7" y="6" width="1" height="2"/>
+                    <rect class="cc-body cc-leg" x="9" y="6" width="1" height="2"/>
+                    <g class="cc-hop">
+                        <rect class="cc-body" x="2" y="0" width="8" height="6"/>
+                        <rect class="cc-body cc-arm-l" x="0" y="2" width="2" height="2"/>
+                        <rect class="cc-body cc-arm-r" x="10" y="2" width="2" height="2"/>
+                        <rect class="cc-eye" x="3" y="1" width="1" height="1"/>
+                        <rect class="cc-eye" x="8" y="1" width="1" height="1"/>
+                    </g>
+                </svg>
+                <span class="cc-label">Claude Code</span>
+            </a>
+        </div>
         <div class="filter-bar" style="gap:6px;">
             <span>🔍 名前検索:</span>
             <input type="text" id="nameSearch" placeholder="名前の一部を入力" style="flex:1; min-width:0; padding:8px 10px; border:1px solid #d1cabb; border-radius:8px; font-size:14px; background:#faf8f4;" onkeydown="if(event.key==='Enter'){applyNameSearch();}">
@@ -2962,7 +2963,7 @@
     </script>
     <script>
     // =============================================================
-    // Claude Code のキャラクター（ヘッダーの上）
+    // Claude Code のキャラクター（「保存した履歴」の右横）
     //   右へ歩く → 端で立ち止まって手足をちょこちょこ動かし、振り向く → 左へ戻る … を繰り返す
     // =============================================================
     (function ccMascot() {
