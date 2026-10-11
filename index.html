@@ -111,13 +111,11 @@
             box-sizing: border-box; margin-bottom: 6px;
         }
         .header-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
-        /* === Claude Code のキャラクター（「保存した履歴」の右横を歩く） === */
+        /* === Claude Code のキャラクター（「保存した履歴」の右横） === */
         .cc-hist-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .cc-hist-head h1 { margin: 0; }
-        /* 右端に寄せ、キャラクターは「Claude Code」の文字の真ん中の上に置く。
-           歩く幅（24px）の半分だけ左へずらしておき、文字の真ん中から左右に12pxずつ歩くようにする */
-        .cc-hist-head .cc-mascot { margin-left: auto; margin-right: 4px; align-items: center; height: 46px; justify-content: flex-end; }
-        .cc-hist-head .cc-mascot svg { position: relative; left: -12px; }
+        /* 右端に寄せ、パソコンを打つキャラクター（ノートパソコンを含む絵）を「Claude Code」の文字の真ん中の上に置く（他のアプリと同じ） */
+        .cc-hist-head .cc-mascot { margin-left: auto; margin-right: -6.5px; align-items: center; height: 46px; justify-content: flex-end; }   /* GitHub のマークとの間隔を他のアプリ（真ん中どうし56px）にそろえる */
         /* === GitHub のマーク（オレンジのキャラクターの右） ===
            横には動かず、その場で：タコの足をゆらゆら・ときどき首をかしげる・ときどき目をパチッ。タップすると1回転 */
         .gh-mascot { --gh-disc: #24292f; --gh-cat: #ffffff; --gh-text: #57606a; }   /* 白いカードの上なので黒い丸 */
