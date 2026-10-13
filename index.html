@@ -273,11 +273,10 @@
         #gogyoBody .label{ font-size:12px; letter-spacing:.08em; color:#f5d76e; margin-bottom:6px; display:block; }
         #gogyoBody .gg-pick{ display:flex; gap:10px; }
         #gogyoBody .gg-pick-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
-        #gogyoBody .gg-pick-col select{ margin-top:auto; }   /* 案内の文の長さが左右で違っても、選ぶ欄の高さをそろえる */
-        /* 名前を入れるとタイプを自動で選ぶ欄（iPhone で勝手にズームしないよう 16px） */
-        #gogyoBody .gg-name{ width:100%; box-sizing:border-box; padding:10px 9px; font-size:16px; border-radius:8px; background:#2c1a4f; color:#f3ead5; border:1px solid rgba(212,175,55,.5); font-family:inherit; margin-bottom:4px; }
-        #gogyoBody .gg-name::placeholder{ color:rgba(243,234,213,.45); }
-        #gogyoBody .gg-name:focus{ outline:none; border-color:#f5d76e; }
+        #gg_self, #gg_other{ margin-top:auto; }   /* 案内の文の長さが左右で違っても、タイプを選ぶ欄の高さをそろえる */
+        /* グループで絞って、保存した人を名前順に選ぶ欄（iPhone で勝手にズームしないよう 16px） */
+        #gogyoBody select.gg-grp, #gogyoBody select.gg-person{ font-size:16px; padding:9px 8px; margin-bottom:5px; background:#2c1a4f; }
+        #gogyoBody .gg-mini{ font-size:10.5px; color:rgba(192,200,216,.75); letter-spacing:.04em; margin:2px 0 3px; }
         #gogyoBody .gg-name-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#7ce0a0; overflow-wrap:anywhere; }
         #gogyoBody .gg-name-hint.miss{ color:#f0b060; }
         #gogyoBody .gg-name-note{ font-size:11px; color:rgba(192,200,216,.7); line-height:1.6; margin-top:8px; }
@@ -799,19 +798,26 @@
                     <div class="gg-pick">
                         <div class="gg-pick-col">
                             <span class="label">◆ 自分のタイプ</span>
-                            <input id="gg_self_name" class="gg-name" type="text" list="gg_names" placeholder="名前を入力" autocomplete="off" enterkeyhint="done">
+                            <div class="gg-mini">グループ</div>
+                            <select id="gg_self_grp" class="gg-grp" aria-label="自分のグループ"></select>
+                            <div class="gg-mini">名前（名前順）</div>
+                            <select id="gg_self_person" class="gg-person" aria-label="自分の名前"></select>
                             <div id="gg_self_hint" class="gg-name-hint"></div>
+                            <div class="gg-mini">タイプ</div>
                             <select id="gg_self"></select>
                         </div>
                         <div class="gg-pick-col">
                             <span class="label">◆ 相手のタイプ</span>
-                            <input id="gg_other_name" class="gg-name" type="text" list="gg_names" placeholder="名前を入力" autocomplete="off" enterkeyhint="done">
+                            <div class="gg-mini">グループ</div>
+                            <select id="gg_other_grp" class="gg-grp" aria-label="相手のグループ"></select>
+                            <div class="gg-mini">名前（名前順）</div>
+                            <select id="gg_other_person" class="gg-person" aria-label="相手の名前"></select>
                             <div id="gg_other_hint" class="gg-name-hint"></div>
+                            <div class="gg-mini">タイプ</div>
                             <select id="gg_other"></select>
                         </div>
                     </div>
-                    <datalist id="gg_names"></datalist>
-                    <div class="gg-name-note">名前を入れると「保存した履歴」からその人のタイプを探して、自動で選びます。下の一覧から直接選ぶこともできます。</div>
+                    <div class="gg-name-note">グループを選ぶと、その中の人が名前順に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
                 </div>
                 <div id="gg_result" class="card result">
                     <div class="gg-pair" id="gg_pairText"></div>
@@ -2954,59 +2960,73 @@
     })();
 
     // =============================================================
-    // 五星三心占い 相性：名前を入れると「保存した履歴」からその人のタイプを探して自動で選ぶ
+    // 五星三心占い 相性：グループで絞って、保存した人を名前順に選ぶと、その人のタイプを自動で選ぶ
     // =============================================================
-    (function ggNameLookup(){
-      const list = document.getElementById('gg_names');
-      if (!list || typeof gogyoTypeOf !== 'function') return;
-      const norm = s => String(s || '').replace(/[\s　]/g, '').toLowerCase();
+    (function ggPersonPicker(){
+      if (typeof gogyoTypeOf !== 'function') return;
+      const NO_GRP = '未分類';
+      const collator = new Intl.Collator('ja');
       const hist = () => { try { return JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'); } catch (e) { return []; } };
-      // 入力候補（保存した人の名前）を作り直す
-      function fillNames() {
-        const seen = new Set();
-        list.innerHTML = '';
-        hist().forEach(it => { const n = (it.name || '').trim(); if (n && n !== '名前なし' && !seen.has(n)) { seen.add(n); list.appendChild(new Option(n)); } });
+      // 保存した人（同じ名前は新しく保存したほうを使う。タイプが分からない人は除く）
+      function people() {
+        const seen = new Set(), out = [];
+        hist().forEach(it => {
+          const n = (it.name || '').trim();
+          if (!n || n === '名前なし' || seen.has(n) || !gogyoTypeOf(it)) return;
+          seen.add(n); out.push(it);
+        });
+        return out;
       }
-      function find(q) {
-        const h = hist().filter(it => it.name && gogyoTypeOf(it));
-        const k = norm(q);
-        const exact = h.find(it => norm(it.name) === k);   // 新しく保存した順に並んでいるので、同じ名前なら新しいほう
-        if (exact) return { item: exact };
-        const part = h.filter(it => norm(it.name).indexOf(k) >= 0);
-        const names = [...new Set(part.map(it => it.name))];
-        if (names.length === 1) return { item: part[0] };
-        return { many: names };
+      // グループの並び：占う画面の「グループ」と同じ順。そこにないグループは後ろに名前順
+      function groupOrder(ps) {
+        const used = new Set(ps.map(p => p.category || NO_GRP));
+        const base = Array.from(document.querySelectorAll('#personCategory option')).map(o => o.value || NO_GRP);
+        const extra = [...used].filter(g => base.indexOf(g) < 0).sort(collator.compare);
+        return base.concat(extra).filter(g => used.has(g));
       }
-      function hook(which) {
-        const input = document.getElementById('gg_' + which + '_name');
+      function setup(which) {
+        const grp = document.getElementById('gg_' + which + '_grp');
+        const per = document.getElementById('gg_' + which + '_person');
         const hint = document.getElementById('gg_' + which + '_hint');
-        const sel = document.getElementById('gg_' + which);
-        function look() {
-          const q = input.value.trim();
-          hint.classList.remove('miss');
-          if (!q) { hint.textContent = ''; return; }
-          const r = find(q);
-          if (r.item) {
-            const t = gogyoTypeOf(r.item);
-            sel.value = t.id;
-            if (sel.onchange) sel.onchange();
-            hint.textContent = '✓ ' + r.item.name + '：' + t.name + '（' + (r.item.star || '') + '）';
-          } else if (r.many.length > 1) {
-            hint.classList.add('miss');
-            hint.textContent = '候補が' + r.many.length + '人います：' + r.many.slice(0, 4).join('、') + (r.many.length > 4 ? '…' : '');
-          } else {
-            hint.classList.add('miss');
-            hint.textContent = '保存した履歴に見つかりません';
-          }
+        const typeSel = document.getElementById('gg_' + which);
+        let ps = [];
+        function fillPeople(keepName) {
+          const g = grp.value;
+          const list = ps.filter(p => g === '' || (p.category || NO_GRP) === g).sort((a, b) => collator.compare(a.name, b.name));
+          per.innerHTML = '';
+          per.add(new Option(list.length ? '— 名前を選ぶ（' + list.length + '人）—' : '— 保存した人がいません —', ''));
+          list.forEach(p => per.add(new Option(p.name, p.name)));
+          per.value = (keepName && list.some(p => p.name === keepName)) ? keepName : '';
         }
-        input.addEventListener('focus', fillNames);
-        input.addEventListener('input', look);
-        input.addEventListener('change', look);
-        // 一覧から直接タイプを選んだら、名前の欄は空にする（違う人の名前が残らないように）
-        sel.addEventListener('change', e => { if (e.isTrusted) { input.value = ''; hint.textContent = ''; hint.classList.remove('miss'); } });
+        function refresh() {
+          ps = people();
+          const keepG = grp.value, keepN = per.value;
+          grp.innerHTML = '';
+          grp.add(new Option('すべてのグループ（' + ps.length + '人）', ''));
+          groupOrder(ps).forEach(g => grp.add(new Option(g + '（' + ps.filter(p => (p.category || NO_GRP) === g).length + '人）', g)));
+          grp.value = Array.from(grp.options).some(o => o.value === keepG) ? keepG : '';
+          fillPeople(keepN);
+        }
+        grp.addEventListener('change', () => { fillPeople(per.value); if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} } });
+        per.addEventListener('change', () => {
+          const p = ps.find(x => x.name === per.value);
+          hint.classList.remove('miss');
+          if (!p) { hint.textContent = ''; return; }
+          const t = gogyoTypeOf(p);
+          typeSel.value = t.id;
+          if (typeSel.onchange) typeSel.onchange();
+          hint.textContent = '✓ ' + t.name + '（' + (p.star || '') + '）';
+        });
+        // タイプを直接選んだら、名前の選択は外す（違う人の名前が残らないように）
+        typeSel.addEventListener('change', e => { if (e.isTrusted) { per.value = ''; hint.textContent = ''; } });
+        return refresh;
       }
-      hook('self'); hook('other');
-      fillNames();
+      const refreshers = [setup('self'), setup('other')];
+      const refreshAll = () => refreshers.forEach(f => f());
+      refreshAll();
+      // 開くたびに最新の保存した履歴で作り直す
+      const open = window.openGogyo;
+      if (typeof open === 'function') window.openGogyo = function() { refreshAll(); return open.apply(this, arguments); };
     })();
     </script>
 
