@@ -115,7 +115,7 @@
         .cc-hist-head { display: flex; align-items: center; gap: 12px; margin-bottom: 8px; }
         .cc-hist-head h1 { margin: 0; }
         /* 右端に寄せ、パソコンを打つキャラクター（ノートパソコンを含む絵）を「Claude Code」の文字の真ん中の上に置く（他のアプリと同じ） */
-        .cc-hist-head .cc-mascot { margin-left: auto; margin-right: -6.5px; align-items: center; height: 46px; justify-content: flex-end; }   /* GitHub のマークとの間隔を他のアプリ（真ん中どうし56px）にそろえる */
+        .cc-hist-head .cc-mascot { margin-left: auto; margin-right: -16.5px; align-items: center; height: 46px; justify-content: flex-end; }   /* GitHub のマークとの間隔（真ん中どうし46px。ノートパソコンを出しても重ならない） */
         /* === GitHub のマーク（オレンジのキャラクターの右） ===
            横には動かず、その場で：タコの足をゆらゆら・ときどき首をかしげる・ときどき目をパチッ。タップすると1回転 */
         .gh-mascot { --gh-disc: #24292f; --gh-cat: #ffffff; --gh-text: #57606a; }   /* 白いカードの上なので黒い丸 */
@@ -283,6 +283,32 @@
         #gogyoBody .gg-gb{ padding:11px 13px; border-radius:10px; font-size:13px; line-height:1.7; background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.25); }
         #gogyoBody .gg-gb .gb-t{ display:block; font-size:11.5px; letter-spacing:.06em; margin-bottom:4px; color:#f5d76e; }
         #gogyoBody .gb-bad .gb-t{ color:#f2a6a6; }
+        /* --- 五星三心 相性：早見表と解説（六星占術の相性早見表と同じ並び） --- */
+        #gogyoBody h2{ font-size:15.5px; letter-spacing:.06em; color:#f5d76e; margin:22px 2px 8px; padding-bottom:5px; border-bottom:1px solid rgba(212,175,55,.35); }
+        #gogyoBody h3{ font-size:13.5px; color:#f5d76e; margin:12px 0 6px; letter-spacing:.04em; }
+        #gogyoBody .card p, #gogyoBody .card li{ font-size:13px; line-height:1.85; }
+        #gogyoBody .card ul{ margin:4px 0; padding-left:1.2em; }
+        #gogyoBody .gg-note{ font-size:11px; color:rgba(192,200,216,.7); line-height:1.7; margin-top:8px; }
+        #gogyoBody .gg-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; font-size:12px; margin:6px 0 10px; }
+        #gogyoBody .gg-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -4px; padding:0 4px 4px; }
+        #gogyoBody table.gg-mx{ border-collapse:collapse; font-family:-apple-system,"Segoe UI","Hiragino Sans",sans-serif; }
+        #gogyoBody table.gg-mx th, #gogyoBody table.gg-mx td{ border:1px solid rgba(212,175,55,.22); text-align:center; padding:0; }
+        #gogyoBody table.gg-mx thead th{ font-size:10px; line-height:1.25; font-weight:600; color:#e8ddc0; padding:4px 2px; min-width:30px; }
+        #gogyoBody table.gg-mx tbody th{ font-size:10.5px; font-weight:600; color:#e8ddc0; padding:4px 6px; white-space:nowrap; text-align:left; position:sticky; left:0; background:#24143d; }
+        #gogyoBody table.gg-mx td{ font-size:15px; font-weight:700; height:30px; min-width:30px; cursor:pointer; }
+        #gogyoBody table.gg-mx td:active{ background:rgba(255,255,255,.12); }
+        #gogyoBody table.gg-mx td.gg-self{ background:rgba(255,255,255,.06); }
+        #gogyoBody .gg-k{ font-size:10px; opacity:.75; }
+        #gogyoBody .gg-pairs{ display:grid; gap:7px; }
+        #gogyoBody .gg-pr{ background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.22); border-radius:9px; padding:8px 10px; font-size:12.5px; line-height:1.7; cursor:pointer; }
+        #gogyoBody .gg-pr b{ color:#f3ead5; }
+        #gogyoBody .gg-pr .why{ display:block; color:#c9c1dd; font-size:12px; }
+        #gogyoBody .gg-chip{ display:inline-block; padding:1px 8px; margin:2px 3px 2px 0; border-radius:999px; font-size:12px; border:1px solid rgba(212,175,55,.35); background:rgba(255,255,255,.04); }
+        #gogyoBody .gg-type{ border-top:1px dashed rgba(212,175,55,.25); padding-top:10px; margin-top:10px; }
+        #gogyoBody .gg-type:first-child{ border-top:none; margin-top:0; padding-top:0; }
+        #gogyoBody table.gg-map{ width:100%; border-collapse:collapse; font-size:12.5px; }
+        #gogyoBody table.gg-map th, #gogyoBody table.gg-map td{ border:1px solid rgba(212,175,55,.22); padding:6px 6px; text-align:center; }
+        #gogyoBody table.gg-map thead th{ color:#f5d76e; font-weight:600; }
         #compatChecker{ background:#fff; border:1px solid #e8e2d8; border-radius:10px; padding:12px; margin-bottom:6px; }
         #compatChecker select{ font-family:inherit; font-size:14px; padding:7px 8px; border:1px solid #d1cabb; border-radius:8px; background:#faf8f4; }
         #compatChecker button{ width:100%; margin-top:10px; padding:10px; border:none; border-radius:9px; background:#8b6f47; color:#fff; font-weight:bold; cursor:pointer; }
@@ -784,6 +810,8 @@
                     </div>
                 </div>
                 <div style="font-size:10.5px; color:rgba(192,200,216,.6); text-align:center; letter-spacing:.06em; line-height:1.7;">※評価は「自分から見た相性」です。相手から見た評価とは一致しないことがあります。</div>
+                <!-- 早見表と解説（中身は下のスクリプト ggGuide が相性データから作る） -->
+                <div id="gg_guide"></div>
             </div>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:rgba(255,255,255,.12); color:#f3ead5; font-weight:bold; margin-top:10px; cursor:pointer;" onclick="closeGogyo()">閉じる</button>
         </div>
@@ -2802,6 +2830,113 @@
       selfSel.onchange=render; otherSel.onchange=render;
       window.openGogyo=function(){ if(typeof playSound==='function'){try{playSound('click');}catch(e){}} render(); document.getElementById('gogyoModal').style.display='flex'; };
       window.closeGogyo=function(){ document.getElementById('gogyoModal').style.display='none'; };
+    })();
+
+    // =============================================================
+    // 五星三心占い 相性：早見表と解説（六星占術の「相性早見表」と同じ並び）
+    //   表や一覧は、すべて上の相性データ GOGYO（12タイプ×12タイプの評価と理由）から作る
+    // =============================================================
+    (function ggGuide(){
+      const box = document.getElementById('gg_guide');
+      if (!box || typeof GOGYO === 'undefined') return;
+      const T = GOGYO.types, M = GOGYO.matrix;
+      const SYM = {2:'◎',1:'〇',0:'△','-1':'▲','-2':'×'};
+      const LBL = {2:'とても良い',1:'良い',0:'普通','-1':'注意','-2':'悪い'};
+      const COL = {2:'#f5d76e',1:'#7ce0a0',0:'#c0c8d8','-1':'#f0b060','-2':'#f27878'};
+      const SHORT = {compass:'羅針盤', indian:'インディ', phoenix:'鳳凰', clock:'時計', chameleon:'カメレ', dolphin:'イルカ'};
+      const ICON = {compass:'🧭', indian:'🪶', phoenix:'🔥', clock:'⏰', chameleon:'🦎', dolphin:'🐬'};
+      const BASES = ['compass','indian','phoenix','clock','chameleon','dolphin'];
+      const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+      const base = id => id.replace(/^(gold|silver)_/, '');
+      const nm = id => (T.find(t => t.id === id) || {}).name || id;
+      const sc = (a, b) => ((M[a] || {})[b] || [0, ''])[0];
+      const why = (a, b) => ((M[a] || {})[b] || [0, ''])[1];
+      const sym = s => '<span style="color:' + COL[s] + '">' + SYM[s] + '</span>';
+      const legend = '<div class="gg-legend">' + [2,1,0,-1,-2].map(s => '<span>' + sym(s) + ' ' + LBL[s] + '</span>').join('') + '</div>';
+      const pr = (a, b, extra) => '<div class="gg-pr" data-a="' + a + '" data-b="' + b + '"><b>' + esc(nm(a)) + ' → ' + esc(nm(b)) + '</b> ' + sym(sc(a, b)) + (extra || '') + '<span class="why">' + esc(why(a, b)) + '</span></div>';
+      let h = '';
+
+      // 1. 12タイプ全組み合わせ
+      h += '<h2>1. 12タイプ全組み合わせ相性表（自分→相手）</h2><div class="card">';
+      h += '<p>縦（左）が自分、横（上）が相手です。「Aから見たB」と「Bから見たA」は同じとは限りません。マスを押すと、上のチェックにその組み合わせの理由が出ます。横にスクロールできます。</p>' + legend;
+      h += '<div class="gg-scroll"><table class="gg-mx"><thead><tr><th></th>' + T.map(t => '<th>' + SHORT[base(t.id)] + '<br><span class="gg-k">' + t.color + '</span></th>').join('') + '</tr></thead><tbody>';
+      T.forEach(a => {
+        h += '<tr><th>' + esc(a.name) + '</th>' + T.map(b => { const s = sc(a.id, b.id); return '<td class="' + (a.id === b.id ? 'gg-self' : '') + '" data-a="' + a.id + '" data-b="' + b.id + '" style="color:' + COL[s] + '" title="' + esc(why(a.id, b.id)) + '">' + SYM[s] + '</td>'; }).join('') + '</tr>';
+      });
+      h += '</tbody></table></div></div>';
+
+      // 2. 座どうし（金銀4通りの平均）
+      h += '<h2>2. 座どうしの基本相性（金・銀まとめ）</h2><div class="card">';
+      h += '<p>同じ座の「金」と「銀」をまとめ、4通り（金→金・金→銀・銀→金・銀→銀）の平均で表したものです。おおまかな傾向を見るときに使ってください。</p>' + legend;
+      const avgSym = v => v >= 1.5 ? 2 : v >= 0.5 ? 1 : v > -0.5 ? 0 : v > -1.5 ? -1 : -2;
+      h += '<div class="gg-scroll"><table class="gg-mx"><thead><tr><th>自分＼相手</th>' + BASES.map(b => '<th>' + ICON[b] + '<br>' + SHORT[b] + '</th>').join('') + '</tr></thead><tbody>';
+      BASES.forEach(a => {
+        h += '<tr><th>' + ICON[a] + ' ' + SHORT[a] + '</th>' + BASES.map(b => {
+          let sum = 0; ['gold_','silver_'].forEach(x => ['gold_','silver_'].forEach(y => { sum += sc(x + a, y + b); }));
+          const s = avgSym(sum / 4);
+          return '<td class="' + (a === b ? 'gg-self' : '') + '" data-a="gold_' + a + '" data-b="gold_' + b + '" style="color:' + COL[s] + '">' + SYM[s] + '</td>';
+        }).join('') + '</tr>';
+      });
+      h += '</tbody></table></div><p class="gg-note">※「羅針盤」は羅針盤座、「インディ」はインディアン座、「カメレ」はカメレオン座です。</p></div>';
+
+      // 3. ◎ と × の組み合わせ
+      const pairs = [];
+      T.forEach(a => T.forEach(b => { if (a.id !== b.id) pairs.push([a.id, b.id, sc(a.id, b.id)]); }));
+      const both = pairs.filter(p => p[0] < p[1] && sc(p[0], p[1]) === 2 && sc(p[1], p[0]) === 2);
+      const best = pairs.filter(p => p[2] === 2);
+      const worst = pairs.filter(p => p[2] === -2);
+      const gap = pairs.filter(p => p[2] - sc(p[1], p[0]) >= 3);
+      h += '<h2>3. 特に良い組み合わせ・注意したい組み合わせ</h2><div class="card">';
+      if (both.length) h += '<h3>💞 両思い（どちらから見ても ◎）</h3><div class="gg-pairs">' + both.map(p => pr(p[0], p[1], ' ⇄ ' + sym(sc(p[1], p[0])))).join('') + '</div>';
+      h += '<h3>◎ 自分から見て「とても良い」相手（' + best.length + '組）</h3><div class="gg-pairs">' + (best.length ? best.map(p => pr(p[0], p[1])).join('') : '<p>ありません</p>') + '</div>';
+      h += '<h3>× 自分から見て「悪い」相手（' + worst.length + '組）</h3><div class="gg-pairs">' + (worst.length ? worst.map(p => pr(p[0], p[1])).join('') : '<p>ありません</p>') + '</div>';
+      if (gap.length) h += '<h3>↔ 片思いになりやすい組み合わせ</h3><p>自分からは良く見えても、相手からはそう見えていない組み合わせです（評価の差が3段階以上）。</p><div class="gg-pairs">' + gap.map(p => pr(p[0], p[1], ' ／ 相手から見ると ' + sym(sc(p[1], p[0])))).join('') + '</div>';
+      h += '<p class="gg-note">※一覧の組み合わせを押すと、上のチェックにその組み合わせが出ます。</p></div>';
+
+      // 4. 座ごとのまとめ
+      h += '<h2>4. 座ごとの特徴と相性まとめ（金・銀別）</h2><div class="card">';
+      BASES.forEach(b => {
+        const desc = (typeof GOGYO_DESC !== 'undefined' && GOGYO_DESC[b]) || '';
+        h += '<div class="gg-type"><h3>' + ICON[b] + ' ' + esc(T.find(t => base(t.id) === b).group) + '</h3>' + (desc ? '<p>' + esc(desc) + '</p>' : '') + '<ul>';
+        ['gold_','silver_'].forEach(x => {
+          const id = x + b, t = T.find(t => t.id === id);
+          const goods = T.filter(o => o.id !== id && sc(id, o.id) === 2).map(o => '<span class="gg-chip">' + esc(o.name) + '</span>').join('') || '—';
+          const bads = T.filter(o => o.id !== id && sc(id, o.id) <= -1).map(o => '<span class="gg-chip">' + sym(sc(id, o.id)) + ' ' + esc(o.name) + '</span>').join('') || '—';
+          h += '<li><strong>' + esc(t.name) + '</strong><br>◎ とても良い：' + goods + '<br>注意：' + bads;
+          if (t.good || t.bad) h += '<br><span class="gg-k">相性の良い相手（まとめ）：' + esc(t.good || '—') + ' ／ 注意したい相手：' + esc(t.bad || '—') + '</span>';
+          h += '</li>';
+        });
+        h += '</ul></div>';
+      });
+      h += '</div>';
+
+      // 5. 金と銀
+      const goldTxt = (typeof GOGYO_GOLD !== 'undefined') ? GOGYO_GOLD : {};
+      h += '<h2>5. 「金」と「銀」のちがい</h2><div class="card"><ul>';
+      h += '<li><strong>生まれ年で決まる</strong>：西暦が偶数の年に生まれた人は「金」、奇数の年に生まれた人は「銀」です。</li>';
+      if (goldTxt[true]) h += '<li><strong>金：</strong>' + esc(goldTxt[true]) + '</li>';
+      if (goldTxt[false]) h += '<li><strong>銀：</strong>' + esc(goldTxt[false]) + '</li>';
+      h += '<li>同じ座でも、金と銀で相手の感じ方が変わることがあります。上の表で金・銀の両方を見くらべてみてください。</li></ul></div>';
+
+      // 6. 六星占術との対応
+      const ROKU = [['土星人','compass'],['金星人','indian'],['火星人','phoenix'],['天王星人','clock'],['木星人','chameleon'],['水星人','dolphin']];
+      h += '<h2>6. 六星占術との対応</h2><div class="card"><p>このアプリでは、六星占術の運命星から五星三心占いのタイプを割り出しています。＋（プラス）は「金」、−（マイナス）は「銀」になります。</p>';
+      h += '<table class="gg-map"><thead><tr><th>六星占術</th><th>五星三心占い</th><th>＋ ／ −</th></tr></thead><tbody>';
+      ROKU.forEach(r => { const g = T.find(t => base(t.id) === r[1]).group; h += '<tr><th>' + r[0] + '</th><td>' + ICON[r[1]] + ' ' + esc(g) + '</td><td>金の' + esc(g) + ' ／ 銀の' + esc(g) + '</td></tr>'; });
+      h += '</tbody></table><p class="gg-note">※五星三心占いはゲッターズ飯田さんの占いです。評価と理由は、このアプリに入っている相性データ（12タイプ×12タイプ）にもとづいています。</p></div>';
+
+      box.innerHTML = h;
+
+      // 表のマスや一覧を押すと、上のチェックにその組み合わせを出す
+      const selfSel = document.getElementById('gg_self'), otherSel = document.getElementById('gg_other');
+      box.addEventListener('click', e => {
+        const el = e.target.closest('[data-a]');
+        if (!el || !selfSel) return;
+        selfSel.value = el.dataset.a; otherSel.value = el.dataset.b;
+        if (selfSel.onchange) selfSel.onchange();
+        if (typeof playSound === 'function') { try { playSound('click'); } catch (err) {} }
+        const r = document.getElementById('gg_result'); if (r) r.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      });
     })();
     </script>
 
