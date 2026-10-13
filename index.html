@@ -324,6 +324,19 @@
         #compatChecker{ background:#fff; border:1px solid #e8e2d8; border-radius:10px; padding:12px; margin-bottom:6px; }
         #compatChecker select{ font-family:inherit; font-size:14px; padding:7px 8px; border:1px solid #d1cabb; border-radius:8px; background:#faf8f4; }
         #compatChecker button{ width:100%; margin-top:10px; padding:10px; border:none; border-radius:9px; background:#8b6f47; color:#fff; font-weight:bold; cursor:pointer; }
+        /* グループで絞って、保存した人を入力順に選ぶ欄（五星三心占い 相性と同じ形。iPhone で勝手にズームしないよう 16px） */
+        #compatChecker .cmp-pick{ display:flex; gap:10px; }
+        #compatChecker .cmp-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
+        #compatChecker .cmp-col select{ width:100%; font-size:16px; margin-bottom:5px; }
+        #compatChecker #cmpSelfStar, #compatChecker #cmpOtherStar{ margin-top:auto; }   /* 案内の文の長さが左右で違っても高さをそろえる */
+        #compatChecker .cmp-head{ font-size:13px; font-weight:bold; color:#8b6f47; margin-bottom:4px; }
+        #compatChecker .cmp-mini{ font-size:10.5px; color:#8a8070; margin:2px 0 3px; }
+        #compatChecker .cmp-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#2e8b57; overflow-wrap:anywhere; }
+        #compatChecker button.cmp-swap{ background:#f6efe2; color:#8b6f47; border:1px solid #d9c9a8; }
+        #compatChecker button.cmp-swap:active{ background:#efe3cc; }
+        #compatChecker .cmp-swap .ic{ display:inline-block; }
+        #compatChecker .cmp-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
+        #compatChecker .cmp-note{ font-size:11px; color:#8a8070; line-height:1.6; margin-top:8px; }
         /* --- 解説セクション --- */
         .ref-section { border-bottom: 1px solid #f2f2f7; }
         .ref-section summary { font-weight: bold; font-size: 14px; padding: 13px 4px; cursor: pointer; color: #333; list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -418,7 +431,7 @@
             <h1>六星占術 × カバラ 判定</h1>
             <button id="soundToggleBtn" class="sound-toggle active" onclick="toggleSound()">🔊 音: ON</button>
         </div>
-        <button class="compat-open-btn" onclick="openCompat()">📊 相性早見表を見る</button>
+        <button class="compat-open-btn" onclick="openCompat()">📊 六星占術 相性早見表</button>
         <button class="compat-open-btn" style="background:linear-gradient(135deg,#4a2d7a,#b8860b);" onclick="openGogyo()">🌟 五星三心占い 相性</button>
         <button class="compat-open-btn" style="background:linear-gradient(135deg,#b8567f,#5b4a33);" onclick="tlToggle()">🔍 芸能人を検索して入力</button>
         <div id="tlPanel" class="tl-panel">
@@ -938,12 +951,31 @@
                 <div style="text-align:center; font-weight:bold; color:#5b4a33; font-size:16px; margin-bottom:10px;">六星占術 相性早見表</div>
                 <div id="compatChecker">
                     <div style="font-weight:bold; color:#5b4a33; margin-bottom:8px;">🔎 かんたん相性チェック</div>
-                    <div style="display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap;">
-                        <select id="cmpSelfStar"></select>
-                        <span style="font-size:13px;">×</span>
-                        <select id="cmpOtherStar"></select>
+                    <div class="cmp-pick">
+                        <div class="cmp-col">
+                            <div class="cmp-head">◆ 自分</div>
+                            <div class="cmp-mini">グループ</div>
+                            <select id="cmp_self_grp" aria-label="自分のグループ"></select>
+                            <div class="cmp-mini">名前（入力順）</div>
+                            <select id="cmp_self_person" aria-label="自分の名前"></select>
+                            <div id="cmp_self_hint" class="cmp-hint"></div>
+                            <div class="cmp-mini">運命星</div>
+                            <select id="cmpSelfStar"></select>
+                        </div>
+                        <div class="cmp-col">
+                            <div class="cmp-head">◆ 相手</div>
+                            <div class="cmp-mini">グループ</div>
+                            <select id="cmp_other_grp" aria-label="相手のグループ"></select>
+                            <div class="cmp-mini">名前（入力順）</div>
+                            <select id="cmp_other_person" aria-label="相手の名前"></select>
+                            <div id="cmp_other_hint" class="cmp-hint"></div>
+                            <div class="cmp-mini">運命星</div>
+                            <select id="cmpOtherStar"></select>
+                        </div>
                     </div>
+                    <button id="cmp_swap" class="cmp-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
                     <button onclick="checkCompat()">相性を見る</button>
+                    <div class="cmp-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命星が自動で選ばれ、相性が出ます。運命星を直接選ぶこともできます。</div>
                     <div id="compatResult" style="margin-top:10px;"></div>
                 </div>
 
@@ -3042,6 +3074,90 @@
       // 開くたびに最新の保存した履歴で作り直す
       const open = window.openGogyo;
       if (typeof open === 'function') window.openGogyo = function() { refreshAll(); return open.apply(this, arguments); };
+    })();
+
+    // =============================================================
+    // 六星占術 相性早見表の「かんたん相性チェック」：五星三心占い 相性と同じく、
+    //   グループで絞って保存した人を入力順に選ぶと、その人の運命星（霊合星人も）を自動で選んで相性を出す
+    // =============================================================
+    (function cmpPersonPicker(){
+      if (typeof personToken !== 'function' || !document.getElementById('cmp_self_grp')) return;
+      const NO_GRP = '未分類';
+      const collator = new Intl.Collator('ja');
+      const hist = () => { try { return JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'); } catch (e) { return []; } };
+      const tokenOf = p => { try { return p.starClass ? personToken(p) : null; } catch (e) { return null; } };
+      // 保存した人（入力順＝新しく保存した人が上。同じ名前は新しいほう。運命星が分からない人は除く）
+      function people() {
+        const seen = new Set(), out = [];
+        hist().forEach(it => {
+          const n = (it.name || '').trim();
+          if (!n || n === '名前なし' || seen.has(n) || !tokenOf(it)) return;
+          seen.add(n); out.push(it);
+        });
+        return out;
+      }
+      function groupOrder(ps) {
+        const used = new Set(ps.map(p => p.category || NO_GRP));
+        const base = Array.from(document.querySelectorAll('#personCategory option')).map(o => o.value || NO_GRP);
+        const extra = [...used].filter(g => base.indexOf(g) < 0).sort(collator.compare);
+        return base.concat(extra).filter(g => used.has(g));
+      }
+      function setup(which, starId) {
+        const grp = document.getElementById('cmp_' + which + '_grp');
+        const per = document.getElementById('cmp_' + which + '_person');
+        const hint = document.getElementById('cmp_' + which + '_hint');
+        const starSel = document.getElementById(starId);
+        let ps = [];
+        function fillPeople(keepName) {
+          const g = grp.value;
+          const list = ps.filter(p => g === '' || (p.category || NO_GRP) === g);
+          per.innerHTML = '';
+          per.add(new Option(list.length ? '— 名前を選ぶ（' + list.length + '人）—' : '— 保存した人がいません —', ''));
+          list.forEach(p => per.add(new Option(p.name, p.name)));
+          per.value = (keepName && list.some(p => p.name === keepName)) ? keepName : '';
+        }
+        function refresh() {
+          ps = people();
+          const keepG = grp.value, keepN = per.value;
+          grp.innerHTML = '';
+          grp.add(new Option('すべてのグループ（' + ps.length + '人）', ''));
+          groupOrder(ps).forEach(g => grp.add(new Option(g + '（' + ps.filter(p => (p.category || NO_GRP) === g).length + '人）', g)));
+          grp.value = Array.from(grp.options).some(o => o.value === keepG) ? keepG : '';
+          fillPeople(keepN);
+        }
+        grp.addEventListener('change', () => { fillPeople(per.value); if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} } });
+        per.addEventListener('change', () => {
+          const p = ps.find(x => x.name === per.value);
+          if (!p) { hint.textContent = ''; return; }
+          const tk = tokenOf(p);
+          starSel.value = tk;
+          hint.textContent = '✓ ' + (typeof cmpDisp === 'function' ? cmpDisp(tk) : tk);
+          checkCompat();
+        });
+        // 運命星を直接選んだら、名前の選択は外す（違う人の名前が残らないように）
+        starSel.addEventListener('change', () => { per.value = ''; hint.textContent = ''; });
+        const get = () => ({ g: grp.value, n: per.value, t: starSel.value, h: hint.textContent });
+        const put = s => { grp.value = s.g; fillPeople(s.n); starSel.value = s.t; hint.textContent = per.value ? s.h : ''; };
+        const clearPick = () => { per.value = ''; hint.textContent = ''; };
+        return { refresh, get, put, clearPick };
+      }
+      const sides = [setup('self', 'cmpSelfStar'), setup('other', 'cmpOtherStar')];
+      // 自分と相手を入れ替える（グループ・名前・運命星をまとめて入れ替え、相性を出し直す）
+      const swapBtn = document.getElementById('cmp_swap');
+      if (swapBtn) swapBtn.addEventListener('click', () => {
+        const a = sides[0].get(), b = sides[1].get();
+        sides[0].put(b); sides[1].put(a);
+        checkCompat();
+        swapBtn.classList.remove('spin'); void swapBtn.offsetWidth; swapBtn.classList.add('spin');
+      });
+      // 開くたびに最新の保存した履歴で作り直す（開いたときは運命星が今の占い結果に戻るので、名前の選択は外す）
+      const open = window.openCompat;
+      if (typeof open === 'function') window.openCompat = function() {
+        sides.forEach(s => s.refresh());
+        const r = open.apply(this, arguments);
+        sides.forEach(s => s.clearPick());
+        return r;
+      };
     })();
     </script>
 
