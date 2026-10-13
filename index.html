@@ -91,6 +91,20 @@
         @keyframes op-drop { from { transform: translateY(-24px); opacity: 0; } }
         @keyframes op-rise { from { transform: translateY(20px); opacity: 0; } }
         @keyframes op-pulse { 50% { transform: scale(1.06); } }
+        /* 背景はホーム画面のアイコンと同じ、深い紫のグラデーションに光のにじみ。文字の色もアイコンに合わせる */
+        #openingScreen { color: #f3ead5;
+            background:
+                radial-gradient(ellipse at 22% 18%, rgba(150,80,220,.45) 0%, rgba(150,80,220,0) 55%),
+                radial-gradient(ellipse at 80% 84%, rgba(50,130,220,.35) 0%, rgba(50,130,220,0) 55%),
+                radial-gradient(ellipse at 80% 14%, rgba(212,175,55,.22) 0%, rgba(212,175,55,0) 45%),
+                linear-gradient(145deg, #2e1656 0%, #1a0f38 50%, #0a0818 100%); }
+        .op-t b { background: linear-gradient(180deg, #fff0c8 0%, #f0d98a 45%, #e1b95f 100%); -webkit-background-clip: text; background-clip: text; -webkit-text-fill-color: transparent;
+            filter: drop-shadow(0 2px 6px rgba(0,0,0,.35)); }
+        .op-t .kab { color: #ebd7ff; }
+        .op-t .gogyo { color: #9fe0f5; }
+        .op-hello { color: #f3ead5; }
+        .op-bar { background: rgba(255,255,255,.18); }
+        .op-emblem svg polygon { stroke: #d9b45a; }
         @media (max-height: 640px) {
             .op-in { gap: 9px; }
             .op-emblem { width: 48px; height: 48px; }
@@ -418,9 +432,9 @@
         <!-- 背景の飾り（うすい六芒星と、6色の星） -->
         <div class="op-bg" aria-hidden="true">
             <svg viewBox="0 0 100 100" fill="none">
-                <polygon points="50,14 81.2,32 81.2,68 50,86 18.8,68 18.8,32" stroke="rgba(139,111,71,.18)" stroke-width=".35"/>
-                <polygon points="50,14 81.2,68 18.8,68" stroke="rgba(139,111,71,.12)" stroke-width=".3"/>
-                <polygon points="50,86 81.2,32 18.8,32" stroke="rgba(139,111,71,.12)" stroke-width=".3"/>
+                <polygon points="50,14 81.2,32 81.2,68 50,86 18.8,68 18.8,32" stroke="rgba(240,217,138,.35)" stroke-width=".35"/>
+                <polygon points="50,14 81.2,68 18.8,68" stroke="rgba(240,217,138,.22)" stroke-width=".3"/>
+                <polygon points="50,86 81.2,32 18.8,32" stroke="rgba(240,217,138,.22)" stroke-width=".3"/>
                 <circle class="op-tw" cx="50" cy="14" r=".9" fill="#ffd86a"/>
                 <circle class="op-tw" cx="81.2" cy="32" r=".9" fill="#ff7878" style="animation-delay:.4s"/>
                 <circle class="op-tw" cx="81.2" cy="68" r=".9" fill="#5fd7f0" style="animation-delay:.8s"/>
