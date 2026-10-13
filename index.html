@@ -263,64 +263,67 @@
         #pairResult .pr-adv{ background:linear-gradient(135deg,#fff0f6,#f6f0ff); border:1px solid #f0d8e6; border-radius:12px; padding:14px; font-size:13.5px; line-height:1.95; color:#4a3a44; }
         @keyframes kgfadeup{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
         /* --- 五星三心 相性 --- */
-        #gogyoModal .modal-content{ max-width:560px; width:94%; max-height:90vh; overflow-y:auto; text-align:left; color:#f3ead5; padding:18px 16px;
-            background:radial-gradient(ellipse at 50% -10%, #3d2566 0%, #1a0e2e 60%, #0d0618 100%); border:1px solid rgba(212,175,55,.5); }
-        #gogyoBody{ font-family:"Yu Mincho","Hiragino Mincho ProN",serif; }
-        #gogyoBody .gg-header{ text-align:center; margin-bottom:16px; }
-        #gogyoBody .title{ font-size:24px; letter-spacing:.14em; font-weight:700; background:linear-gradient(180deg,#fff6d8,#f5d76e 35%,#b8860b 80%,#8a6510); -webkit-background-clip:text; background-clip:text; -webkit-text-fill-color:transparent; }
-        #gogyoBody .subtitle{ margin-top:6px; font-size:12px; letter-spacing:.14em; color:#c0c8d8; opacity:.85; }
-        #gogyoBody .card{ background:linear-gradient(160deg, rgba(74,45,122,.45), rgba(26,14,46,.75)); border:1px solid rgba(212,175,55,.45); border-radius:14px; padding:16px 14px; margin-bottom:14px; }
-        #gogyoBody .label{ font-size:12px; letter-spacing:.08em; color:#f5d76e; margin-bottom:6px; display:block; }
+        /* 六星占術 相性早見表（#compatBody）と同じ、白とベージュの見やすいデザイン */
+        #gogyoModal .modal-content{ max-width:640px; width:94%; max-height:90vh; overflow-y:auto; text-align:left; padding:16px; }
+        #gogyoBody{ color:#2d2a26; }
+        #gogyoBody .gg-header{ text-align:center; margin-bottom:10px; }
+        #gogyoBody .title{ font-size:16px; font-weight:bold; color:#5b4a33; }
+        #gogyoBody .subtitle{ margin-top:2px; font-size:11.5px; color:#6b645c; }
+        #gogyoBody .card{ background:#faf8f4; border:1px solid #e8e2d8; border-radius:10px; padding:12px 14px; margin-bottom:12px; }
+        #gogyoBody .label{ font-size:13px; font-weight:bold; color:#8b6f47; margin-bottom:4px; display:block; }
         #gogyoBody .gg-pick{ display:flex; gap:10px; }
         #gogyoBody .gg-pick-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
         #gg_self, #gg_other{ margin-top:auto; }   /* 案内の文の長さが左右で違っても、タイプを選ぶ欄の高さをそろえる */
-        /* グループで絞って、保存した人を名前順に選ぶ欄（iPhone で勝手にズームしないよう 16px） */
-        #gogyoBody select.gg-grp, #gogyoBody select.gg-person{ font-size:16px; padding:9px 8px; margin-bottom:5px; background:#2c1a4f; }
-        #gogyoBody .gg-mini{ font-size:10.5px; color:rgba(192,200,216,.75); letter-spacing:.04em; margin:2px 0 3px; }
-        #gogyoBody .gg-swap{ display:block; width:100%; margin-top:10px; padding:10px; border-radius:10px; border:1px solid rgba(212,175,55,.55); background:rgba(212,175,55,.12); color:#f5d76e; font-family:inherit; font-size:14px; font-weight:700; letter-spacing:.06em; cursor:pointer; }
-        #gogyoBody .gg-swap:active{ background:rgba(212,175,55,.25); }
+        /* グループで絞って、保存した人を入力順に選ぶ欄（iPhone で勝手にズームしないよう 16px） */
+        #gogyoBody select{ width:100%; padding:7px 8px; font-size:16px; border-radius:8px; background:#fff; color:#2d2a26; border:1px solid #d1cabb; font-family:inherit; cursor:pointer; margin-bottom:5px; }
+        #gogyoBody .gg-mini{ font-size:10.5px; color:#8a8070; margin:2px 0 3px; }
+        #gogyoBody .gg-swap{ display:block; width:100%; margin-top:10px; padding:10px; border-radius:9px; border:1px solid #d9c9a8; background:#f6efe2; color:#8b6f47; font-family:inherit; font-size:14px; font-weight:bold; cursor:pointer; }
+        #gogyoBody .gg-swap:active{ background:#efe3cc; }
         #gogyoBody .gg-swap .ic{ display:inline-block; }
         #gogyoBody .gg-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
         @keyframes gg-swap-spin{ from{ transform:rotate(0); } to{ transform:rotate(180deg); } }
-        #gogyoBody .gg-name-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#7ce0a0; overflow-wrap:anywhere; }
-        #gogyoBody .gg-name-hint.miss{ color:#f0b060; }
-        #gogyoBody .gg-name-note{ font-size:11px; color:rgba(192,200,216,.7); line-height:1.6; margin-top:8px; }
-        #gogyoBody select{ width:100%; padding:11px 8px; font-size:15px; border-radius:8px; background:#221340; color:#f3ead5; border:1px solid rgba(212,175,55,.5); font-family:inherit; cursor:pointer; }
-        #gogyoBody .result{ animation:kgfadeup .4s ease; text-align:center; }
-        #gogyoBody .gg-pair{ font-size:14px; letter-spacing:.05em; color:#e8ddc0; margin-bottom:6px; }
-        #gogyoBody .gg-symbol{ font-size:64px; line-height:1.1; font-weight:700; margin:2px 0; }
-        #gogyoBody .gg-label{ font-size:18px; font-weight:700; letter-spacing:.1em; margin-bottom:10px; }
-        #gogyoBody .gg-reason{ font-size:14px; line-height:1.9; color:#f3ead5; background:rgba(255,255,255,.05); border:1px solid rgba(212,175,55,.3); border-radius:10px; padding:12px 14px; text-align:justify; }
-        #gogyoBody .gg-goodbad{ display:grid; gap:9px; margin-top:14px; text-align:left; }
-        #gogyoBody .gg-gb{ padding:11px 13px; border-radius:10px; font-size:13px; line-height:1.7; background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.25); }
-        #gogyoBody .gg-gb .gb-t{ display:block; font-size:11.5px; letter-spacing:.06em; margin-bottom:4px; color:#f5d76e; }
-        #gogyoBody .gb-bad .gb-t{ color:#f2a6a6; }
-        /* --- 五星三心 相性：早見表と解説（六星占術の相性早見表と同じ並び） --- */
-        #gogyoBody h2{ font-size:15.5px; letter-spacing:.06em; color:#f5d76e; margin:22px 2px 8px; padding-bottom:5px; border-bottom:1px solid rgba(212,175,55,.35); }
-        #gogyoBody h3{ font-size:13.5px; color:#f5d76e; margin:12px 0 6px; letter-spacing:.04em; }
-        #gogyoBody .card p, #gogyoBody .card li{ font-size:13px; line-height:1.85; }
-        #gogyoBody .card ul{ margin:4px 0; padding-left:1.2em; }
-        #gogyoBody .gg-note{ font-size:11px; color:rgba(192,200,216,.7); line-height:1.7; margin-top:8px; }
-        #gogyoBody .gg-legend{ display:flex; flex-wrap:wrap; gap:6px 10px; font-size:12px; margin:6px 0 10px; }
-        #gogyoBody .gg-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; margin:0 -4px; padding:0 4px 4px; }
-        #gogyoBody table.gg-mx{ border-collapse:collapse; font-family:-apple-system,"Segoe UI","Hiragino Sans",sans-serif; }
-        #gogyoBody table.gg-mx th, #gogyoBody table.gg-mx td{ border:1px solid rgba(212,175,55,.22); text-align:center; padding:0; }
-        #gogyoBody table.gg-mx thead th{ font-size:10px; line-height:1.25; font-weight:600; color:#e8ddc0; padding:4px 2px; min-width:30px; }
-        #gogyoBody table.gg-mx tbody th{ font-size:10.5px; font-weight:600; color:#e8ddc0; padding:4px 6px; white-space:nowrap; text-align:left; position:sticky; left:0; background:#24143d; }
-        #gogyoBody table.gg-mx td{ font-size:15px; font-weight:700; height:30px; min-width:30px; cursor:pointer; }
-        #gogyoBody table.gg-mx td:active{ background:rgba(255,255,255,.12); }
-        #gogyoBody table.gg-mx td.gg-self{ background:rgba(255,255,255,.06); }
-        #gogyoBody .gg-k{ font-size:10px; opacity:.75; }
+        #gogyoBody .gg-name-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#2e8b57; overflow-wrap:anywhere; }
+        #gogyoBody .gg-name-hint.miss{ color:#b06a2c; }
+        #gogyoBody .gg-name-note{ font-size:11px; color:#8a8070; line-height:1.6; margin-top:8px; }
+        #gogyoBody .result{ animation:kgfadeup .4s ease; text-align:center; background:#fff; }
+        #gogyoBody .gg-pair{ font-size:14px; font-weight:bold; color:#5b4a33; margin-bottom:6px; }
+        #gogyoBody .gg-symbol{ font-size:56px; line-height:1.1; font-weight:700; margin:2px 0; }
+        #gogyoBody .gg-label{ font-size:17px; font-weight:700; margin-bottom:10px; }
+        #gogyoBody .gg-reason{ font-size:14px; line-height:1.8; color:#2d2a26; background:#faf8f4; border:1px solid #e8e2d8; border-radius:10px; padding:12px 14px; text-align:left; }
+        #gogyoBody .gg-goodbad{ display:grid; gap:9px; margin-top:12px; text-align:left; }
+        #gogyoBody .gg-gb{ padding:10px 12px; border-radius:10px; font-size:13px; line-height:1.7; }
+        #gogyoBody .gb-good{ background:#e7f3ed; border:1px solid #cfe5d8; }
+        #gogyoBody .gb-bad{ background:#f8e7e7; border:1px solid #ecd0d0; }
+        #gogyoBody .gg-gb .gb-t{ display:block; font-size:11.5px; font-weight:bold; margin-bottom:3px; color:#2e7d5b; }
+        #gogyoBody .gb-bad .gb-t{ color:#a53a3a; }
+        /* --- 早見表と解説 --- */
+        #gogyoBody h2{ font-size:16px; color:#5b4a33; border-left:5px solid #8b6f47; padding-left:8px; margin:20px 0 8px; }
+        #gogyoBody h3{ font-size:14px; color:#5b4a33; margin:12px 0 4px; }
+        #gogyoBody .card p, #gogyoBody .card li{ font-size:13px; line-height:1.7; color:#2d2a26; }
+        #gogyoBody .card ul{ margin:6px 0; padding-left:1.2em; }
+        #gogyoBody .gg-note{ font-size:11.5px; color:#6b645c; line-height:1.6; margin-top:6px; }
+        #gogyoBody .gg-legend{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+        #gogyoBody .gg-legend span{ font-size:11.5px; padding:3px 8px; border-radius:999px; border:1px solid #e8e2d8; font-weight:700; }
+        #gogyoBody .gg-scroll{ overflow-x:auto; -webkit-overflow-scrolling:touch; }
+        #gogyoBody table.gg-mx{ border-collapse:collapse; background:#fff; margin:8px 0; }
+        #gogyoBody table.gg-mx th, #gogyoBody table.gg-mx td{ border:1px solid #e8e2d8; text-align:center; padding:0; }
+        #gogyoBody table.gg-mx thead th{ font-size:10px; line-height:1.25; font-weight:600; background:#f0ebe2; color:#5b4a33; padding:4px 2px; min-width:30px; }
+        #gogyoBody table.gg-mx tbody th{ font-size:10.5px; font-weight:600; background:#f7f4ee; color:#5b4a33; padding:4px 6px; white-space:nowrap; text-align:left; position:sticky; left:0; }
+        #gogyoBody table.gg-mx td{ font-size:14px; font-weight:700; height:30px; min-width:30px; cursor:pointer; }
+        #gogyoBody table.gg-mx td:active{ filter:brightness(.92); }
+        #gogyoBody table.gg-mx td.gg-self{ outline:2px solid #d9c9a8; outline-offset:-2px; }
+        #gogyoBody .gg-k{ font-size:10px; color:#8a8070; }
         #gogyoBody .gg-pairs{ display:grid; gap:7px; }
-        #gogyoBody .gg-pr{ background:rgba(255,255,255,.04); border:1px solid rgba(212,175,55,.22); border-radius:9px; padding:8px 10px; font-size:12.5px; line-height:1.7; cursor:pointer; }
-        #gogyoBody .gg-pr b{ color:#f3ead5; }
-        #gogyoBody .gg-pr .why{ display:block; color:#c9c1dd; font-size:12px; }
-        #gogyoBody .gg-chip{ display:inline-block; padding:1px 8px; margin:2px 3px 2px 0; border-radius:999px; font-size:12px; border:1px solid rgba(212,175,55,.35); background:rgba(255,255,255,.04); }
-        #gogyoBody .gg-type{ border-top:1px dashed rgba(212,175,55,.25); padding-top:10px; margin-top:10px; }
+        #gogyoBody .gg-pr{ background:#fff; border:1px solid #e8e2d8; border-radius:9px; padding:8px 10px; font-size:12.5px; line-height:1.7; cursor:pointer; }
+        #gogyoBody .gg-pr b{ color:#5b4a33; }
+        #gogyoBody .gg-pr .why{ display:block; color:#6b645c; font-size:12px; }
+        #gogyoBody .gg-chip{ display:inline-block; padding:1px 8px; margin:2px 3px 2px 0; border-radius:6px; font-size:12px; background:#f0ebe2; }
+        #gogyoBody .gg-type{ border-top:1px dashed #e0d6c4; padding-top:10px; margin-top:10px; }
         #gogyoBody .gg-type:first-child{ border-top:none; margin-top:0; padding-top:0; }
-        #gogyoBody table.gg-map{ width:100%; border-collapse:collapse; font-size:12.5px; }
-        #gogyoBody table.gg-map th, #gogyoBody table.gg-map td{ border:1px solid rgba(212,175,55,.22); padding:6px 6px; text-align:center; }
-        #gogyoBody table.gg-map thead th{ color:#f5d76e; font-weight:600; }
+        #gogyoBody table.gg-map{ width:100%; border-collapse:collapse; font-size:12.5px; background:#fff; margin:8px 0; }
+        #gogyoBody table.gg-map th, #gogyoBody table.gg-map td{ border:1px solid #e8e2d8; padding:6px 4px; text-align:center; }
+        #gogyoBody table.gg-map thead th{ background:#f0ebe2; color:#5b4a33; }
+        #gogyoBody table.gg-map tbody th{ background:#f7f4ee; white-space:nowrap; }
         #compatChecker{ background:#fff; border:1px solid #e8e2d8; border-radius:10px; padding:12px; margin-bottom:6px; }
         #compatChecker select{ font-family:inherit; font-size:14px; padding:7px 8px; border:1px solid #d1cabb; border-radius:8px; background:#faf8f4; }
         #compatChecker button{ width:100%; margin-top:10px; padding:10px; border:none; border-radius:9px; background:#8b6f47; color:#fff; font-weight:bold; cursor:pointer; }
@@ -802,7 +805,7 @@
     <div id="gogyoModal" class="modal-overlay">
         <div class="modal-content">
             <div id="gogyoBody">
-                <div style="text-align:right; margin-bottom:2px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:rgba(255,255,255,.15); color:#f3ead5; font-weight:bold; cursor:pointer; font-size:13px;" onclick="closeGogyo()">✕ 閉じる</button></div>
+                <div style="text-align:right; margin-bottom:2px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="closeGogyo()">✕ 閉じる</button></div>
                 <div class="gg-header">
                     <div class="title">五星三心占い相性早見表</div>
                     <div class="subtitle">〜 自分と相手のタイプで相性をチェック 〜</div>
@@ -843,11 +846,11 @@
                         <div class="gg-gb gb-bad"><span class="gb-t">⚠ 注意したい相手</span><span id="gg_bad"></span></div>
                     </div>
                 </div>
-                <div style="font-size:10.5px; color:rgba(192,200,216,.6); text-align:center; letter-spacing:.06em; line-height:1.7;">※評価は「自分から見た相性」です。相手から見た評価とは一致しないことがあります。</div>
+                <div style="font-size:11px; color:#6b645c; text-align:center; line-height:1.7;">※評価は「自分から見た相性」です。相手から見た評価とは一致しないことがあります。</div>
                 <!-- 早見表と解説（中身は下のスクリプト ggGuide が相性データから作る） -->
                 <div id="gg_guide"></div>
             </div>
-            <button style="width:100%; padding:11px; border:none; border-radius:10px; background:rgba(255,255,255,.12); color:#f3ead5; font-weight:bold; margin-top:10px; cursor:pointer;" onclick="closeGogyo()">閉じる</button>
+            <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; font-weight:bold; margin-top:10px; cursor:pointer;" onclick="closeGogyo()">閉じる</button>
         </div>
     </div>
 
@@ -2862,7 +2865,7 @@
     (function(){
       const scale={2:'◎',1:'〇',0:'△','-1':'▲','-2':'×'};
       const labelMap={2:'とても良い',1:'良い',0:'普通','-1':'注意','-2':'悪い'};
-      const colorMap={2:'#f5d76e',1:'#7ce0a0',0:'#c0c8d8','-1':'#f0b060','-2':'#f27878'};
+      const colorMap={2:'#2e7d5b',1:'#3a6ea5',0:'#8a7a2e','-1':'#b06a2c','-2':'#a53a3a'};   // 六星占術 相性早見表と同じ色
       const selfSel=document.getElementById('gg_self'), otherSel=document.getElementById('gg_other');
       if(!selfSel) return;
       GOGYO.types.forEach(function(t){ selfSel.add(new Option(t.name,t.id)); otherSel.add(new Option(t.name,t.id)); });
@@ -2895,7 +2898,8 @@
       const T = GOGYO.types, M = GOGYO.matrix;
       const SYM = {2:'◎',1:'〇',0:'△','-1':'▲','-2':'×'};
       const LBL = {2:'とても良い',1:'良い',0:'普通','-1':'注意','-2':'悪い'};
-      const COL = {2:'#f5d76e',1:'#7ce0a0',0:'#c0c8d8','-1':'#f0b060','-2':'#f27878'};
+      const COL = {2:'#2e7d5b',1:'#3a6ea5',0:'#8a7a2e','-1':'#b06a2c','-2':'#a53a3a'};   // 六星占術 相性早見表と同じ色
+      const BG  = {2:'#e7f3ed',1:'#e8f0f8',0:'#f5f1dd','-1':'#f9ecdf','-2':'#f8e7e7'};
       const SHORT = {compass:'羅針盤', indian:'インディ', phoenix:'鳳凰', clock:'時計', chameleon:'カメレ', dolphin:'イルカ'};
       const ICON = {compass:'🧭', indian:'🪶', phoenix:'🔥', clock:'⏰', chameleon:'🦎', dolphin:'🐬'};
       const BASES = ['compass','indian','phoenix','clock','chameleon','dolphin'];
@@ -2905,7 +2909,7 @@
       const sc = (a, b) => ((M[a] || {})[b] || [0, ''])[0];
       const why = (a, b) => ((M[a] || {})[b] || [0, ''])[1];
       const sym = s => '<span style="color:' + COL[s] + '">' + SYM[s] + '</span>';
-      const legend = '<div class="gg-legend">' + [2,1,0,-1,-2].map(s => '<span>' + sym(s) + ' ' + LBL[s] + '</span>').join('') + '</div>';
+      const legend = '<div class="gg-legend">' + [2,1,0,-1,-2].map(s => '<span style="color:' + COL[s] + ';background:' + BG[s] + '">' + SYM[s] + ' ' + LBL[s] + '</span>').join('') + '</div>';
       const pr = (a, b, extra) => '<div class="gg-pr" data-a="' + a + '" data-b="' + b + '"><b>' + esc(nm(a)) + ' → ' + esc(nm(b)) + '</b> ' + sym(sc(a, b)) + (extra || '') + '<span class="why">' + esc(why(a, b)) + '</span></div>';
       let h = '';
 
@@ -2914,7 +2918,7 @@
       h += '<p>縦（左）が自分、横（上）が相手です。「Aから見たB」と「Bから見たA」は同じとは限りません。マスを押すと、上のチェックにその組み合わせの理由が出ます。横にスクロールできます。</p>' + legend;
       h += '<div class="gg-scroll"><table class="gg-mx"><thead><tr><th></th>' + T.map(t => '<th>' + SHORT[base(t.id)] + '<br><span class="gg-k">' + t.color + '</span></th>').join('') + '</tr></thead><tbody>';
       T.forEach(a => {
-        h += '<tr><th>' + esc(a.name) + '</th>' + T.map(b => { const s = sc(a.id, b.id); return '<td class="' + (a.id === b.id ? 'gg-self' : '') + '" data-a="' + a.id + '" data-b="' + b.id + '" style="color:' + COL[s] + '" title="' + esc(why(a.id, b.id)) + '">' + SYM[s] + '</td>'; }).join('') + '</tr>';
+        h += '<tr><th>' + esc(a.name) + '</th>' + T.map(b => { const s = sc(a.id, b.id); return '<td class="' + (a.id === b.id ? 'gg-self' : '') + '" data-a="' + a.id + '" data-b="' + b.id + '" style="color:' + COL[s] + ';background:' + BG[s] + '" title="' + esc(why(a.id, b.id)) + '">' + SYM[s] + '</td>'; }).join('') + '</tr>';
       });
       h += '</tbody></table></div></div>';
 
@@ -2927,7 +2931,7 @@
         h += '<tr><th>' + ICON[a] + ' ' + SHORT[a] + '</th>' + BASES.map(b => {
           let sum = 0; ['gold_','silver_'].forEach(x => ['gold_','silver_'].forEach(y => { sum += sc(x + a, y + b); }));
           const s = avgSym(sum / 4);
-          return '<td class="' + (a === b ? 'gg-self' : '') + '" data-a="gold_' + a + '" data-b="gold_' + b + '" style="color:' + COL[s] + '">' + SYM[s] + '</td>';
+          return '<td class="' + (a === b ? 'gg-self' : '') + '" data-a="gold_' + a + '" data-b="gold_' + b + '" style="color:' + COL[s] + ';background:' + BG[s] + '">' + SYM[s] + '</td>';
         }).join('') + '</tr>';
       });
       h += '</tbody></table></div><p class="gg-note">※「羅針盤」は羅針盤座、「インディ」はインディアン座、「カメレ」はカメレオン座です。</p></div>';
