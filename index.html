@@ -210,7 +210,7 @@
         .modal-overlay { overflow-y: auto; }
         /* --- 相性早見表 --- */
         .compat-open-btn { width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(135deg,#8b6f47,#5b4a33); color:#f5efe6; font-weight:bold; font-size:15px; cursor:pointer; margin-bottom:10px; letter-spacing:.04em; }
-        #compatModal .modal-content { max-width:640px; width:94%; max-height:90vh; overflow-y:auto; text-align:left; padding:16px; }
+        #compatModal .modal-content { max-width:640px; width:94%; max-height:90vh; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; touch-action:pan-y; text-align:left; padding:16px; }   /* 縦にスクロールしても横に動かない */
         #compatBody h2 { font-size:16px; color:#5b4a33; border-left:5px solid #8b6f47; padding-left:8px; margin:20px 0 8px; }
         #compatBody h3 { font-size:14px; color:#5b4a33; margin:12px 0 4px; }
         #compatBody .card { background:#faf8f4; border:1px solid #e8e2d8; border-radius:10px; padding:12px 14px; margin-bottom:12px; }
@@ -259,7 +259,7 @@
         @keyframes kgfadeup{from{opacity:0;transform:translateY(18px);}to{opacity:1;transform:none;}}
         /* --- 五星三心 相性 --- */
         /* 六星占術 相性早見表（#compatBody）と同じ、白とベージュの見やすいデザイン */
-        #gogyoModal .modal-content{ max-width:640px; width:94%; max-height:90vh; overflow-y:auto; text-align:left; padding:16px; }
+        #gogyoModal .modal-content{ max-width:640px; width:94%; max-height:90vh; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; touch-action:pan-y; text-align:left; padding:16px; }   /* 縦にスクロールしても横に動かない */
         #gogyoBody{ color:#2d2a26; }
         #gogyoBody .gg-header{ text-align:center; margin-bottom:10px; }
         #gogyoBody .title{ font-size:16px; font-weight:bold; color:#5b4a33; }
@@ -305,6 +305,25 @@
         #gogyoBody table.gg-mx thead th{ font-size:10px; line-height:1.25; font-weight:600; background:#f0ebe2; color:#5b4a33; padding:4px 2px; min-width:30px; }
         #gogyoBody table.gg-mx tbody th{ font-size:10.5px; font-weight:600; background:#f7f4ee; color:#5b4a33; padding:4px 6px; white-space:nowrap; text-align:left; position:sticky; left:0; }
         #gogyoBody table.gg-mx td{ font-size:14px; font-weight:700; height:30px; min-width:30px; cursor:pointer; }
+        /* 12タイプの表は、座をアイコンで表して画面の幅に収める（横にスクロールしない） */
+        #gogyoBody table.gg-mx12{ width:100%; table-layout:fixed; }
+        #gogyoBody table.gg-mx12 tr > :first-child{ width:38px; }
+        #gogyoBody table.gg-mx12 thead th{ min-width:0; padding:3px 0; font-size:12px; }
+        #gogyoBody table.gg-mx12 tbody th{ position:static; padding:3px 2px; font-size:12px; text-align:center; }
+        #gogyoBody table.gg-mx12 td{ min-width:0; height:26px; font-size:12.5px; }
+        #gogyoBody .gg-key{ display:flex; flex-wrap:wrap; gap:4px 10px; font-size:11.5px; color:#5b4a33; margin:4px 0 2px; }
+        /* 小さいスマホ（幅360px以下）では余白と文字を少し小さくして、表を画面の幅に収める */
+        @media (max-width: 360px) {
+            #compatModal .modal-content, #gogyoModal .modal-content { padding: 12px 10px; }
+            #compatBody .card, #gogyoBody .card { padding: 10px 8px; }
+            #compatBody .matrix { font-size: 10px; }
+            #compatBody .matrix th, #compatBody .matrix td { padding: 4px 0; }
+            #compatBody th, #compatBody td { padding: 5px 1px; }
+            #gogyoBody table.gg-mx thead th { font-size: 9.5px; }
+            #gogyoBody table.gg-mx tbody th { padding: 3px 3px; }
+            #gogyoBody table.gg-mx12 tr > :first-child { width: 34px; }
+            #gogyoBody table.gg-mx12 td { font-size: 11.5px; }
+        }
         #gogyoBody table.gg-mx td:active{ filter:brightness(.92); }
         #gogyoBody table.gg-mx td.gg-self{ outline:2px solid #d9c9a8; outline-offset:-2px; }
         #gogyoBody .gg-k{ font-size:10px; color:#8a8070; }
@@ -1031,7 +1050,7 @@
 
                 <h2>2. ＋/−込み 12タイプ全組み合わせ相性表</h2>
                 <div class="card">
-                    <p>12タイプ全組み合わせ（78ペア）の相性です。横にスクロールできます。</p>
+                    <p>12タイプ全組み合わせ（78ペア）の相性です。</p>
                     <div class="legend">
                         <span class="s-best">◎+ 抜群</span><span class="s-good">◎ 非常に良い</span><span class="s-ok">○ 良い</span><span class="s-mid">△ まずまず</span><span class="s-warn">▲ 良くない</span><span class="s-bad">× 悪い</span>
                     </div>
@@ -2997,10 +3016,10 @@
 
       // 1. 12タイプ全組み合わせ
       h += '<h2>1. 12タイプ全組み合わせ相性表（自分→相手）</h2><div class="card">';
-      h += '<p>縦（左）が自分、横（上）が相手です。「Aから見たB」と「Bから見たA」は同じとは限りません。マスを押すと、上のチェックにその組み合わせの理由が出ます。横にスクロールできます。</p>' + legend;
-      h += '<div class="gg-scroll"><table class="gg-mx"><thead><tr><th></th>' + T.map(t => '<th>' + SHORT[base(t.id)] + '<br><span class="gg-k">' + t.color + '</span></th>').join('') + '</tr></thead><tbody>';
+      h += '<p>縦（左）が自分、横（上）が相手です。「Aから見たB」と「Bから見たA」は同じとは限りません。マスを押すと、上のチェックにその組み合わせの理由が出ます。</p>' + legend + '<div class="gg-key">' + BASES.map(b => '<span>' + ICON[b] + ' ' + esc(T.find(t => base(t.id) === b).group) + '</span>').join('') + '</div>';
+      h += '<div class="gg-scroll"><table class="gg-mx gg-mx12"><thead><tr><th></th>' + T.map(t => '<th title="' + esc(t.name) + '">' + ICON[base(t.id)] + '<br><span class="gg-k">' + t.color + '</span></th>').join('') + '</tr></thead><tbody>';
       T.forEach(a => {
-        h += '<tr><th>' + esc(a.name) + '</th>' + T.map(b => { const s = sc(a.id, b.id); return '<td class="' + (a.id === b.id ? 'gg-self' : '') + '" data-a="' + a.id + '" data-b="' + b.id + '" style="color:' + COL[s] + ';background:' + BG[s] + '" title="' + esc(why(a.id, b.id)) + '">' + SYM[s] + '</td>'; }).join('') + '</tr>';
+        h += '<tr><th title="' + esc(a.name) + '">' + ICON[base(a.id)] + a.color + '</th>' + T.map(b => { const s = sc(a.id, b.id); return '<td class="' + (a.id === b.id ? 'gg-self' : '') + '" data-a="' + a.id + '" data-b="' + b.id + '" style="color:' + COL[s] + ';background:' + BG[s] + '" title="' + esc(why(a.id, b.id)) + '">' + SYM[s] + '</td>'; }).join('') + '</tr>';
       });
       h += '</tbody></table></div></div>';
 
