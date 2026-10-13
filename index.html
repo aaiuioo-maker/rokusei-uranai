@@ -46,78 +46,56 @@
             align-items: center;
         }
         /* =============================================
-           OPENING SCREEN（郵便料金アプリと同じ、レトロゲーム風の夜空）
+           OPENING SCREEN（「よく行く場所」と同じ作り：明るい画面の真ん中に、
+           パソコンを打つ Claude Code のキャラクターと GitHub のマークを白いカードにのせる）
         ============================================= */
-        #openingScreen {
-            position: fixed; inset: 0; z-index: 2000;
-            background: #000010;
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            padding: 20px; overflow: hidden; cursor: pointer;
-            font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", "Hiragino Sans", "Yu Gothic", sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-        /* ブラウン管のような横すじ */
-        .op-scanlines { position: absolute; inset: 0; pointer-events: none; z-index: 2;
-            background: repeating-linear-gradient(0deg, transparent, transparent 3px, rgba(0,0,0,0.18) 4px); }
-        .op-stars { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-        .op-star { position: absolute; background: #fff; border-radius: 50%; }
-        @keyframes op-twinkle { from { opacity: .15; } to { opacity: .9; } }
-        .op-meteor { position: absolute; width: 2px; height: 60px; pointer-events: none;
-            background: linear-gradient(180deg, rgba(255,255,255,0), rgba(255,255,255,0.8));
-            transform-origin: top; animation: op-meteor-fall 1.5s linear forwards; }
-        @keyframes op-meteor-fall {
-            0% { opacity: 1; transform: translateY(-60px) rotate(30deg); }
-            100% { opacity: 0; transform: translateY(300px) rotate(30deg); } }
-
-        .op-logo-wrap { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center;
-            opacity: 0; animation: op-logo-in 0.8s ease-out 0.3s forwards; }
-        @keyframes op-logo-in { 0% { opacity: 0; transform: translateY(20px); } 100% { opacity: 1; transform: translateY(0); } }
-        .op-logo-en { color: #4a8fd4; font-size: 11px; letter-spacing: 5px; margin-bottom: 10px; font-weight: 400;
-            animation: op-flicker 4s infinite 1.5s; }
-        @keyframes op-flicker { 0%, 96%, 100% { opacity: 1; } 97%, 99% { opacity: 0.4; } }
-        .op-logo-ja { color: #ffe44d; font-size: 40px; font-weight: 800; letter-spacing: 6px; text-align: center; line-height: 1.25;
-            text-shadow: 0 0 20px rgba(255,228,77,0.5), 0 0 40px rgba(255,228,77,0.2);
-            animation: op-glow 2s ease-in-out infinite alternate 1s; }
-        @keyframes op-glow {
-            0% { text-shadow: 0 0 10px rgba(255,228,77,0.4), 0 0 30px rgba(255,228,77,0.1); }
-            100% { text-shadow: 0 0 20px rgba(255,228,77,0.8), 0 0 50px rgba(255,228,77,0.3); } }
-        .op-logo-sub { margin-top: 10px; display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .op-logo-sub div { font-size: 15px; font-weight: 800; letter-spacing: 2px; }
-        .op-logo-sub .kab { color: #c9a0ff; text-shadow: 0 0 10px rgba(201,160,255,0.45); }
-        .op-logo-sub .gogyo { color: #7fe0c0; text-shadow: 0 0 10px rgba(127,224,192,0.45); }
-
-        .op-horizon { position: relative; z-index: 1; width: 280px; max-width: 100%; height: 2px; margin-top: 18px;
-            background: linear-gradient(90deg, transparent, #4a8fd4 20%, #4a8fd4 80%, transparent);
-            opacity: 0; animation: op-horizon-in 0.8s ease-out 1.2s forwards; }
-        @keyframes op-horizon-in { 0% { opacity: 0; transform: scaleX(0); } 100% { opacity: 1; transform: scaleX(1); } }
-
-        /* 六星の紋章（六角形の頂点に6色の星） */
-        .op-hero-wrap { position: relative; z-index: 1; margin-top: 18px; width: 108px; height: 108px;
-            opacity: 0; animation: op-hero-in 0.6s ease-out 0.5s forwards; }
-        @keyframes op-hero-in { 0% { opacity: 0; transform: scale(0.8); } 100% { opacity: 1; transform: scale(1); } }
-        .op-hero-wrap svg { width: 100%; height: 100%; filter: drop-shadow(0 0 8px rgba(255,228,77,0.35)); }
-        .op-hero-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
-            color: #ffe44d; font-size: 15px; font-weight: 800; letter-spacing: 2px; text-shadow: 0 0 8px rgba(255,228,77,0.6); }
-        .op-hero-wrap .op-gem { animation: op-gem 1.6s ease-in-out infinite alternate; }
-        @keyframes op-gem { from { opacity: .45; } to { opacity: 1; } }
-
-        /* ゲームのメッセージ枠 */
-        .op-msgbox { position: relative; z-index: 1; width: 280px; max-width: 100%; margin-top: 18px;
-            padding: 10px 12px; border: 3px solid #ffe44d; border-radius: 4px; background: #000010;
-            color: #f8f8f8; font-size: 14px; font-weight: 700; letter-spacing: 2px; text-align: center;
-            opacity: 0; animation: op-press-in 0.5s ease-out 1.4s forwards; }
-        .op-press { position: relative; z-index: 1; margin-top: 18px; color: #ffe44d; font-size: 15px; letter-spacing: 3px; font-weight: 800;
-            text-align: center; width: 100%;
-            opacity: 0; animation: op-press-in 0.5s ease-out 1.8s forwards, op-blink 1.1s step-end infinite 2.3s; }
-        @keyframes op-press-in { 0% { opacity: 0; } 100% { opacity: 1; } }
-        @keyframes op-blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
-        .op-copy { position: absolute; bottom: calc(20px + env(safe-area-inset-bottom)); z-index: 1;
-            color: #2a4a6a; font-size: 10px; letter-spacing: 2px;
-            opacity: 0; animation: op-press-in 0.5s ease-out 2.2s forwards; }
-        @media (max-height: 600px) {
-            .op-logo-ja { font-size: 32px; }
-            .op-hero-wrap { width: 84px; height: 84px; margin-top: 12px; }
-            .op-msgbox, .op-press, .op-horizon { margin-top: 12px; }
+        #openingScreen { position: fixed; inset: 0; z-index: 2000; display: grid; place-items: center;
+            padding: calc(16px + env(safe-area-inset-top)) 20px calc(16px + env(safe-area-inset-bottom));
+            background: linear-gradient(#f7f6f3, #e8e6e1); color: #111; cursor: pointer; overflow: auto;
+            transition: opacity .5s, visibility .5s; font-family: -apple-system, 'Helvetica Neue', 'Hiragino Sans', sans-serif;
+            -webkit-tap-highlight-color: transparent; }
+        #openingScreen.hide { opacity: 0; visibility: hidden; }
+        /* 背景の飾り：うすい六芒星と、6色の星がまたたく */
+        .op-bg { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+        .op-bg svg { position: absolute; left: 50%; top: 50%; width: 150vmax; height: 150vmax; transform: translate(-50%, -50%); opacity: .55; }
+        .op-bg .op-tw { animation: op-tw 2.4s ease-in-out infinite alternate; }
+        @keyframes op-tw { from { opacity: .15; } to { opacity: .8; } }
+        .op-in { position: relative; z-index: 1; width: 100%; max-width: 360px; display: flex; flex-direction: column; align-items: center; gap: 14px; text-align: center; }
+        .op-emblem { position: relative; width: 64px; height: 64px; animation: op-drop .5s both; }
+        .op-emblem svg { width: 100%; height: 100%; }
+        .op-emblem span { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+            font-size: 13px; font-weight: 800; letter-spacing: 1px; color: #5b4a33; }
+        .op-sub { margin: 0; font-size: .85rem; font-weight: 700; background: #1a6ed8; color: #fff; border-radius: 999px; padding: 3px 14px; animation: op-drop .5s .05s both; }
+        .op-t { margin: 0; display: flex; flex-direction: column; line-height: 1.2; color: #111; }
+        .op-t b { font-size: 3rem; letter-spacing: .1em; animation: op-drop .6s .15s both; }
+        .op-t span { font-size: 1.05rem; font-weight: 700; letter-spacing: .04em; animation: op-drop .6s .25s both; }
+        .op-t .kab { color: #7b2fbf; margin-top: 4px; }
+        .op-t .gogyo { color: #b8860b; }
+        /* キャラクターの台（白いカード） */
+        .op-chars { display: flex; align-items: flex-end; justify-content: center; gap: 26px; background: #fff; border-radius: 18px;
+            padding: 16px 24px 10px; box-shadow: 0 4px 14px rgba(0,0,0,.08); border: .5px solid rgba(0,0,0,.08); animation: op-rise .6s .4s both; }
+        .op-c { display: flex; flex-direction: column; align-items: center; gap: 6px; font: 10px -apple-system, "Segoe UI", sans-serif; letter-spacing: .05em; }
+        .op-cc { width: 102px; height: 69px; shape-rendering: crispEdges; overflow: visible; }
+        .op-c.cc span { color: #d97757; }
+        .op-gh { --gh-disc: #24292f; --gh-cat: #fff; color: #57606a; }
+        .op-gh svg { width: 48px; height: 48px; overflow: visible; }   /* オレンジの体（頭から足先まで48px）と高さをそろえる */
+        .op-gh.spin .gh-all { animation: gh-spin .7s cubic-bezier(.34,1.4,.64,1); }
+        .op-hello { margin: 0; font-size: 1rem; font-weight: 700; color: #333; animation: op-rise .6s .55s both; }
+        .op-tip { margin: 0; font-size: .85rem; line-height: 1.5; min-height: 3em; background: #fff; color: #444; border: .5px solid rgba(0,0,0,.08);
+            border-radius: 10px; padding: 8px 12px; animation: op-rise .6s .65s both; }
+        .op-bar { width: 72%; height: 6px; background: rgba(0,0,0,.1); border-radius: 3px; overflow: hidden; }
+        .op-bar i { display: block; height: 100%; width: 0; background: #1a6ed8; transition: width 1.5s linear; }
+        .op-go { font: inherit; font-weight: 700; font-size: 1.05rem; background: #1a6ed8; color: #fff; border: 0; border-radius: 999px; padding: 12px 30px;
+            box-shadow: 0 4px 0 rgba(0,0,0,.15); animation: op-pulse 1.4s ease-in-out infinite; cursor: pointer; }
+        .op-go.busy { animation: none; opacity: .85; }
+        @keyframes op-drop { from { transform: translateY(-24px); opacity: 0; } }
+        @keyframes op-rise { from { transform: translateY(20px); opacity: 0; } }
+        @keyframes op-pulse { 50% { transform: scale(1.06); } }
+        @media (max-height: 640px) {
+            .op-in { gap: 9px; }
+            .op-emblem { width: 48px; height: 48px; }
+            .op-t b { font-size: 2.5rem; }
+            .op-chars { padding: 10px 20px 8px; }
         }
         /* =============================================
            MAIN APP STYLES
@@ -416,36 +394,66 @@
     </style>
 </head>
 <body>
-    <!-- ===== OPENING（郵便料金アプリと同じレトロゲーム風） ===== -->
-    <div id="openingScreen">
-        <div class="op-scanlines"></div>
-        <div class="op-stars" id="op-stars"></div>
-        <div class="op-logo-wrap">
-            <div class="op-logo-en">SIX STARS FORTUNE</div>
-            <div class="op-logo-ja">六星占術</div>
-            <div class="op-logo-sub">
-                <div class="kab">× 橙花式カバラ数秘術</div>
-                <div class="gogyo">× ゲッターズ五星三心占い</div>
-            </div>
-        </div>
-        <div class="op-horizon"></div>
-        <div class="op-hero-wrap">
-            <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" stroke="#ffe44d" stroke-width="2" fill="rgba(255,228,77,0.05)"/>
-                <polygon points="50,14 85,32.5 85,67.5 50,86 15,67.5 15,32.5" stroke="rgba(74,143,212,0.8)" stroke-width="1" fill="none"/>
-                <!-- 頂点の6つの星（土・金・火・天・木・水の色） -->
-                <circle class="op-gem" cx="50" cy="4"    r="4" fill="#ffd86a"/>
-                <circle class="op-gem" cx="93" cy="27.5" r="4" fill="#ff7878" style="animation-delay:.25s"/>
-                <circle class="op-gem" cx="93" cy="72.5" r="4" fill="#5fd7f0" style="animation-delay:.5s"/>
-                <circle class="op-gem" cx="50" cy="96"   r="4" fill="#6fd98a" style="animation-delay:.75s"/>
-                <circle class="op-gem" cx="7"  cy="72.5" r="4" fill="#6fa8ff" style="animation-delay:1s"/>
-                <circle class="op-gem" cx="7"  cy="27.5" r="4" fill="#c9a0ff" style="animation-delay:1.25s"/>
+    <!-- ===== OPENING（「よく行く場所」と同じ作り。タップすると音が鳴って、いつもの画面に切りかわる） ===== -->
+    <div id="openingScreen" role="dialog" aria-label="オープニング">
+        <!-- 背景の飾り（うすい六芒星と、6色の星） -->
+        <div class="op-bg" aria-hidden="true">
+            <svg viewBox="0 0 100 100" fill="none">
+                <polygon points="50,14 81.2,32 81.2,68 50,86 18.8,68 18.8,32" stroke="rgba(139,111,71,.18)" stroke-width=".35"/>
+                <polygon points="50,14 81.2,68 18.8,68" stroke="rgba(139,111,71,.12)" stroke-width=".3"/>
+                <polygon points="50,86 81.2,32 18.8,32" stroke="rgba(139,111,71,.12)" stroke-width=".3"/>
+                <circle class="op-tw" cx="50" cy="14" r=".9" fill="#ffd86a"/>
+                <circle class="op-tw" cx="81.2" cy="32" r=".9" fill="#ff7878" style="animation-delay:.4s"/>
+                <circle class="op-tw" cx="81.2" cy="68" r=".9" fill="#5fd7f0" style="animation-delay:.8s"/>
+                <circle class="op-tw" cx="50" cy="86" r=".9" fill="#6fd98a" style="animation-delay:1.2s"/>
+                <circle class="op-tw" cx="18.8" cy="68" r=".9" fill="#6fa8ff" style="animation-delay:1.6s"/>
+                <circle class="op-tw" cx="18.8" cy="32" r=".9" fill="#c9a0ff" style="animation-delay:2s"/>
             </svg>
-            <div class="op-hero-label">六星</div>
         </div>
-        <div class="op-msgbox">運命の星と数を導き出せ</div>
-        <div class="op-press">▶ タップして開始 ◀</div>
-        <div class="op-copy">© 2026 SIX STARS FORTUNE</div>
+        <div class="op-in">
+            <div class="op-emblem" aria-hidden="true">
+                <svg viewBox="0 0 100 100" fill="none">
+                    <polygon points="50,4 93,27.5 93,72.5 50,96 7,72.5 7,27.5" stroke="#8b6f47" stroke-width="3" fill="#fff"/>
+                    <circle cx="50" cy="4" r="6" fill="#ffd86a"/><circle cx="93" cy="27.5" r="6" fill="#ff7878"/>
+                    <circle cx="93" cy="72.5" r="6" fill="#5fd7f0"/><circle cx="50" cy="96" r="6" fill="#6fd98a"/>
+                    <circle cx="7" cy="72.5" r="6" fill="#6fa8ff"/><circle cx="7" cy="27.5" r="6" fill="#c9a0ff"/>
+                </svg>
+                <span>六星</span>
+            </div>
+            <p class="op-sub">運命の星と数を導き出せ</p>
+            <h2 class="op-t"><b>六星占術</b><span class="kab">× 橙花式カバラ数秘術</span><span class="gogyo">× ゲッターズ五星三心占い</span></h2>
+            <div class="op-chars">
+                <div class="op-c cc"><svg class="cc-anim op-cc" viewBox="0 -7 34 23" data-skip="60" aria-hidden="true"></svg><span>Claude Code</span></div>
+                <div class="op-c op-gh">
+                    <svg viewBox="0 0 16 16" aria-hidden="true">
+                        <defs><clipPath id="ghClipOp"><circle cx="8" cy="8" r="8"/></clipPath></defs>
+                        <g class="gh-all">
+                            <circle class="gh-disc" cx="8" cy="8" r="8"/>
+                            <g clip-path="url(#ghClipOp)">
+                                <path class="gh-cat" d="M6.75 10.3 C6.45 10.7 6.3 11.2 6.3 11.8 L6.3 15.1 Q6.3 15.6 6.8 15.6 L9.2 15.6 Q9.7 15.6 9.7 15.1 L9.7 11.8 C9.7 11.2 9.55 10.7 9.25 10.3 Z"/>
+                                <g class="gh-head">
+                                    <path class="gh-cat" d="M4.15 4.75 C3.85 3.85 3.95 2.85 4.3 2.1 C4.3 2.1 5.05 1.95 6.35 2.9 C6.9 2.75 7.45 2.68 8 2.68 C8.55 2.68 9.1 2.75 9.65 2.9 C10.95 1.95 11.7 2.1 11.7 2.1 C12.05 2.85 12.15 3.85 11.85 4.75 C12.4 5.3 12.75 6.0 12.75 6.95 C12.75 9.75 10.95 10.45 8 10.55 C5.05 10.45 3.25 9.75 3.25 6.95 C3.25 6.0 3.6 5.3 4.15 4.75 Z"/>
+                                    <rect class="gh-eyes" x="5.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+                                    <rect class="gh-eyes" x="9.5" y="6.1" width="1" height="1.5" rx="0.5"/>
+                                </g>
+                                <g class="gh-tail">
+                                    <path class="gh-tail-line" d="M6.5 12.35 C5.3 12.55 4.65 12.0 4.25 11.25 C3.95 10.7 3.6 10.35 3.0 10.25"/>
+                                    <circle class="gh-dot" cx="5.5" cy="12.2" r="0.17"/>
+                                    <circle class="gh-dot" cx="4.75" cy="11.75" r="0.17"/>
+                                    <circle class="gh-dot" cx="4.25" cy="11.05" r="0.17"/>
+                                    <circle class="gh-dot" cx="3.7" cy="10.5" r="0.17"/>
+                                </g>
+                            </g>
+                        </g>
+                    </svg>
+                    <span>GitHub</span>
+                </div>
+            </div>
+            <p class="op-hello" id="ophello"></p>
+            <p class="op-tip" id="optip"></p>
+            <div class="op-bar"><i id="opbar"></i></div>
+            <button class="op-go" id="opgo" type="button">タップして開始</button>
+        </div>
     </div>
     <!-- ===== MAIN APP ===== -->
     <div class="container" id="mainContainer" style="display: none;">
@@ -1706,40 +1714,72 @@
             }
         }
         /* ===== OPENING ===== */
-        // 夜空の星（ランダムな位置でまたたく）と、ときどき流れる流れ星
-        (function opSky(){
-            const scr = document.getElementById('openingScreen');
-            const starsEl = document.getElementById('op-stars');
-            if (!scr || !starsEl) return;
-            for (let i = 0; i < 60; i++) {
-                const s = document.createElement('div'); s.className = 'op-star';
-                const sz = Math.random() * 2 + 0.5;
-                s.style.cssText = `width:${sz}px;height:${sz}px;top:${Math.random()*100}%;left:${Math.random()*100}%;` +
-                    `animation:op-twinkle ${(1.5+Math.random()*3).toFixed(1)}s ${(Math.random()*3).toFixed(1)}s infinite alternate;`;
-                starsEl.appendChild(s);
+        // 「よく行く場所」と同じ流れ：タップすると ピコッ → カタカタ（キーボード）→ ピロリン と鳴り、
+        // 青いバーが伸びきったらいつもの画面に切りかわる。準備中にもう一度タップするとすぐ閉じる
+        (function opening(){
+            const op = document.getElementById('openingScreen');
+            if (!op) return;
+            const h = new Date().getHours();
+            document.getElementById('ophello').textContent = h < 5 ? '夜おそくまで、おつかれさまです' : h < 11 ? 'おはようございます' : h < 17 ? 'こんにちは' : 'おつかれさまです';
+            const TIPS = [
+                '生年月日を8桁で入れて「占う」を押すと、六星占術とカバラ数秘術の結果が出ます',
+                '「芸能人を検索して入力」で、名前から生年月日と血液型を取り込めます',
+                '保存した人は、グループや星人・血液型・数秘で絞り込めます',
+                '相性早見表は「保存した履歴」の下のボタンから開けます',
+                '相性早見表では、グループと名前から保存した人を選べます',
+                '「⇄ 自分と相手を入れ替える」で、相手から見た相性がわかります',
+                '「バックアップ保存」で、保存した人を別のスマホに移せます'];
+            document.getElementById('optip').textContent = 'ひとこと：' + TIPS[Math.floor(Math.random() * TIPS.length)];
+            // ピコッという音（短い四角い波）
+            function opTone(f, t, d, v) {
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = 'square'; o.frequency.value = f;
+                g.gain.setValueAtTime(1e-4, t);
+                g.gain.exponentialRampToValueAtTime(v, t + .005);
+                g.gain.exponentialRampToValueAtTime(1e-4, t + d);
+                o.connect(g).connect(audioCtx.destination); o.start(t); o.stop(t + d + .02);
             }
-            function spawnMeteor(){
-                if (scr.style.display === 'none') return;   // アプリが始まったら止める
-                const m = document.createElement('div'); m.className = 'op-meteor';
-                m.style.left = (20 + Math.random()*60) + '%';
-                m.style.top = (Math.random()*40) + '%';
-                scr.appendChild(m);
-                setTimeout(() => m.remove(), 1600);
-                setTimeout(spawnMeteor, 1800 + Math.random()*3000);
+            // カタッ（キーボードを打つ音）。d 秒あとに鳴らす
+            function opKey(d) {
+                const t = audioCtx.currentTime + .01 + d;
+                const o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = 'square'; o.frequency.value = 1700 + Math.random() * 500;
+                g.gain.setValueAtTime(.035, t); g.gain.exponentialRampToValueAtTime(.001, t + .025);
+                o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t + .035);
             }
-            setTimeout(spawnMeteor, 2000);
+            let started = false, closed = false;
+            function close() {
+                if (closed) return; closed = true;
+                op.classList.add('hide');
+                setTimeout(() => op.remove(), 600);
+            }
+            op.addEventListener('click', () => {
+                if (started) { close(); return; }
+                started = true;
+                // いつもの画面は、オープニングの後ろで先に用意しておく
+                document.getElementById('mainContainer').style.display = 'block';
+                document.getElementById('kabRefContainer').style.display = 'block';
+                document.getElementById('starRefContainer').style.display = 'block';
+                document.getElementById('gogyoRefContainer').style.display = 'block';
+                populateNumberMeanings();
+                populateGogyoRef();
+                loadHistory();
+                if (isSoundOn) {
+                    try {
+                        if (audioCtx.state === 'suspended') audioCtx.resume();
+                        const t = audioCtx.currentTime + .01;
+                        opTone(1046, t, .05, .06); opTone(1318, t + .06, .05, .06);                          // ピコッ
+                        for (let i = 0; i < 14; i++) opKey(.15 + i * .095 + Math.random() * .03);              // カタカタ…
+                        [1318.5, 1568, 2093].forEach((f, i) => opTone(f, t + 1.65 + i * .06, i === 2 ? .13 : .05, .11)); // ピロリン
+                    } catch (_) {}
+                }
+                const go = document.getElementById('opgo');
+                go.textContent = '準備中…'; go.classList.add('busy');
+                op.querySelector('.op-gh').classList.add('spin');                                      // GitHub のマークがくるっと回る
+                requestAnimationFrame(() => { document.getElementById('opbar').style.width = '100%'; });
+                setTimeout(close, 2300);
+            });
         })();
-        document.getElementById('openingScreen').addEventListener('click', function() {
-            playRetroIntro();
-            document.getElementById('openingScreen').style.display = 'none';
-            document.getElementById('mainContainer').style.display = 'block';
-            document.getElementById('kabRefContainer').style.display = 'block';
-            document.getElementById('starRefContainer').style.display = 'block';
-            document.getElementById('gogyoRefContainer').style.display = 'block';
-            populateNumberMeanings();
-            populateGogyoRef();
-            loadHistory();
-        });
         function populateNumberMeanings() {
             const order = [1,2,3,4,5,6,7,8,9,11,22,33];
             document.getElementById('numMeaningBody').innerHTML = order.map(n => {
@@ -3416,11 +3456,20 @@
     }).join('');
   }).join(''));
   const total = SEQ.reduce((s, q) => s + q[1], 0);
-  let shown = -1;
+  // data-skip="60" を付けた絵（オープニング）は、最初の止まっている2秒を飛ばしてすぐ打ちはじめる
+  const shown = new Map();
+  function frameAt(t) {
+    t %= total;
+    for (const [f, len] of SEQ) { if (t < len) return f; t -= len; }
+    return SEQ[0][0];
+  }
   function draw(now) {
-    let t = Math.floor(now / (1000 / 30)) % total, id = SEQ[0][0];
-    for (const [f, len] of SEQ) { if (t < len) { id = f; break; } t -= len; }
-    if (id !== shown) { svgs.forEach(s => { s.innerHTML = svgOf[id]; }); shown = id; }
+    const base = Math.floor(now / (1000 / 30));
+    svgs.forEach(s => {
+      if (!s.isConnected) return;   // オープニングが閉じたあとは描かない
+      const id = frameAt(base + (+s.dataset.skip || 0));
+      if (shown.get(s) !== id) { s.innerHTML = svgOf[id]; shown.set(s, id); }
+    });
     requestAnimationFrame(draw);
   }
   requestAnimationFrame(draw);
