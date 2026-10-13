@@ -277,6 +277,11 @@
         /* グループで絞って、保存した人を名前順に選ぶ欄（iPhone で勝手にズームしないよう 16px） */
         #gogyoBody select.gg-grp, #gogyoBody select.gg-person{ font-size:16px; padding:9px 8px; margin-bottom:5px; background:#2c1a4f; }
         #gogyoBody .gg-mini{ font-size:10.5px; color:rgba(192,200,216,.75); letter-spacing:.04em; margin:2px 0 3px; }
+        #gogyoBody .gg-swap{ display:block; width:100%; margin-top:10px; padding:10px; border-radius:10px; border:1px solid rgba(212,175,55,.55); background:rgba(212,175,55,.12); color:#f5d76e; font-family:inherit; font-size:14px; font-weight:700; letter-spacing:.06em; cursor:pointer; }
+        #gogyoBody .gg-swap:active{ background:rgba(212,175,55,.25); }
+        #gogyoBody .gg-swap .ic{ display:inline-block; }
+        #gogyoBody .gg-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
+        @keyframes gg-swap-spin{ from{ transform:rotate(0); } to{ transform:rotate(180deg); } }
         #gogyoBody .gg-name-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#7ce0a0; overflow-wrap:anywhere; }
         #gogyoBody .gg-name-hint.miss{ color:#f0b060; }
         #gogyoBody .gg-name-note{ font-size:11px; color:rgba(192,200,216,.7); line-height:1.6; margin-top:8px; }
@@ -800,7 +805,7 @@
                             <span class="label">◆ 自分のタイプ</span>
                             <div class="gg-mini">グループ</div>
                             <select id="gg_self_grp" class="gg-grp" aria-label="自分のグループ"></select>
-                            <div class="gg-mini">名前（名前順）</div>
+                            <div class="gg-mini">名前（入力順）</div>
                             <select id="gg_self_person" class="gg-person" aria-label="自分の名前"></select>
                             <div id="gg_self_hint" class="gg-name-hint"></div>
                             <div class="gg-mini">タイプ</div>
@@ -810,14 +815,15 @@
                             <span class="label">◆ 相手のタイプ</span>
                             <div class="gg-mini">グループ</div>
                             <select id="gg_other_grp" class="gg-grp" aria-label="相手のグループ"></select>
-                            <div class="gg-mini">名前（名前順）</div>
+                            <div class="gg-mini">名前（入力順）</div>
                             <select id="gg_other_person" class="gg-person" aria-label="相手の名前"></select>
                             <div id="gg_other_hint" class="gg-name-hint"></div>
                             <div class="gg-mini">タイプ</div>
                             <select id="gg_other"></select>
                         </div>
                     </div>
-                    <div class="gg-name-note">グループを選ぶと、その中の人が名前順に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
+                    <button id="gg_swap" class="gg-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
+                    <div class="gg-name-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
                 </div>
                 <div id="gg_result" class="card result">
                     <div class="gg-pair" id="gg_pairText"></div>
@@ -2992,7 +2998,8 @@
         let ps = [];
         function fillPeople(keepName) {
           const g = grp.value;
-          const list = ps.filter(p => g === '' || (p.category || NO_GRP) === g).sort((a, b) => collator.compare(a.name, b.name));
+          // 入力順（「保存した履歴」の入力順と同じ。新しく保存した人が上）
+          const list = ps.filter(p => g === '' || (p.category || NO_GRP) === g);
           per.innerHTML = '';
           per.add(new Option(list.length ? '— 名前を選ぶ（' + list.length + '人）—' : '— 保存した人がいません —', ''));
           list.forEach(p => per.add(new Option(p.name, p.name)));
@@ -3019,10 +3026,23 @@
         });
         // タイプを直接選んだら、名前の選択は外す（違う人の名前が残らないように）
         typeSel.addEventListener('change', e => { if (e.isTrusted) { per.value = ''; hint.textContent = ''; } });
-        return refresh;
+        // 入れ替え用：今の状態を取り出す／入れる
+        const get = () => ({ g: grp.value, n: per.value, t: typeSel.value, h: hint.textContent });
+        const put = s => { grp.value = s.g; fillPeople(s.n); typeSel.value = s.t; hint.textContent = per.value ? s.h : ''; };
+        return { refresh, get, put };
       }
-      const refreshers = [setup('self'), setup('other')];
+      const sides = [setup('self'), setup('other')];
+      const refreshers = sides.map(s => s.refresh);
       const refreshAll = () => refreshers.forEach(f => f());
+      // 自分と相手を入れ替える（グループ・名前・タイプをまとめて入れ替え、相性を出し直す）
+      const swapBtn = document.getElementById('gg_swap');
+      if (swapBtn) swapBtn.addEventListener('click', () => {
+        const a = sides[0].get(), b = sides[1].get();
+        sides[0].put(b); sides[1].put(a);
+        const s = document.getElementById('gg_self'); if (s && s.onchange) s.onchange();
+        if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} }
+        swapBtn.classList.remove('spin'); void swapBtn.offsetWidth; swapBtn.classList.add('spin');
+      });
       refreshAll();
       // 開くたびに最新の保存した履歴で作り直す
       const open = window.openGogyo;
