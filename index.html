@@ -368,6 +368,9 @@
         #compatChecker .cmp-swap .ic{ display:inline-block; }
         #compatChecker .cmp-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
         #compatChecker .cmp-note{ font-size:11px; color:#8a8070; line-height:1.6; margin-top:8px; }
+        /* もう一方の早見表へ行くボタン（行き先の早見表の色） */
+        #compatChecker button.cmp-cross{ background:linear-gradient(135deg,#4a2d7a,#b8860b); color:#fff; border:none; margin-top:8px; }
+        #gogyoBody .gg-cross{ margin-top:8px; background:linear-gradient(135deg,#8b6f47,#5b4a33); color:#f5efe6; border:none; }
         /* --- 解説セクション --- */
         .ref-section { border-bottom: 1px solid #f2f2f7; }
         .ref-section summary { font-weight: bold; font-size: 14px; padding: 13px 4px; cursor: pointer; color: #333; list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -894,6 +897,7 @@
                         </div>
                     </div>
                     <button id="gg_swap" class="gg-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
+                    <button id="gg_to_six" class="gg-swap gg-cross" type="button">📊 この2人を六星占術 相性早見表で見る</button>
                     <div class="gg-name-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
                 </div>
                 <div id="gg_result" class="card result">
@@ -1037,6 +1041,7 @@
                         </div>
                     </div>
                     <button id="cmp_swap" class="cmp-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
+                    <button id="cmp_to_gogyo" class="cmp-swap cmp-cross" type="button">🌟 この2人を五星三心占い相性早見表で見る</button>
                     <button onclick="checkCompat()">相性を見る</button>
                     <div class="cmp-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命星が自動で選ばれ、相性が出ます。運命星を直接選ぶこともできます。</div>
                     <div id="compatResult" style="margin-top:10px;"></div>
@@ -3277,6 +3282,61 @@
         sides.forEach(s => s.clearPick());
         return r;
       };
+    })();
+
+    // =============================================================
+    // 2つの相性早見表を行き来するボタン：
+    //   今選んでいる2人（名前を選んでいればその人、なければタイプ／運命星）を引き継いで、もう一方の早見表を開く
+    // =============================================================
+    (function crossPairButtons(){
+      const $ = id => document.getElementById(id);
+      // 五星三心の座 ⇔ 六星占術の運命星（金＝＋、銀＝−）
+      const BASE2STAR = { compass:'土星人', indian:'金星人', phoenix:'火星人', clock:'天王星人', chameleon:'木星人', dolphin:'水星人' };
+      const STAR2BASE = {}; Object.keys(BASE2STAR).forEach(b => { STAR2BASE[BASE2STAR[b]] = b; });
+      const gogyoToStar = id => { const m = /^(gold|silver)_(\w+)$/.exec(id || ''); return m && BASE2STAR[m[2]] ? BASE2STAR[m[2]] + (m[1] === 'gold' ? '+' : '−') : null; };
+      const starToGogyo = tk => { const m = /^(.+人)([+−])$/.exec(tk || ''); return m && STAR2BASE[m[1]] ? (m[2] === '+' ? 'gold_' : 'silver_') + STAR2BASE[m[1]] : null; };   // 霊合星人はタイプが決まらない
+      const read = (grp, per, sel) => ({ g: $(grp).value, n: $(per).value, t: $(sel).value });
+      const fire = (el, type) => el.dispatchEvent(new Event(type || 'change'));
+      // 名前を選んでいた人は、同じグループ・同じ名前で選び直す（タイプ／運命星は自動で入る）
+      function pickPerson(grpId, perId, s) {
+        const grp = $(grpId), per = $(perId);
+        grp.value = Array.from(grp.options).some(o => o.value === s.g) ? s.g : '';
+        fire(grp);
+        if (!Array.from(per.options).some(o => o.value === s.n)) { grp.value = ''; fire(grp); }   // 名前が見つからなければ「すべてのグループ」から
+        per.value = s.n;
+        if (per.value !== s.n) return false;
+        fire(per);
+        return true;
+      }
+      // 五星三心 → 六星占術
+      const toSix = $('gg_to_six');
+      if (toSix) toSix.addEventListener('click', () => {
+        const a = read('gg_self_grp', 'gg_self_person', 'gg_self'), b = read('gg_other_grp', 'gg_other_person', 'gg_other');
+        closeGogyo(); openCompat();
+        [[a, 'cmp_self_grp', 'cmp_self_person', 'cmpSelfStar'], [b, 'cmp_other_grp', 'cmp_other_person', 'cmpOtherStar']].forEach(([s, g, p, st]) => {
+          if (s.n && pickPerson(g, p, s)) return;
+          $(p).value = ''; $(p.replace('_person', '_hint')).textContent = '';   // 名前でなく運命星で引き継ぐときは、前に選んだ名前を外す
+          const tk = gogyoToStar(s.t); if (!tk) return;
+          $(st).value = tk; fire($(st));
+        });
+        checkCompat();
+        const m = document.querySelector('#compatModal .modal-content'); if (m) m.scrollTop = 0;
+      });
+      // 六星占術 → 五星三心
+      const toGogyo = $('cmp_to_gogyo');
+      if (toGogyo) toGogyo.addEventListener('click', () => {
+        const a = read('cmp_self_grp', 'cmp_self_person', 'cmpSelfStar'), b = read('cmp_other_grp', 'cmp_other_person', 'cmpOtherStar');
+        closeCompat(); openGogyo();
+        const notes = [];
+        [[a, 'gg_self_grp', 'gg_self_person', 'gg_self', 'gg_self_hint'], [b, 'gg_other_grp', 'gg_other_person', 'gg_other', 'gg_other_hint']].forEach(([s, g, p, sel, hint]) => {
+          if (s.n && pickPerson(g, p, s)) return;
+          $(p).value = ''; $(hint).textContent = '';   // 名前でなくタイプで引き継ぐときは、前に選んだ名前を外す
+          const id = starToGogyo(s.t);
+          if (!id) { $(hint).textContent = '霊合星人はタイプが決まらないので、名前かタイプを選んでください'; return; }
+          $(sel).value = id; if ($(sel).onchange) $(sel).onchange();
+        });
+        const m = document.querySelector('#gogyoModal .modal-content'); if (m) m.scrollTop = 0;
+      });
     })();
     </script>
 
