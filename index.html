@@ -4176,7 +4176,7 @@ window.CC_EXTRA = [...MOVES, ...SLEEPS, ...FOODS, ...FOODS2, ...FOODS3, ...WAYS,
     for (const [f, len] of SEQ) { if (t < len) return f; t -= len; }
     return SEQ[0][0];
   }
-  // 夜の0時〜朝5時は「おやすみ」：目をとじて、すうすう息をして、Zが浮かぶ（0.48秒ごとに8コマ）
+  // 夜の0時〜朝7時は「おやすみ」：目をとじて、すうすう息をして、Zが浮かぶ（0.48秒ごとに8コマ）
   const SLEEP0 = svgOf.length, rect = (x, y, w, h, c) => '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + c + '"/>';
   const zee = (x, y) => rect(x, y, 3, 1, '#8fa3d6') + rect(x + 1, y + 1, 1, 1, '#8fa3d6') + rect(x, y + 2, 3, 1, '#8fa3d6');
   for (let i = 0; i < 8; i++) {
@@ -4187,7 +4187,7 @@ window.CC_EXTRA = [...MOVES, ...SLEEPS, ...FOODS, ...FOODS2, ...FOODS3, ...WAYS,
       rect(6, s * 2 + 3, 2, 1, COLOR.K) + rect(16, s * 2 + 3, 2, 1, COLOR.K) +
       zee(22, -1 - k) + (k >= 2 ? zee(26, -6 - (k - 2)) : '') + '</g>');
   }
-  // 朝5時〜夜0時は、最初にパソコンを1回打ったあとは、01〜120 の動きからずっとランダムに出す。動き（見本ページの番号）からランダムに1つを1回だけ入れる
+  // 朝7時〜夜0時は、最初にパソコンを1回打ったあとは、01〜120 の動きからずっとランダムに出す。動き（見本ページの番号）からランダムに1つを1回だけ入れる
   //   入れる動きの絵は svgOf の X0 番から後ろに入れかえて使う
   const TYPE_MS = total * 1000 / 30, EVERY = 1, X0 = svgOf.length;
   let mv = null, typeOff = 0, nextAt = TYPE_MS * EVERY, done = 0, last = -1;
@@ -4215,7 +4215,7 @@ window.CC_EXTRA = [...MOVES, ...SLEEPS, ...FOODS, ...FOODS2, ...FOODS3, ...WAYS,
     const base = Math.floor(now / (1000 / 30));
     svgs.forEach(s => {
       if (!s.isConnected) return;   // オープニングが閉じたあとは描かない
-      const x = extraId(now), id = new Date().getHours() < 5 ? SLEEP0 + Math.floor(now / 480) % 8 : x >= 0 ? x : frameAt(base - typeOff + (+s.dataset.skip || 0));   // 夜はおやすみ
+      const x = extraId(now), id = new Date().getHours() < 7 ? SLEEP0 + Math.floor(now / 480) % 8 : x >= 0 ? x : frameAt(base - typeOff + (+s.dataset.skip || 0));   // 夜はおやすみ
       if (shown.get(s) !== id) { s.innerHTML = svgOf[id]; shown.set(s, id); }
     });
     requestAnimationFrame(draw);
