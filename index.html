@@ -751,7 +751,6 @@
         <div class="history-list-wrapper">
             <ul id="historyList" style="list-style:none; padding:0; margin:0;"></ul>
         </div>
-        <button class="image-btn" onclick="createImage()">📸 一覧を画像で保存</button>
         <button class="image-btn" id="groupImgBtn" style="background:linear-gradient(135deg,#7dc0ff,#c77dff); margin-top:8px;" onclick="createGroupImage(false)">🎴 選んだ人をまとめて画像化（0）</button>
         <div style="font-size:11px; color:#888; text-align:center; margin-top:8px;">まとめ画像の並び替え（押すとその順で作成）</div>
         <div class="sort-bar" style="margin-top:4px;">
@@ -1220,20 +1219,17 @@
             <div id="detailBody"></div>
             <button class="image-btn" style="margin-top:14px; background:linear-gradient(135deg,#7bc47f,#4a8b6f);" onclick="renamePerson(currentDetailIndex)">✏️ 名前を変更</button>
             <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で保存</button>
-            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#9aa6bd,#5b6b8c);" onclick="createPersonImage(currentDetailIndex, true)">📄 この人を画像で保存（イラストなし）</button>
             <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを保存</button>
-            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#c77dff,#7b2fbf);" onclick="createPersonIllust(currentDetailIndex, true)">🔯 カバラのみのイラストを保存</button>
-            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#4a2d7a,#d4af37);" onclick="createGogyoIllust(currentDetailIndex)">🌟 五星三心のみのイラストを保存</button>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; margin-top:8px; font-weight:bold;" onclick="document.getElementById('detailModal').style.display='none'">閉じる</button>
         </div>
     </div>
     <div id="imageModal" class="modal-overlay">
         <div class="modal-content">
-            <div style="text-align:right; margin-bottom:2px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="document.getElementById('imageModal').style.display='none'">✕ 閉じる</button></div>
+            <div style="text-align:right; margin-bottom:2px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="closeImageModal()">✕ 閉じる</button></div>
             <p style="font-weight:bold;">書き出し完了</p>
             <p style="font-size:11px; color:#666;">画像を長押しして保存</p>
             <img id="exportedImage">
-            <button style="width:100%; padding:10px; border:none; border-radius:10px; background:#f2f2f7;" onclick="document.getElementById('imageModal').style.display='none'">閉じる</button>
+            <button style="width:100%; padding:10px; border:none; border-radius:10px; background:#f2f2f7;" onclick="closeImageModal()">閉じる</button>
         </div>
     </div>
     <script>
@@ -1950,6 +1946,13 @@
         let currentResultData = null;
         let deleteTargetIndex = -1;
         let currentDetailIndex = -1;
+        // 画像の画面を閉じたときに、その人の画面（詳細）へ戻るかどうか
+        let imageBackToDetail = false;
+        function closeImageModal() {
+            document.getElementById('imageModal').style.display = 'none';
+            if (imageBackToDetail && currentDetailIndex >= 0) document.getElementById('detailModal').style.display = 'flex';
+            imageBackToDetail = false;
+        }
         const imgSelect = new Set();
         function toggleImgSelect(idx){
             const h = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
@@ -2673,7 +2676,7 @@
             ctx.fillStyle='#bbb'; ctx.font='11px sans-serif'; ctx.textAlign='center';
             ctx.fillText('六星占術 × 橙花式カバラ数秘術 判定アプリ', cx, H-30);
             document.getElementById('exportedImage').src = cv.toDataURL();
-            document.getElementById('detailModal').style.display='none';
+            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
             document.getElementById('imageModal').style.display='flex';
         }
 
@@ -2796,7 +2799,7 @@
                 const cv=document.createElement('canvas'); cv.width=560; cv.height=700;
                 drawTarotCard(cv.getContext('2d'), item, kabOnly);
                 document.getElementById('exportedImage').src = cv.toDataURL();
-                document.getElementById('detailModal').style.display='none';
+                document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
                 document.getElementById('imageModal').style.display='flex';
             }));
         }
@@ -2918,7 +2921,7 @@
             if(!gogyoTypeOf(it)){ alert('五星三心タイプを判定できませんでした。'); return; }
             const cv=document.createElement('canvas'); cv.width=560; cv.height=830;
             drawGogyoCard(cv.getContext('2d'), it);
-            document.getElementById('detailModal').style.display='none';
+            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
             document.getElementById('exportedImage').src=cv.toDataURL();
             document.getElementById('imageModal').style.display='flex';
         }
