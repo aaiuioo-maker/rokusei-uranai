@@ -410,6 +410,26 @@
         #kcBody .kc-pairs{ display:flex; flex-wrap:wrap; gap:6px; }
         #kcBody .kc-pr{ background:#fff; border:1px solid #e8e2d8; border-radius:8px; padding:4px 10px; font-size:12.5px; cursor:pointer; }
         #kcBody .kc-src{ font-size:11.5px; color:#6b645c; line-height:1.6; margin-top:6px; }
+        /* 本の解説（写真）：登録の欄と、写真を見る画面 */
+        #kcBody .kcb-row{ display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:8px 0; border-top:1px dashed #e0d6c4; }
+        #kcBody .kcb-lbl{ flex:1 1 100%; font-size:13px; font-weight:bold; color:#5b4a33; }
+        #kcBody .kcb-lbl span{ font-weight:normal; color:#8a8070; font-size:11.5px; }
+        #kcBody .kcb-st{ font-size:12px; color:#a08c6a; margin-right:auto; }
+        #kcBody .kcb-st.on{ color:#2e7d5b; font-weight:bold; }
+        #kcBody .kcb-btn{ display:inline-block; padding:6px 12px; border-radius:8px; border:1px solid #d9c9a8; background:#f6efe2; color:#8b6f47; font-size:12.5px; font-weight:bold; font-family:inherit; cursor:pointer; }
+        #kcBody .kcb-btn.view{ background:#8b6f47; color:#fff; border-color:#8b6f47; }
+        #kcBody .kcb-btn.del{ background:#fff; color:#a53a3a; border-color:#ecd0d0; }
+        #kcBody .kcb-open{ display:block; width:100%; margin-top:10px; padding:10px; border:none; border-radius:9px; background:linear-gradient(135deg,#7b2fbf,#c77dff); color:#fff; font-weight:bold; font-family:inherit; font-size:14px; cursor:pointer; }
+        #kcBody .kcb-tip{ margin-top:8px; font-size:11px; color:#8a8070; }
+        #kcBookViewer{ position:fixed; inset:0; z-index:3000; display:none; flex-direction:column; background:rgba(20,16,12,.94); }
+        #kcBookViewer .kcv-bar{ display:flex; align-items:center; gap:8px; padding:calc(10px + env(safe-area-inset-top)) 12px 10px; color:#fff; }
+        #kcBookViewer .kcv-cap{ flex:1; min-width:0; font-size:13px; line-height:1.5; }
+        #kcBookViewer .kcv-cap b{ color:#ffd86a; font-size:15px; }
+        #kcBookViewer .kcv-cap span{ display:block; font-size:11px; color:#d8d0c0; }
+        #kcBookViewer button{ flex:none; padding:7px 12px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; font-family:inherit; cursor:pointer; }
+        #kcBookViewer .kcv-scroll{ flex:1; overflow:auto; -webkit-overflow-scrolling:touch; padding:0 8px calc(12px + env(safe-area-inset-bottom)); }
+        #kcBookViewer img{ display:block; width:100%; height:auto; border-radius:4px; background:#fff; }
+        #kcBookViewer.zoom img{ width:200%; max-width:none; }
         @media (max-width: 360px) {
             #kcModal .modal-content{ padding:12px 10px; }
             #kcBody .card{ padding:10px 8px; }
@@ -3470,8 +3490,10 @@
         $('kc_result').innerHTML =
           '<div class="kc-pair">' + nm(a) + ' → ' + nm(b) + '</div>' + chip(s) +
           '<div class="kc-back">相手（' + b + '）から見ると ' + '<b style="color:' + COL[r] + '">' + r + ' ' + LBL[r] + '</b></div>' +
-          '<div class="kc-page">くわしい解説：本の' + PAGE(+b) + 'ページ【表1】の「本人 ' + a + '」×「相手 ' + b + '」のマス</div>';
+          '<div class="kc-page">くわしい解説：本の' + PAGE(+b) + 'ページ【表1】の「本人 ' + a + '」×「相手 ' + b + '」のマス</div>' +
+          (window.kcBookLink ? window.kcBookLink(+a, +b) : '');
       }
+      window.kcRecheck = check;   // 本の写真を登録・削除したときに出し直す
       $('kc_self').addEventListener('change', check);
       $('kc_other').addEventListener('change', check);
 
@@ -3564,7 +3586,8 @@
       });
       h += '</ul></div>';
 
-      h += '<h2>4. 出典</h2><div class="card"><p class="kc-src">橙花さんの本 第六章「数字どうしの相性を見る」【表1】数秘術ライフパス相性表（170〜173ページ）の ◎〇△ をもとにしています。運命数（鍵の数）は、このアプリで計算した数を使っています。各組み合わせのくわしい解説は、本の該当ページをご覧ください。</p></div>';
+      h += '<h2>4. 本の解説を見る（写真）</h2><div class="card" id="kc_book"></div>';
+      h += '<h2>5. 出典</h2><div class="card"><p class="kc-src">橙花さんの本 第六章「数字どうしの相性を見る」【表1】数秘術ライフパス相性表（170〜173ページ）の ◎〇△ をもとにしています。運命数（鍵の数）は、このアプリで計算した数を使っています。各組み合わせのくわしい解説は、本の該当ページをご覧ください。</p></div>';
       $('kc_guide').innerHTML = h;
       $('kc_guide').addEventListener('click', e => {
         const el = e.target.closest('[data-a]'); if (!el) return;
@@ -3586,6 +3609,108 @@
       };
       window.closeKc = function () { $('kcModal').style.display = 'none'; };
       check();
+    })();
+
+    // =============================================================
+    // 本の解説を見る（写真）：本の【表1】の写真4枚を、このスマホの中だけ（IndexedDB）に保存して見る。
+    //   写真はインターネットには上がらず、公開ページにも入らない（本の文章を公開しないため）。
+    // =============================================================
+    (function kcBook(){
+      const box = document.getElementById('kc_book');
+      if (!box || !window.indexedDB) return;
+      // 写真の4枚：相手の数のまとまりごと（本のページ）
+      const PAGES = [
+        { key:'p1', nums:[1,2,3],    page:171, label:'相手 1・2・3' },
+        { key:'p2', nums:[4,5,6],    page:170, label:'相手 4・5・6' },
+        { key:'p3', nums:[7,8,9],    page:173, label:'相手 7・8・9' },
+        { key:'p4', nums:[11,22,33], page:172, label:'相手 11・22・33' }
+      ];
+      const pageOf = b => PAGES.find(p => p.nums.indexOf(b) >= 0);
+      const have = {};   // どの写真が登録済みか（画面表示用）
+      // ---- IndexedDB（このスマホの中だけの保存場所） ----
+      let dbp = null;
+      function db() {
+        if (!dbp) dbp = new Promise((ok, ng) => {
+          const r = indexedDB.open('kcBookPhotos', 1);
+          r.onupgradeneeded = () => r.result.createObjectStore('pages');
+          r.onsuccess = () => ok(r.result); r.onerror = () => ng(r.error);
+        });
+        return dbp;
+      }
+      const tx = (mode, fn) => db().then(d => new Promise((ok, ng) => {
+        const t = d.transaction('pages', mode), req = fn(t.objectStore('pages'));
+        t.oncomplete = () => ok(req && req.result); t.onerror = () => ng(t.error);
+      }));
+      const getPhoto = k => tx('readonly', s => s.get(k));
+      const putPhoto = (k, v) => tx('readwrite', s => s.put(v, k));
+      const delPhoto = k => tx('readwrite', s => s.delete(k));
+      // 大きな写真は横1600pxまで縮めて保存（容量の節約）
+      function shrink(file) {
+        return new Promise((ok, ng) => {
+          const url = URL.createObjectURL(file), img = new Image();
+          img.onload = () => {
+            const w = Math.min(1600, img.naturalWidth), h = Math.round(img.naturalHeight * w / img.naturalWidth);
+            const c = document.createElement('canvas'); c.width = w; c.height = h;
+            c.getContext('2d').drawImage(img, 0, 0, w, h);
+            URL.revokeObjectURL(url);
+            ok(c.toDataURL('image/jpeg', 0.85));
+          };
+          img.onerror = () => { URL.revokeObjectURL(url); ng(new Error('写真を読み込めませんでした')); };
+          img.src = url;
+        });
+      }
+      const snd = t => { if (typeof playSound === 'function') { try { playSound(t); } catch (e) {} } };
+
+      // ---- 登録の欄 ----
+      function render() {
+        box.innerHTML = '<p>本の【表1】の写真を、相手の数のまとまりごとに4枚登録すると、相性チェックの結果から本の解説を開けます。' +
+          '写真は<b>このスマホの中だけ</b>に保存され、インターネットには上がりません。</p>' +
+          PAGES.map(p => '<div class="kcb-row"><div class="kcb-lbl">' + p.label + '<span>（' + p.page + 'ページ）</span></div>' +
+            '<div class="kcb-st ' + (have[p.key] ? 'on' : '') + '">' + (have[p.key] ? '✓ 登録済み' : '未登録') + '</div>' +
+            '<label class="kcb-btn">' + (have[p.key] ? '撮り直す' : '写真を選ぶ') + '<input type="file" accept="image/*" data-k="' + p.key + '" hidden></label>' +
+            (have[p.key] ? '<button type="button" class="kcb-btn view" data-view="' + p.key + '">見る</button><button type="button" class="kcb-btn del" data-del="' + p.key + '">消す</button>' : '') +
+            '</div>').join('');
+        if (window.kcRecheck) window.kcRecheck();
+      }
+      box.addEventListener('change', async e => {
+        const inp = e.target.closest('input[type=file]'); if (!inp || !inp.files[0]) return;
+        try { await putPhoto(inp.dataset.k, await shrink(inp.files[0])); have[inp.dataset.k] = true; snd('success'); render(); }
+        catch (err) { alert('写真を保存できませんでした：' + err.message); }
+      });
+      box.addEventListener('click', async e => {
+        const d = e.target.closest('[data-del]'), v = e.target.closest('[data-view]');
+        if (d) { if (!confirm('この写真を消しますか？')) return; await delPhoto(d.dataset.del); delete have[d.dataset.del]; snd('delete'); render(); }
+        if (v) { const p = PAGES.find(x => x.key === v.dataset.view); show(p, null, null); }
+      });
+
+      // ---- 写真を見る画面 ----
+      const ov = document.createElement('div');
+      ov.id = 'kcBookViewer';
+      ov.innerHTML = '<div class="kcv-bar"><div class="kcv-cap" id="kcv_cap"></div>' +
+        '<button type="button" id="kcv_zoom">拡大</button><button type="button" id="kcv_close">✕ 閉じる</button></div>' +
+        '<div class="kcv-scroll"><img id="kcv_img" alt="本の表の写真"></div>';
+      document.body.appendChild(ov);
+      let zoom = false;
+      document.getElementById('kcv_zoom').onclick = () => { zoom = !zoom; ov.classList.toggle('zoom', zoom); document.getElementById('kcv_zoom').textContent = zoom ? '縮小' : '拡大'; };
+      document.getElementById('kcv_close').onclick = () => { ov.style.display = 'none'; };
+      async function show(p, a, b) {
+        const src = await getPhoto(p.key); if (!src) return;
+        document.getElementById('kcv_img').src = src;
+        document.getElementById('kcv_cap').innerHTML = a ? '「本人 <b>' + a + '</b>」の行 ×「相手 <b>' + b + '</b>」の列<span>（' + p.page + 'ページ／左から' + (p.nums.indexOf(b) + 1) + '列目）</span>' : p.label + '<span>（' + p.page + 'ページ）</span>';
+        zoom = false; ov.classList.remove('zoom'); document.getElementById('kcv_zoom').textContent = '拡大';
+        ov.style.display = 'flex'; ov.querySelector('.kcv-scroll').scrollTop = 0;
+        snd('click');
+      }
+      // 相性チェックの結果に出すボタン
+      window.kcBookLink = (a, b) => {
+        const p = pageOf(b); if (!p) return '';
+        return have[p.key]
+          ? '<button type="button" class="kcb-open" onclick="kcOpenBook(' + a + ',' + b + ')">📖 本の解説を見る（' + p.page + 'ページの写真）</button>'
+          : '<div class="kcb-tip">下の「4. 本の解説を見る（写真）」で本の写真を登録すると、ここから解説を開けます</div>';
+      };
+      window.kcOpenBook = (a, b) => { const p = pageOf(b); if (p) show(p, a, b); };
+      // どの写真が登録済みか読み込んでから表示
+      Promise.all(PAGES.map(p => getPhoto(p.key).then(v => { if (v) have[p.key] = true; }))).catch(() => {}).then(render);
     })();
     </script>
 
