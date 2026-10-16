@@ -371,6 +371,50 @@
         /* もう一方の早見表へ行くボタン（行き先の早見表の色） */
         #compatChecker button.cmp-cross{ background:linear-gradient(135deg,#4a2d7a,#b8860b); color:#fff; border:none; margin-top:8px; }
         #gogyoBody .gg-cross{ margin-top:8px; background:linear-gradient(135deg,#8b6f47,#5b4a33); color:#f5efe6; border:none; }
+        /* --- 橙花式カバラ数秘術 相性早見表（六星占術 相性早見表と同じデザイン） --- */
+        #kcModal .modal-content{ max-width:640px; width:94%; max-height:90vh; overflow-y:auto; overflow-x:hidden; overscroll-behavior:contain; touch-action:pan-y; text-align:left; padding:16px; }
+        #kcBody{ color:#2d2a26; }
+        #kcBody .kc-title{ text-align:center; font-weight:bold; color:#5b4a33; font-size:16px; margin-bottom:10px; }
+        #kcBody .kc-checker{ background:#fff; border:1px solid #e8e2d8; border-radius:10px; padding:12px; margin-bottom:6px; }
+        #kcBody .kc-head0{ font-weight:bold; color:#5b4a33; margin-bottom:8px; }
+        #kcBody .kc-pick{ display:flex; gap:10px; }
+        #kcBody .kc-col{ flex:1; min-width:0; display:flex; flex-direction:column; }
+        #kcBody .kc-col select{ width:100%; font-family:inherit; font-size:16px; padding:7px 8px; border:1px solid #d1cabb; border-radius:8px; background:#faf8f4; margin-bottom:5px; }
+        #kc_self, #kc_other{ margin-top:auto; }
+        #kcBody .kc-head{ font-size:13px; font-weight:bold; color:#8b6f47; margin-bottom:4px; }
+        #kcBody .kc-mini{ font-size:10.5px; color:#8a8070; margin:2px 0 3px; }
+        #kcBody .kc-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#2e8b57; overflow-wrap:anywhere; }
+        #kcBody .kc-swap{ width:100%; margin-top:10px; padding:10px; border-radius:9px; border:1px solid #d9c9a8; background:#f6efe2; color:#8b6f47; font-weight:bold; font-family:inherit; cursor:pointer; }
+        #kcBody .kc-swap .ic{ display:inline-block; }
+        #kcBody .kc-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
+        #kcBody .kc-result{ margin-top:12px; text-align:center; }
+        #kcBody .kc-pair{ font-size:14px; font-weight:bold; color:#5b4a33; }
+        #kcBody .kc-chip{ display:inline-block; margin-top:6px; padding:4px 14px; border-radius:8px; font-size:15px; font-weight:700; }
+        #kcBody .kc-back{ margin-top:8px; font-size:12.5px; color:#6b645c; }
+        #kcBody .kc-page{ margin-top:6px; font-size:11.5px; color:#8a8070; }
+        #kcBody .kc-note{ font-size:11px; color:#8a8070; line-height:1.6; margin-top:10px; }
+        #kcBody h2{ font-size:16px; color:#5b4a33; border-left:5px solid #8b6f47; padding-left:8px; margin:20px 0 8px; }
+        #kcBody h3{ font-size:14px; color:#5b4a33; margin:12px 0 4px; }
+        #kcBody .card{ background:#faf8f4; border:1px solid #e8e2d8; border-radius:10px; padding:12px 14px; margin-bottom:12px; }
+        #kcBody .card p, #kcBody .card li{ font-size:13px; line-height:1.7; }
+        #kcBody .card ul{ margin:6px 0; padding-left:1.2em; }
+        #kcBody .kc-legend{ display:flex; flex-wrap:wrap; gap:6px; margin:8px 0; }
+        #kcBody .kc-legend span{ font-size:11.5px; padding:3px 8px; border-radius:999px; border:1px solid #e8e2d8; font-weight:700; }
+        #kcBody table.kc-mx{ width:100%; table-layout:fixed; border-collapse:collapse; background:#fff; margin:8px 0; }
+        #kcBody table.kc-mx th, #kcBody table.kc-mx td{ border:1px solid #e8e2d8; text-align:center; padding:0; }
+        #kcBody table.kc-mx thead th{ background:#f0ebe2; color:#5b4a33; font-size:12px; padding:4px 0; }
+        #kcBody table.kc-mx tbody th{ background:#f7f4ee; color:#5b4a33; font-size:12px; }
+        #kcBody table.kc-mx tr > :first-child{ width:30px; }
+        #kcBody table.kc-mx td{ font-size:13px; font-weight:700; height:28px; cursor:pointer; }
+        #kcBody table.kc-mx td.kc-self{ outline:2px solid #d9c9a8; outline-offset:-2px; }
+        #kcBody .kc-pairs{ display:flex; flex-wrap:wrap; gap:6px; }
+        #kcBody .kc-pr{ background:#fff; border:1px solid #e8e2d8; border-radius:8px; padding:4px 10px; font-size:12.5px; cursor:pointer; }
+        #kcBody .kc-src{ font-size:11.5px; color:#6b645c; line-height:1.6; margin-top:6px; }
+        @media (max-width: 360px) {
+            #kcModal .modal-content{ padding:12px 10px; }
+            #kcBody .card{ padding:10px 8px; }
+            #kcBody table.kc-mx td{ font-size:12px; }
+        }
         /* --- 解説セクション --- */
         .ref-section { border-bottom: 1px solid #f2f2f7; }
         .ref-section summary { font-weight: bold; font-size: 14px; padding: 13px 4px; cursor: pointer; color: #333; list-style: none; display: flex; justify-content: space-between; align-items: center; }
@@ -764,6 +808,7 @@
         <!-- 相性早見表（六星占術・五星三心占い） -->
         <button class="compat-open-btn" style="margin-top:12px;" onclick="openCompat()">📊 六星占術 相性早見表</button>
         <button class="compat-open-btn" style="background:linear-gradient(135deg,#4a2d7a,#b8860b);" onclick="openGogyo()">🌟 五星三心占い相性早見表</button>
+        <button class="compat-open-btn" style="background:linear-gradient(135deg,#7b2fbf,#c77dff);" onclick="openKc()">🔢 橙花式カバラ数秘術 相性早見表</button>
         <button id="selectAllBtn" onclick="selectAllVisible()" style="width:100%; margin-top:8px; padding:11px; border:1px solid #b7e0c0; border-radius:10px; background:#eefaf0; color:var(--accent-green); font-weight:bold; font-size:14px; cursor:pointer;">☑ 表示中をすべて選択</button>
         <button id="clearSelBtn" onclick="clearImgSelect()" style="width:100%; margin-top:8px; padding:11px; border:1px solid #ffc9c9; border-radius:10px; background:#fff0f0; color:var(--accent-red); font-weight:bold; font-size:14px; cursor:pointer;">✖ 選択をクリア（0）</button>
         <div style="text-align:center; margin-top:4px; font-size:11px; color:#aaa;">各行のチェックで選択できます</div>
@@ -1221,6 +1266,45 @@
             <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で保存</button>
             <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを保存</button>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; margin-top:8px; font-weight:bold;" onclick="document.getElementById('detailModal').style.display='none'">閉じる</button>
+        </div>
+    </div>
+    <!-- ===== 橙花式カバラ数秘術 相性早見表（六星占術 相性早見表と同じ白とベージュのデザイン） ===== -->
+    <div id="kcModal" class="modal-overlay">
+        <div class="modal-content">
+            <div id="kcBody">
+                <div style="text-align:right; margin-bottom:6px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="closeKc()">✕ 閉じる</button></div>
+                <div class="kc-title">橙花式カバラ数秘術 相性早見表</div>
+                <div class="kc-checker">
+                    <div class="kc-head0">🔎 かんたん相性チェック</div>
+                    <div class="kc-pick">
+                        <div class="kc-col">
+                            <div class="kc-head">◆ 自分（本人）</div>
+                            <div class="kc-mini">グループ</div>
+                            <select id="kc_self_grp" aria-label="自分のグループ"></select>
+                            <div class="kc-mini">名前（入力順）</div>
+                            <select id="kc_self_person" aria-label="自分の名前"></select>
+                            <div id="kc_self_hint" class="kc-hint"></div>
+                            <div class="kc-mini">運命数（鍵の数）</div>
+                            <select id="kc_self"></select>
+                        </div>
+                        <div class="kc-col">
+                            <div class="kc-head">◆ 相手</div>
+                            <div class="kc-mini">グループ</div>
+                            <select id="kc_other_grp" aria-label="相手のグループ"></select>
+                            <div class="kc-mini">名前（入力順）</div>
+                            <select id="kc_other_person" aria-label="相手の名前"></select>
+                            <div id="kc_other_hint" class="kc-hint"></div>
+                            <div class="kc-mini">運命数（鍵の数）</div>
+                            <select id="kc_other"></select>
+                        </div>
+                    </div>
+                    <button id="kc_swap" class="kc-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
+                    <div id="kc_result" class="kc-result"></div>
+                    <div class="kc-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命数（鍵の数）が自動で選ばれ、相性が出ます。運命数を直接選ぶこともできます。</div>
+                </div>
+                <div id="kc_guide"></div>
+            </div>
+            <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; font-weight:bold; margin-top:10px; cursor:pointer;" onclick="closeKc()">閉じる</button>
         </div>
     </div>
     <div id="imageModal" class="modal-overlay">
@@ -3351,6 +3435,157 @@
         });
         const m = document.querySelector('#gogyoModal .modal-content'); if (m) m.scrollTop = 0;
       });
+    })();
+
+    // =============================================================
+    // 橙花式カバラ数秘術 相性早見表
+    //   橙花さんの本 第六章「数字どうしの相性を見る」【表1】数秘術ライフパス相性表 の ◎〇△ を写したもの
+    //   （各組み合わせの解説文は本の文章なので載せず、本のページを案内する）
+    // =============================================================
+    (function kcCompat(){
+      const $ = id => document.getElementById(id);
+      if (!$('kcModal')) return;
+      const NUMS = [1,2,3,4,5,6,7,8,9,11,22,33];
+      // 行＝本人の数、文字＝相手の数（1,2,3,4,5,6,7,8,9,11,22,33 の順）
+      const ROWS = {
+        1:'〇◎〇△〇〇〇△〇△△◎',  2:'◎◎△〇△〇△△〇◎△◎',  3:'〇△〇◎◎〇△〇〇△△◎',
+        4:'△〇〇〇〇◎△〇〇〇〇◎',  5:'〇△◎◎〇△△◎△〇〇△',  6:'〇〇〇◎△◎△◎◎△〇◎',
+        7:'〇〇△〇△△◎〇◎◎〇◎',  8:'△〇〇◎〇〇△△◎〇〇△',  9:'〇〇〇〇△◎◎〇△△〇◎',
+        11:'△◎△◎〇△〇〇△〇◎〇', 22:'△△〇〇〇〇〇◎〇◎◎〇', 33:'◎◎〇◎△〇△△〇〇◎〇'
+      };
+      const sym = (a, b) => (ROWS[a] || '').charAt(NUMS.indexOf(+b)) || '';
+      const PAGE = n => (n <= 3 ? 171 : n <= 6 ? 170 : n <= 9 ? 173 : 172);   // 相手の数が載っている本のページ
+      const LBL = { '◎':'とても良い', '〇':'良い', '△':'工夫しだい' };
+      const COL = { '◎':'#2e7d5b', '〇':'#3a6ea5', '△':'#8a7a2e' };
+      const BG  = { '◎':'#e7f3ed', '〇':'#e8f0f8', '△':'#f5f1dd' };
+      const PTS = { '◎':3, '〇':2, '△':1 };
+      const nm = n => { try { const k = kabInfo(n); return n + (k && k.name ? '（' + k.name + '）' : ''); } catch (e) { return String(n); } };
+      const chip = s => '<span class="kc-chip" style="color:' + COL[s] + ';background:' + BG[s] + '">' + s + ' ' + LBL[s] + '</span>';
+
+      // 運命数の選ぶ欄
+      ['kc_self', 'kc_other'].forEach(id => { $(id).innerHTML = NUMS.map(n => '<option value="' + n + '">' + nm(n) + '</option>').join(''); });
+
+      function check() {
+        const a = $('kc_self').value, b = $('kc_other').value, s = sym(a, b), r = sym(b, a);
+        $('kc_result').innerHTML =
+          '<div class="kc-pair">' + nm(a) + ' → ' + nm(b) + '</div>' + chip(s) +
+          '<div class="kc-back">相手（' + b + '）から見ると ' + '<b style="color:' + COL[r] + '">' + r + ' ' + LBL[r] + '</b></div>' +
+          '<div class="kc-page">くわしい解説：本の' + PAGE(+b) + 'ページ【表1】の「本人 ' + a + '」×「相手 ' + b + '」のマス</div>';
+      }
+      $('kc_self').addEventListener('change', check);
+      $('kc_other').addEventListener('change', check);
+
+      // ---- グループと名前で選ぶ（五星三心・六星占術の早見表と同じ） ----
+      const NO_GRP = '未分類';
+      const collator = new Intl.Collator('ja');
+      const hist = () => { try { return JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'); } catch (e) { return []; } };
+      const numOf = p => { try { const n = itemKabNum(p); return NUMS.indexOf(+n) >= 0 ? +n : null; } catch (e) { return null; } };
+      function people() {
+        const seen = new Set(), out = [];
+        hist().forEach(it => { const n = (it.name || '').trim(); if (!n || n === '名前なし' || seen.has(n) || !numOf(it)) return; seen.add(n); out.push(it); });
+        return out;
+      }
+      function groupOrder(ps) {
+        const used = new Set(ps.map(p => p.category || NO_GRP));
+        const base = Array.from(document.querySelectorAll('#personCategory option')).map(o => o.value || NO_GRP);
+        const extra = [...used].filter(g => base.indexOf(g) < 0).sort(collator.compare);
+        return base.concat(extra).filter(g => used.has(g));
+      }
+      function setup(which) {
+        const grp = $('kc_' + which + '_grp'), per = $('kc_' + which + '_person'), hint = $('kc_' + which + '_hint'), sel = $('kc_' + which);
+        let ps = [];
+        function fillPeople(keep) {
+          const g = grp.value, list = ps.filter(p => g === '' || (p.category || NO_GRP) === g);
+          per.innerHTML = '';
+          per.add(new Option(list.length ? '— 名前を選ぶ（' + list.length + '人）—' : '— 保存した人がいません —', ''));
+          list.forEach(p => per.add(new Option(p.name, p.name)));
+          per.value = (keep && list.some(p => p.name === keep)) ? keep : '';
+        }
+        function refresh() {
+          ps = people();
+          const keepG = grp.value, keepN = per.value;
+          grp.innerHTML = '';
+          grp.add(new Option('すべてのグループ（' + ps.length + '人）', ''));
+          groupOrder(ps).forEach(g => grp.add(new Option(g + '（' + ps.filter(p => (p.category || NO_GRP) === g).length + '人）', g)));
+          grp.value = Array.from(grp.options).some(o => o.value === keepG) ? keepG : '';
+          fillPeople(keepN);
+        }
+        grp.addEventListener('change', () => { fillPeople(per.value); if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} } });
+        per.addEventListener('change', () => {
+          const p = ps.find(x => x.name === per.value);
+          if (!p) { hint.textContent = ''; return; }
+          const n = numOf(p);
+          sel.value = n; hint.textContent = '✓ ' + nm(n);
+          check();
+          if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} }
+        });
+        sel.addEventListener('change', () => { per.value = ''; hint.textContent = ''; });
+        return {
+          refresh,
+          get: () => ({ g: grp.value, n: per.value, t: sel.value, h: hint.textContent }),
+          put: s => { grp.value = s.g; fillPeople(s.n); sel.value = s.t; hint.textContent = per.value ? s.h : ''; },
+          clearPick: () => { per.value = ''; hint.textContent = ''; }
+        };
+      }
+      const sides = [setup('self'), setup('other')];
+      $('kc_swap').addEventListener('click', () => {
+        const a = sides[0].get(), b = sides[1].get();
+        sides[0].put(b); sides[1].put(a); check();
+        const btn = $('kc_swap'); btn.classList.remove('spin'); void btn.offsetWidth; btn.classList.add('spin');
+        if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} }
+      });
+
+      // ---- 早見表と一覧 ----
+      let h = '';
+      h += '<h2>1. 運命数どうしの相性表（本人→相手）</h2><div class="card">';
+      h += '<p>縦（左）が本人、横（上）が相手です。「本人から見た相手」と「相手から見た本人」は同じとは限りません。マスを押すと、上のチェックにその組み合わせが出ます。</p>';
+      h += '<div class="kc-legend">' + ['◎','〇','△'].map(s => '<span style="color:' + COL[s] + ';background:' + BG[s] + '">' + s + ' ' + LBL[s] + '</span>').join('') + '</div>';
+      h += '<table class="kc-mx"><thead><tr><th></th>' + NUMS.map(n => '<th>' + n + '</th>').join('') + '</tr></thead><tbody>';
+      NUMS.forEach(a => {
+        h += '<tr><th>' + a + '</th>' + NUMS.map(b => { const s = sym(a, b); return '<td class="' + (a === b ? 'kc-self' : '') + '" data-a="' + a + '" data-b="' + b + '" style="color:' + COL[s] + ';background:' + BG[s] + '">' + s + '</td>'; }).join('') + '</tr>';
+      });
+      h += '</tbody></table></div>';
+
+      const both = [], gap = [];
+      NUMS.forEach((a, i) => NUMS.forEach((b, j) => {
+        if (j > i && sym(a, b) === '◎' && sym(b, a) === '◎') both.push([a, b]);
+        if (a !== b && PTS[sym(a, b)] - PTS[sym(b, a)] === 2) gap.push([a, b]);
+      }));
+      const prs = (list, f) => '<div class="kc-pairs">' + list.map(([a, b]) => '<span class="kc-pr" data-a="' + a + '" data-b="' + b + '">' + f(a, b) + '</span>').join('') + '</div>';
+      h += '<h2>2. 特に良い組み合わせ</h2><div class="card">';
+      h += '<h3>💞 両思い（どちらから見ても ◎）</h3>' + prs(both, (a, b) => a + ' ⇄ ' + b);
+      h += '<h3>↔ 片思いになりやすい組み合わせ</h3><p>本人からは ◎ でも、相手から見ると △ の組み合わせです。</p>' + prs(gap, (a, b) => a + ' → ' + b + '（◎）／ ' + b + ' → ' + a + '（△）');
+      h += '<p class="kc-src">※組み合わせを押すと、上のチェックに出ます。</p></div>';
+
+      h += '<h2>3. 数ごとのまとめ</h2><div class="card"><ul>';
+      NUMS.forEach(a => {
+        const good = NUMS.filter(b => b !== a && sym(a, b) === '◎');
+        h += '<li><strong>' + nm(a) + '</strong>：◎ ' + (good.length ? good.join('・') : '—') + '</li>';
+      });
+      h += '</ul></div>';
+
+      h += '<h2>4. 出典</h2><div class="card"><p class="kc-src">橙花さんの本 第六章「数字どうしの相性を見る」【表1】数秘術ライフパス相性表（170〜173ページ）の ◎〇△ をもとにしています。運命数（鍵の数）は、このアプリで計算した数を使っています。各組み合わせのくわしい解説は、本の該当ページをご覧ください。</p></div>';
+      $('kc_guide').innerHTML = h;
+      $('kc_guide').addEventListener('click', e => {
+        const el = e.target.closest('[data-a]'); if (!el) return;
+        $('kc_self').value = el.dataset.a; $('kc_other').value = el.dataset.b;
+        sides.forEach(s => s.clearPick()); check();
+        if (typeof playSound === 'function') { try { playSound('click'); } catch (err) {} }
+        const m = document.querySelector('#kcModal .modal-content'); if (m) m.scrollTop = 0;
+      });
+
+      // ---- 開く・閉じる ----
+      window.openKc = function () {
+        if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} }
+        sides.forEach(s => s.refresh());
+        // 自分は、いま占っている人の運命数にしておく
+        if (typeof currentResultData !== 'undefined' && currentResultData && currentResultData.kabbalaNum) { $('kc_self').value = currentResultData.kabbalaNum; sides[0].clearPick(); }
+        check();
+        $('kcModal').style.display = 'flex';
+        const m = document.querySelector('#kcModal .modal-content'); if (m) m.scrollTop = 0;
+      };
+      window.closeKc = function () { $('kcModal').style.display = 'none'; };
+      check();
     })();
     </script>
 
