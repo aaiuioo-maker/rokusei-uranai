@@ -502,6 +502,15 @@
 #ccWakePop button { flex: 1; padding: 10px; border-radius: 10px; border: none; font: inherit; cursor: pointer; }
 #ccWakePop .ccw-wake { background: #d97757; color: #fff; }
 #ccWakePop .ccw-close { background: #f8f8f8; color: #0b1120; }
+#ccWakePop .ccw-btns { flex-wrap: wrap; }
+#ccWakePop .ccw-movie { background: #2a3d6b; color: #fff; }
+#ccWakePop .ccw-wake[hidden] { display: none; }
+#ccWakePop .ccw-link { display: block; margin-top: 10px; color: #cbd5e1; font-size: 12px; }
+#ccMovie { position: fixed; inset: 0; z-index: 100000; background: rgba(0,0,0,.85); display: flex; align-items: center; justify-content: center; padding: 16px; }
+#ccMovie[hidden] { display: none !important; }
+#ccMovie .ccm-box { width: 100%; max-width: 420px; display: grid; gap: 10px; }
+#ccMovie video { width: 100%; pointer-events: none; aspect-ratio: 1; background: #000; border: 3px double #f8f8f8; border-radius: 6px; }
+#ccMovie .ccm-close { padding: 11px; border-radius: 10px; border: none; background: #f8f8f8; color: #0b1120; font: 700 14px -apple-system, "Hiragino Sans", sans-serif; cursor: pointer; }
 </style>
 </head>
 <body>
@@ -4817,33 +4826,46 @@ window.CC_EXTRA = [...MOVES, ...SLEEPS, ...FOODS, ...FOODS2, ...FOODS3, ...WAYS,
     </script>
 <script>
 // =============================================================
-// 夜（0時〜朝7時）にオレンジのキャラクターをタップすると、自己紹介の画面に「おこす」ボタンが出る。
-//   押すと、アプリを閉じるまで起きて、ランダムな動きをする（閉じて開き直すと、また寝る）
+// オレンジのキャラクターをタップすると、小さな画面を出す（このアプリには自己紹介の画面がないため）
+//   「動画を見る」：2つの動画からランダムに1つを流す（movies/block-day.mp4・movies/block-night.mp4）
+//   「おこす」：夜（0時〜朝7時）に寝ているときだけ出る。押すと、アプリを閉じるまで起きてランダムに動く
 // =============================================================
 (function ccWake() {
   window.CC_AWAKE = false;
   const sleeping = () => new Date().getHours() < 7 && !window.CC_AWAKE;
-  const intro = document.getElementById('ccIntro');
-  if (intro) {
-    const box = intro.querySelector('.ccx-box'), btn = intro.querySelector('.ccx-wake');
-    if (!box || !btn) return;
-    const sync = () => { btn.hidden = !(intro.classList.contains('show') && box.dataset.who === 'cc' && sleeping()); };
-    new MutationObserver(sync).observe(intro, { attributes: true, subtree: true, attributeFilter: ['class', 'data-who'] });
-    btn.addEventListener('click', () => { window.CC_AWAKE = true; btn.hidden = true; intro.querySelector('.ccx-close').click(); });
-    return;
-  }
-  // 自己紹介の画面がないアプリ：寝ているときにタップすると、小さな「おこす」画面を出す
   const a = document.querySelector('.cc-mascot');
   if (!a) return;
   const pop = document.createElement('div');
   pop.id = 'ccWakePop'; pop.hidden = true;
-  pop.innerHTML = '<div class="ccw-box"><p>オレンジのキャラクターは、いま ねています… zzz</p>' +
-    '<div class="ccw-btns"><button type="button" class="ccw-wake">おこす</button><button type="button" class="ccw-close">とじる</button></div></div>';
+  pop.innerHTML = '<div class="ccw-box"><p class="ccw-msg"></p>' +
+    '<div class="ccw-btns"><button type="button" class="ccw-movie">動画を見る</button><button type="button" class="ccw-wake">おこす</button><button type="button" class="ccw-close">とじる</button></div>' +
+    '<a class="ccw-link" href="https://claude.com/claude-code" target="_blank" rel="noopener">Claude Code の公式ページ</a></div>';
   document.body.appendChild(pop);
-  a.addEventListener('click', e => { if (!sleeping()) return; e.preventDefault(); pop.hidden = false; });
-  pop.querySelector('.ccw-wake').addEventListener('click', () => { window.CC_AWAKE = true; pop.hidden = true; });
+  const msg = pop.querySelector('.ccw-msg'), wake = pop.querySelector('.ccw-wake');
+  a.addEventListener('click', e => {
+    e.preventDefault();
+    const zz = sleeping();
+    msg.textContent = zz ? 'オレンジのキャラクターは、いま ねています… zzz' : 'Claude Code でつくった、オレンジのキャラクターです。';
+    wake.hidden = !zz; pop.hidden = false;
+  });
+  wake.addEventListener('click', () => { window.CC_AWAKE = true; pop.hidden = true; });
   pop.querySelector('.ccw-close').addEventListener('click', () => { pop.hidden = true; });
   pop.addEventListener('click', e => { if (e.target === pop) pop.hidden = true; });
+  // 動画
+  const MOVIES = ['movies/block-day.mp4', 'movies/block-night.mp4'];
+  let last = -1;
+  const mv = document.createElement('div'); mv.id = 'ccMovie'; mv.hidden = true;
+  mv.innerHTML = '<div class="ccm-box"><video playsinline preload="none" disablepictureinpicture></video><button type="button" class="ccm-close">とじる</button></div>';
+  document.body.appendChild(mv);
+  const video = mv.querySelector('video');
+  const closeMv = () => { video.pause(); mv.hidden = true; };
+  pop.querySelector('.ccw-movie').addEventListener('click', () => {
+    let i; do { i = Math.floor(Math.random() * MOVIES.length); } while (i === last && MOVIES.length > 1);   // 前と同じ動画は続けない
+    last = i; pop.hidden = true; video.src = MOVIES[i]; mv.hidden = false; video.currentTime = 0; video.play().catch(() => {});
+  });
+  mv.querySelector('.ccm-close').addEventListener('click', closeMv);
+  mv.addEventListener('click', e => { if (e.target === mv) closeMv(); });
+  video.addEventListener('ended', closeMv);
 })();
 </script>
 </body>
