@@ -223,6 +223,7 @@
         #imageModal .modal-content { max-height: 92vh; overflow-y: auto; }
         /* 人の画面（詳細）の上の取っ手：下にスワイプで閉じられる目印 */
         .swipe-grab { width: 44px; height: 5px; border-radius: 3px; background: #d8d2c6; margin: -4px auto 6px; }
+        .swipe-pos { text-align: center; font-size: 11px; color: #a39a8a; margin: -2px 0 4px; min-height: 1em; }
         .modal-overlay { overflow-y: auto; }
         /* --- 相性早見表 --- */
         .compat-open-btn { width:100%; padding:12px; border:none; border-radius:12px; background:linear-gradient(135deg,#8b6f47,#5b4a33); color:#f5efe6; font-weight:bold; font-size:15px; cursor:pointer; margin-bottom:10px; letter-spacing:.04em; }
@@ -1295,6 +1296,7 @@
     <div id="detailModal" class="modal-overlay">
         <div class="modal-content" style="max-height:88vh; overflow-y:auto;">
             <div class="swipe-grab" aria-hidden="true"></div>
+            <div class="swipe-pos" id="detailPos"></div>
             <div style="text-align:right; margin-bottom:6px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="document.getElementById('detailModal').style.display='none'">✕ 閉じる</button></div>
             <div id="detailBody"></div>
             <button class="image-btn" style="margin-top:14px; background:linear-gradient(135deg,#7bc47f,#4a8b6f);" onclick="renamePerson(currentDetailIndex)">✏️ 名前を変更</button>
@@ -2068,28 +2070,74 @@
         let deleteTargetIndex = -1;
         let currentDetailIndex = -1;
         // 画像の画面を閉じたときに、その人の画面（詳細）へ戻るかどうか
-        // 人の画面（詳細）は、いちばん上までスクロールした状態で下にスワイプすると閉じる
-        (function detailSwipeClose(){
+        // 人の画面（詳細）のスワイプ：
+        //   下にスワイプ（いちばん上までスクロールしているとき）→ 閉じる
+        //   左にスワイプ → 次の人、右にスワイプ → 前の人（保存した履歴の一覧で今見えている順）
+        (function detailSwipe(){
             const ov = document.getElementById('detailModal'); if (!ov) return;
             const box = ov.querySelector('.modal-content');
-            let y0 = null, dy = 0;
-            box.addEventListener('touchstart', e => { if (box.scrollTop <= 0 && e.touches.length === 1) { y0 = e.touches[0].clientY; dy = 0; box.style.transition = 'none'; } else y0 = null; }, { passive: true });
+            const pos = document.getElementById('detailPos');
+            const snd = t => { if (typeof playSound === 'function') { try { playSound(t); } catch (e) {} } };
+            // 一覧で今見えている順（絞り込み・並べ替えをそのまま使う）の、元の番号の並び
+            function order() {
+                const raw = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
+                return getSortedHistory(raw).filter(isVisibleInFilter).map(it => it._origIdx);
+            }
+            function showPos() {
+                if (!pos) return;
+                const o = order(), i = o.indexOf(currentDetailIndex);
+                pos.textContent = (i >= 0 && o.length > 1) ? '‹ ' + (i + 1) + ' / ' + o.length + ' ›　左右にスワイプで前後の人' : '';
+            }
+            // 人の画面を開くたびに、何人目かを出す
+            const orig = showDetail;
+            showDetail = function (index) { orig(index); showPos(); };
+            const reset = () => { box.style.transition = 'none'; box.style.transform = ''; box.style.opacity = ''; };
+            // 次（+1）／前（-1）の人へ。端まで行ったら少し揺れて止まる
+            function move(step) {
+                const o = order(), i = o.indexOf(currentDetailIndex), j = i + step;
+                box.style.transition = 'transform .18s ease, opacity .18s ease';
+                if (i < 0 || j < 0 || j >= o.length) { box.style.transform = ''; box.style.opacity = ''; return; }
+                box.style.transform = 'translateX(' + (step > 0 ? -110 : 110) + '%)'; box.style.opacity = '0';
+                setTimeout(() => {
+                    showDetail(o[j]); box.scrollTop = 0;
+                    box.style.transition = 'none'; box.style.transform = 'translateX(' + (step > 0 ? 110 : -110) + '%)';
+                    requestAnimationFrame(() => requestAnimationFrame(() => {
+                        box.style.transition = 'transform .2s ease, opacity .2s ease'; box.style.transform = ''; box.style.opacity = '';
+                    }));
+                }, 180);
+            }
+            let x0 = null, y0 = 0, dx = 0, dy = 0, dir = '';
+            box.addEventListener('touchstart', e => {
+                if (e.touches.length !== 1) { x0 = null; return; }
+                x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = dy = 0; dir = ''; box.style.transition = 'none';
+            }, { passive: true });
             box.addEventListener('touchmove', e => {
-                if (y0 === null) return;
-                dy = e.touches[0].clientY - y0;
-                if (dy <= 0 || box.scrollTop > 0) { box.style.transform = ''; return; }
-                e.preventDefault();   // 下に引っぱっている間は、画面がスクロールしないようにする
-                box.style.transform = 'translateY(' + dy + 'px)'; box.style.opacity = String(Math.max(.4, 1 - dy / 600));
+                if (x0 === null) return;
+                dx = e.touches[0].clientX - x0; dy = e.touches[0].clientY - y0;
+                if (!dir) {   // 最初に10px動いた向きで、横か縦かを決める
+                    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+                    dir = Math.abs(dx) > Math.abs(dy) ? 'h' : (dy > 0 && box.scrollTop <= 0 ? 'down' : 'none');
+                }
+                if (dir === 'h') {
+                    e.preventDefault();
+                    box.style.transform = 'translateX(' + dx + 'px)'; box.style.opacity = String(Math.max(.5, 1 - Math.abs(dx) / 500));
+                } else if (dir === 'down') {
+                    if (dy <= 0) { box.style.transform = ''; return; }
+                    e.preventDefault();   // 下に引っぱっている間は、画面がスクロールしないようにする
+                    box.style.transform = 'translateY(' + dy + 'px)'; box.style.opacity = String(Math.max(.4, 1 - dy / 600));
+                }
             }, { passive: false });
             box.addEventListener('touchend', () => {
-                if (y0 === null) return;
+                if (x0 === null) return;
                 box.style.transition = 'transform .2s ease, opacity .2s ease';
-                if (dy > 90) {   // 90px以上引っぱったら閉じる
+                if (dir === 'down' && dy > 90) {   // 90px以上引っぱったら閉じる
                     box.style.transform = 'translateY(100vh)'; box.style.opacity = '0';
-                    setTimeout(() => { ov.style.display = 'none'; box.style.transition = 'none'; box.style.transform = ''; box.style.opacity = ''; }, 200);
-                    if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} }
+                    setTimeout(() => { ov.style.display = 'none'; reset(); }, 200);
+                    snd('click');
+                } else if (dir === 'h' && Math.abs(dx) > 70) {   // 70px以上横にスワイプしたら前後の人へ
+                    move(dx < 0 ? 1 : -1);
                 } else { box.style.transform = ''; box.style.opacity = ''; }
-                y0 = null; dy = 0;
+                x0 = null; dx = dy = 0; dir = '';
             });
         })();
         let imageBackToDetail = false;
