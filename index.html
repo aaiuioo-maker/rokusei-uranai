@@ -4965,5 +4965,71 @@ window.CC_EXTRA = [...MOVES, ...SLEEPS, ...FOODS, ...FOODS2, ...FOODS3, ...WAYS,
   video.addEventListener('ended', closeMv);
 })();
 </script>
+<script>
+// =============================================================
+// 閉じるボタンのある画面は、どれも「いちばん上までスクロールした状態で下にスワイプ」すると閉じる
+//   （人の画面＝detailModal は左右スワイプもあるので、別のところで同じ動きを付けている）
+// =============================================================
+(function swipeDownToCloseAll(){
+  const snd = () => { if (typeof playSound === 'function') { try { playSound('click'); } catch (e) {} } };
+  // move：指に合わせて動かす箱　scroll：中身がスクロールする箱　close：閉じる処理
+  function attach(move, scroll, close, grab) {
+    if (!move || move.dataset.swipeDown) return;
+    move.dataset.swipeDown = '1';
+    if (grab) { const g = document.createElement('div'); g.className = 'swipe-grab'; g.setAttribute('aria-hidden', 'true'); move.insertBefore(g, move.firstChild); }
+    let y0 = null, x0 = 0, dy = 0, dir = '';
+    const reset = () => { move.style.transition = 'none'; move.style.transform = ''; move.style.opacity = ''; };
+    move.addEventListener('touchstart', e => {
+      if (e.touches.length !== 1 || e.target.closest('input, select, textarea, video')) { y0 = null; return; }
+      y0 = e.touches[0].clientY; x0 = e.touches[0].clientX; dy = 0; dir = ''; move.style.transition = 'none';
+    }, { passive: true });
+    move.addEventListener('touchmove', e => {
+      if (y0 === null) return;
+      dy = e.touches[0].clientY - y0; const dx = e.touches[0].clientX - x0;
+      if (!dir) {   // 最初に動いた向きで決める：下向き・いちばん上 → 閉じる動き、それ以外 → ふつうのスクロール
+        if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
+        dir = (dy > 0 && Math.abs(dy) > Math.abs(dx) && scroll.scrollTop <= 0) ? 'down' : 'none';
+      }
+      if (dir !== 'down') return;
+      if (dy <= 0) { move.style.transform = ''; return; }
+      e.preventDefault();   // 下に引っぱっている間は、画面がスクロールしないようにする
+      move.style.transform = 'translateY(' + dy + 'px)'; move.style.opacity = String(Math.max(.4, 1 - dy / 600));
+    }, { passive: false });
+    move.addEventListener('touchend', () => {
+      if (y0 === null) return;
+      move.style.transition = 'transform .2s ease, opacity .2s ease';
+      if (dir === 'down' && dy > 90) {   // 90px以上引っぱったら閉じる
+        move.style.transform = 'translateY(100vh)'; move.style.opacity = '0';
+        setTimeout(() => { close(); reset(); }, 200);
+        snd();
+      } else { move.style.transform = ''; move.style.opacity = ''; }
+      y0 = null; dy = 0; dir = '';
+    });
+  }
+  const $ = id => document.getElementById(id);
+  const hide = id => () => { const el = $(id); if (el) el.style.display = 'none'; };
+  const call = (name, id) => () => { if (typeof window[name] === 'function') window[name](); else hide(id)(); };
+  // 「◯◯Modal」の白い箱（.modal-content）と、その閉じる処理
+  [
+    ['compatModal', call('closeCompat', 'compatModal')],
+    ['gogyoModal',  call('closeGogyo',  'gogyoModal')],
+    ['kcModal',     call('closeKc',     'kcModal')],
+    ['imageModal',  call('closeImageModal', 'imageModal')],
+    ['deleteModal', call('closeModal',  'deleteModal')],
+    ['rankModal',   call('closeRank',   'rankModal')],
+    ['rank2Modal',  call('closeRank2',  'rank2Modal')],
+    ['rank3Modal',  call('closeRank3',  'rank3Modal')],
+    ['pairModal',   call('closePair',   'pairModal')]
+  ].forEach(([id, close]) => { const ov = $(id); if (!ov) return; const box = ov.querySelector('.modal-content'); attach(box, box, close, true); });
+  // 本の写真の画面（全体が動き、写真の部分がスクロールする）
+  const v = $('kcBookViewer');
+  if (v) attach(v, v.querySelector('.kcv-scroll') || v, () => { v.style.display = 'none'; }, false);
+  // オレンジのキャラクターの小さな画面と、動画の画面
+  const pop = $('ccWakePop');
+  if (pop) { const b = pop.querySelector('.ccw-box'); if (b) attach(b, b, () => { const c = pop.querySelector('.ccw-close'); if (c) c.click(); else pop.hidden = true; }, false); }
+  const mv = $('ccMovie');
+  if (mv) { const b = mv.querySelector('.ccm-box'); if (b) attach(b, b, () => { const c = mv.querySelector('.ccm-close'); if (c) c.click(); else mv.hidden = true; }, false); }
+})();
+</script>
 </body>
 </html>
