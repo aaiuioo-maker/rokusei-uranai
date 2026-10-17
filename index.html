@@ -390,6 +390,8 @@
         #kcBody .kc-swap{ width:100%; margin-top:10px; padding:10px; border-radius:9px; border:1px solid #d9c9a8; background:#f6efe2; color:#8b6f47; font-weight:bold; font-family:inherit; cursor:pointer; }
         #kcBody .kc-swap .ic{ display:inline-block; }
         #kcBody .kc-cross{ display:block; width:100%; margin-top:8px; padding:10px; border:none; border-radius:9px; color:#fff; font-weight:bold; font-family:inherit; font-size:14px; cursor:pointer; }
+        /* 早見表を切り替えるボタンは1行に収める */
+        .gg-cross, #compatChecker button.cmp-cross, #kcBody .kc-cross{ white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
         #kcBody .kc-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
         #kcBody .kc-result{ margin-top:12px; text-align:center; }
         #kcBody .kc-pair{ font-size:14px; font-weight:bold; color:#5b4a33; }
@@ -985,8 +987,8 @@
                         </div>
                     </div>
                     <button id="gg_swap" class="gg-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
-                    <button id="gg_to_six" class="gg-swap gg-cross" type="button">📊 この2人を六星占術 相性早見表で見る</button>
-                    <button id="gg_to_kc" class="gg-swap gg-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff); color:#fff;">🔢 この2人を橙花式カバラ数秘術 相性早見表で見る</button>
+                    <button id="gg_to_six" class="gg-swap gg-cross" type="button">📊 この2人を六星占術で見る</button>
+                    <button id="gg_to_kc" class="gg-swap gg-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff); color:#fff;">🔢 この2人をカバラ数秘術で見る</button>
                     <div class="gg-name-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
                 </div>
                 <div id="gg_result" class="card result">
@@ -1130,8 +1132,8 @@
                         </div>
                     </div>
                     <button id="cmp_swap" class="cmp-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
-                    <button id="cmp_to_gogyo" class="cmp-swap cmp-cross" type="button">🌟 この2人を五星三心占い相性早見表で見る</button>
-                    <button id="cmp_to_kc" class="cmp-swap cmp-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff);">🔢 この2人を橙花式カバラ数秘術 相性早見表で見る</button>
+                    <button id="cmp_to_gogyo" class="cmp-swap cmp-cross" type="button">🌟 この2人を五星三心占いで見る</button>
+                    <button id="cmp_to_kc" class="cmp-swap cmp-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff);">🔢 この2人をカバラ数秘術で見る</button>
                     <button onclick="checkCompat()">相性を見る</button>
                     <div class="cmp-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命星が自動で選ばれ、相性が出ます。運命星を直接選ぶこともできます。</div>
                     <div id="compatResult" style="margin-top:10px;"></div>
@@ -1336,8 +1338,8 @@
                         </div>
                     </div>
                     <button id="kc_swap" class="kc-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
-                    <button id="kc_to_six" class="kc-cross" type="button" style="background:linear-gradient(135deg,#8b6f47,#5b4a33);">📊 この2人を六星占術 相性早見表で見る</button>
-                    <button id="kc_to_gogyo" class="kc-cross" type="button" style="background:linear-gradient(135deg,#4a2d7a,#b8860b);">🌟 この2人を五星三心占い相性早見表で見る</button>
+                    <button id="kc_to_six" class="kc-cross" type="button" style="background:linear-gradient(135deg,#8b6f47,#5b4a33);">📊 この2人を六星占術で見る</button>
+                    <button id="kc_to_gogyo" class="kc-cross" type="button" style="background:linear-gradient(135deg,#4a2d7a,#b8860b);">🌟 この2人を五星三心占いで見る</button>
                     <div id="kc_result" class="kc-result"></div>
                     <div class="kc-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命数（鍵の数）が自動で選ばれ、相性が出ます。運命数を直接選ぶこともできます。</div>
                 </div>
@@ -2106,16 +2108,16 @@
                     }));
                 }, 180);
             }
-            let x0 = null, y0 = 0, dx = 0, dy = 0, dir = '';
+            let x0 = null, y0 = 0, dx = 0, dy = 0, dir = '', t0 = 0;
             box.addEventListener('touchstart', e => {
                 if (e.touches.length !== 1) { x0 = null; return; }
-                x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = dy = 0; dir = ''; box.style.transition = 'none';
+                x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; dx = dy = 0; dir = ''; t0 = Date.now(); box.style.transition = 'none';
             }, { passive: true });
             box.addEventListener('touchmove', e => {
                 if (x0 === null) return;
                 dx = e.touches[0].clientX - x0; dy = e.touches[0].clientY - y0;
-                if (!dir) {   // 最初に10px動いた向きで、横か縦かを決める
-                    if (Math.abs(dx) < 10 && Math.abs(dy) < 10) return;
+                if (!dir) {   // 最初に6px動いた向きで、横か縦かを決める
+                    if (Math.abs(dx) < 6 && Math.abs(dy) < 6) return;
                     dir = Math.abs(dx) > Math.abs(dy) ? 'h' : (dy > 0 && box.scrollTop <= 0 ? 'down' : 'none');
                 }
                 if (dir === 'h') {
@@ -2134,7 +2136,7 @@
                     box.style.transform = 'translateY(100vh)'; box.style.opacity = '0';
                     setTimeout(() => { ov.style.display = 'none'; reset(); }, 200);
                     snd('click');
-                } else if (dir === 'h' && Math.abs(dx) > 70) {   // 70px以上横にスワイプしたら前後の人へ
+                } else if (dir === 'h' && (Math.abs(dx) > 35 || (Math.abs(dx) > 15 && Date.now() - t0 < 300))) {   // 35px以上、またはサッと15px以上横にスワイプしたら前後の人へ
                     move(dx < 0 ? 1 : -1);
                 } else { box.style.transform = ''; box.style.opacity = ''; }
                 x0 = null; dx = dy = 0; dir = '';
