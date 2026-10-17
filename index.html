@@ -386,6 +386,7 @@
         #kcBody .kc-hint{ font-size:11.5px; line-height:1.5; min-height:1.5em; margin-bottom:4px; color:#2e8b57; overflow-wrap:anywhere; }
         #kcBody .kc-swap{ width:100%; margin-top:10px; padding:10px; border-radius:9px; border:1px solid #d9c9a8; background:#f6efe2; color:#8b6f47; font-weight:bold; font-family:inherit; cursor:pointer; }
         #kcBody .kc-swap .ic{ display:inline-block; }
+        #kcBody .kc-cross{ display:block; width:100%; margin-top:8px; padding:10px; border:none; border-radius:9px; color:#fff; font-weight:bold; font-family:inherit; font-size:14px; cursor:pointer; }
         #kcBody .kc-swap.spin .ic{ animation:gg-swap-spin .4s ease; }
         #kcBody .kc-result{ margin-top:12px; text-align:center; }
         #kcBody .kc-pair{ font-size:14px; font-weight:bold; color:#5b4a33; }
@@ -982,6 +983,7 @@
                     </div>
                     <button id="gg_swap" class="gg-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
                     <button id="gg_to_six" class="gg-swap gg-cross" type="button">📊 この2人を六星占術 相性早見表で見る</button>
+                    <button id="gg_to_kc" class="gg-swap gg-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff); color:#fff;">🔢 この2人を橙花式カバラ数秘術 相性早見表で見る</button>
                     <div class="gg-name-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人のタイプが自動で選ばれます。タイプを直接選ぶこともできます。</div>
                 </div>
                 <div id="gg_result" class="card result">
@@ -1126,6 +1128,7 @@
                     </div>
                     <button id="cmp_swap" class="cmp-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
                     <button id="cmp_to_gogyo" class="cmp-swap cmp-cross" type="button">🌟 この2人を五星三心占い相性早見表で見る</button>
+                    <button id="cmp_to_kc" class="cmp-swap cmp-cross" type="button" style="background:linear-gradient(135deg,#7b2fbf,#c77dff);">🔢 この2人を橙花式カバラ数秘術 相性早見表で見る</button>
                     <button onclick="checkCompat()">相性を見る</button>
                     <div class="cmp-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命星が自動で選ばれ、相性が出ます。運命星を直接選ぶこともできます。</div>
                     <div id="compatResult" style="margin-top:10px;"></div>
@@ -1328,6 +1331,8 @@
                         </div>
                     </div>
                     <button id="kc_swap" class="kc-swap" type="button"><span class="ic">⇄</span> 自分と相手を入れ替える</button>
+                    <button id="kc_to_six" class="kc-cross" type="button" style="background:linear-gradient(135deg,#8b6f47,#5b4a33);">📊 この2人を六星占術 相性早見表で見る</button>
+                    <button id="kc_to_gogyo" class="kc-cross" type="button" style="background:linear-gradient(135deg,#4a2d7a,#b8860b);">🌟 この2人を五星三心占い相性早見表で見る</button>
                     <div id="kc_result" class="kc-result"></div>
                     <div class="kc-note">グループを選ぶと、その中の人が入力順（新しく保存した人が上）に並びます。名前を選ぶと「保存した履歴」からその人の運命数（鍵の数）が自動で選ばれ、相性が出ます。運命数を直接選ぶこともできます。</div>
                 </div>
@@ -3412,8 +3417,11 @@
     })();
 
     // =============================================================
-    // 2つの相性早見表を行き来するボタン：
-    //   今選んでいる2人（名前を選んでいればその人、なければタイプ／運命星）を引き継いで、もう一方の早見表を開く
+    // 3つの相性早見表（六星占術・五星三心占い・橙花式カバラ数秘術）を行き来するボタン：
+    //   今選んでいる2人を引き継いで、別の早見表を開く。
+    //   名前を選んでいればその人を選び直す（その早見表の星・タイプ・数が自動で入る）。
+    //   名前がなければ、六星占術⇔五星三心占いはタイプ／運命星を置きかえて引き継ぐ。
+    //   カバラ数秘術の数と、星・タイプは置きかえられないので、そのときは案内を出す。
     // =============================================================
     (function crossPairButtons(){
       const $ = id => document.getElementById(id);
@@ -3422,48 +3430,57 @@
       const STAR2BASE = {}; Object.keys(BASE2STAR).forEach(b => { STAR2BASE[BASE2STAR[b]] = b; });
       const gogyoToStar = id => { const m = /^(gold|silver)_(\w+)$/.exec(id || ''); return m && BASE2STAR[m[2]] ? BASE2STAR[m[2]] + (m[1] === 'gold' ? '+' : '−') : null; };
       const starToGogyo = tk => { const m = /^(.+人)([+−])$/.exec(tk || ''); return m && STAR2BASE[m[1]] ? (m[2] === '+' ? 'gold_' : 'silver_') + STAR2BASE[m[1]] : null; };   // 霊合星人はタイプが決まらない
-      const read = (grp, per, sel) => ({ g: $(grp).value, n: $(per).value, t: $(sel).value });
+      // それぞれの早見表の、開く・閉じる・選ぶ欄
+      const CHART = {
+        six:   { open: () => openCompat(), close: () => closeCompat(), scroll: '#compatModal .modal-content',
+                 ids: w => ({ grp: 'cmp_' + w + '_grp', per: 'cmp_' + w + '_person', sel: w === 'self' ? 'cmpSelfStar' : 'cmpOtherStar', hint: 'cmp_' + w + '_hint' }),
+                 after: () => checkCompat(), what: '運命星' },
+        gogyo: { open: () => openGogyo(), close: () => closeGogyo(), scroll: '#gogyoModal .modal-content',
+                 ids: w => ({ grp: 'gg_' + w + '_grp', per: 'gg_' + w + '_person', sel: 'gg_' + w, hint: 'gg_' + w + '_hint' }),
+                 after: () => { const s = $('gg_self'); if (s && s.onchange) s.onchange(); }, what: 'タイプ' },
+        kc:    { open: () => openKc(), close: () => closeKc(), scroll: '#kcModal .modal-content',
+                 ids: w => ({ grp: 'kc_' + w + '_grp', per: 'kc_' + w + '_person', sel: 'kc_' + w, hint: 'kc_' + w + '_hint' }),
+                 after: () => { if (window.kcRecheck) window.kcRecheck(); }, what: '運命数' }
+      };
+      // 名前がないときの置きかえ（できない組み合わせは null）
+      function convert(from, to, v) {
+        if (from === to) return v;
+        if (from === 'gogyo' && to === 'six') return gogyoToStar(v);
+        if (from === 'six' && to === 'gogyo') return starToGogyo(v);
+        return null;
+      }
       const fire = (el, type) => el.dispatchEvent(new Event(type || 'change'));
-      // 名前を選んでいた人は、同じグループ・同じ名前で選び直す（タイプ／運命星は自動で入る）
-      function pickPerson(grpId, perId, s) {
-        const grp = $(grpId), per = $(perId);
+      // 名前を選んでいた人は、同じグループ・同じ名前で選び直す
+      function pickPerson(ids, s) {
+        const grp = $(ids.grp), per = $(ids.per);
         grp.value = Array.from(grp.options).some(o => o.value === s.g) ? s.g : '';
         fire(grp);
-        if (!Array.from(per.options).some(o => o.value === s.n)) { grp.value = ''; fire(grp); }   // 名前が見つからなければ「すべてのグループ」から
+        if (!Array.from(per.options).some(o => o.value === s.n)) { grp.value = ''; fire(grp); }   // 見つからなければ「すべてのグループ」から
         per.value = s.n;
         if (per.value !== s.n) return false;
         fire(per);
         return true;
       }
-      // 五星三心 → 六星占術
-      const toSix = $('gg_to_six');
-      if (toSix) toSix.addEventListener('click', () => {
-        const a = read('gg_self_grp', 'gg_self_person', 'gg_self'), b = read('gg_other_grp', 'gg_other_person', 'gg_other');
-        closeGogyo(); openCompat();
-        [[a, 'cmp_self_grp', 'cmp_self_person', 'cmpSelfStar'], [b, 'cmp_other_grp', 'cmp_other_person', 'cmpOtherStar']].forEach(([s, g, p, st]) => {
-          if (s.n && pickPerson(g, p, s)) return;
-          $(p).value = ''; $(p.replace('_person', '_hint')).textContent = '';   // 名前でなく運命星で引き継ぐときは、前に選んだ名前を外す
-          const tk = gogyoToStar(s.t); if (!tk) return;
-          $(st).value = tk; fire($(st));
+      function go(from, to) {
+        const A = CHART[from], B = CHART[to];
+        const read = w => { const i = A.ids(w); return { g: $(i.grp).value, n: $(i.per).value, t: $(i.sel).value }; };
+        const st = { self: read('self'), other: read('other') };
+        A.close(); B.open();
+        ['self', 'other'].forEach(w => {
+          const s = st[w], i = B.ids(w);
+          if (s.n && pickPerson(i, s)) return;
+          $(i.per).value = ''; $(i.hint).textContent = '';   // 名前でなく星・タイプ・数で引き継ぐときは、前に選んだ名前を外す
+          const v = convert(from, to, s.t);
+          if (v == null) { $(i.hint).textContent = (s.n ? s.n + 'さんは見つかりませんでした。' : '') + B.what + 'を選んでください（名前で選ぶと自動で入ります）'; return; }
+          $(i.sel).value = v; fire($(i.sel));
+          $(i.hint).textContent = '';
         });
-        checkCompat();
-        const m = document.querySelector('#compatModal .modal-content'); if (m) m.scrollTop = 0;
-      });
-      // 六星占術 → 五星三心
-      const toGogyo = $('cmp_to_gogyo');
-      if (toGogyo) toGogyo.addEventListener('click', () => {
-        const a = read('cmp_self_grp', 'cmp_self_person', 'cmpSelfStar'), b = read('cmp_other_grp', 'cmp_other_person', 'cmpOtherStar');
-        closeCompat(); openGogyo();
-        const notes = [];
-        [[a, 'gg_self_grp', 'gg_self_person', 'gg_self', 'gg_self_hint'], [b, 'gg_other_grp', 'gg_other_person', 'gg_other', 'gg_other_hint']].forEach(([s, g, p, sel, hint]) => {
-          if (s.n && pickPerson(g, p, s)) return;
-          $(p).value = ''; $(hint).textContent = '';   // 名前でなくタイプで引き継ぐときは、前に選んだ名前を外す
-          const id = starToGogyo(s.t);
-          if (!id) { $(hint).textContent = '霊合星人はタイプが決まらないので、名前かタイプを選んでください'; return; }
-          $(sel).value = id; if ($(sel).onchange) $(sel).onchange();
-        });
-        const m = document.querySelector('#gogyoModal .modal-content'); if (m) m.scrollTop = 0;
-      });
+        B.after();
+        const m = document.querySelector(B.scroll); if (m) m.scrollTop = 0;
+      }
+      // ボタン：id → [元の早見表, 行き先]
+      const BTN = { gg_to_six:['gogyo','six'], gg_to_kc:['gogyo','kc'], cmp_to_gogyo:['six','gogyo'], cmp_to_kc:['six','kc'], kc_to_six:['kc','six'], kc_to_gogyo:['kc','gogyo'] };
+      Object.keys(BTN).forEach(id => { const b = $(id); if (b) b.addEventListener('click', () => go(BTN[id][0], BTN[id][1])); });
     })();
 
     // =============================================================
