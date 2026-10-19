@@ -2828,18 +2828,24 @@
                 ctx.fillStyle='#000'; ctx.font='bold 30px sans-serif';
                 ctx.fillText(`${item.name}`, cx, y); y+=28;
                 ctx.fillStyle='#666'; ctx.font='14px sans-serif';
-                ctx.fillText(`${item.date} (${item.zodiac})${item.bloodType?' ・ '+item.bloodType:''}`, cx, y); y+=28;
-                if(typeof gogyoTypeOf==='function'){ const gg=gogyoTypeOf(item); if(gg){
-                    ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 18px sans-serif'; ctx.fillText('五星三心占い　'+gg.name, cx, y); y+=24;
-                    if(gg.desc){ ctx.fillStyle='#666'; ctx.font='13px sans-serif'; y=wrapCenter(ctx, gg.desc, cx, y, W-150, 19); }
-                    const gi=(typeof gogyoInfoById==='function')?gogyoInfoById(gg.id):null;
-                    if(gi){ ctx.fillStyle='#2ca02c'; ctx.font='12px sans-serif'; y=wrapCenter(ctx, '相性の良い相手：'+gi.good, cx, y+6, W-150, 18);
-                            ctx.fillStyle='#c0392b'; y=wrapCenter(ctx, '注意したい相手：'+gi.bad, cx, y+2, W-150, 18); }
-                    y+=14;
-                    ctx.strokeStyle='#e2dcf0'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(90,y); ctx.lineTo(W-90,y); ctx.stroke();
-                    y+=34;
-                } }
-                // 六星占術
+                ctx.fillText(`${item.date} (${item.zodiac})${item.bloodType?' ・ '+item.bloodType:''}`, cx, y); y+=40;
+                // 見出し（左右に線を引いた、占いの名前）
+                function secHead(text, color){
+                    ctx.font='bold 17px sans-serif'; ctx.textAlign='center';
+                    const tw=ctx.measureText(text).width, gap=14;
+                    ctx.strokeStyle=color; ctx.globalAlpha=.45; ctx.lineWidth=1.5;
+                    ctx.beginPath(); ctx.moveTo(70,y-6); ctx.lineTo(cx-tw/2-gap,y-6); ctx.moveTo(cx+tw/2+gap,y-6); ctx.lineTo(W-70,y-6); ctx.stroke();
+                    ctx.globalAlpha=1; ctx.fillStyle=color; ctx.fillText(text, cx, y); y+=34;
+                }
+                // 相性の良い相手（緑）・あまり良くない相手（赤）の2行
+                function goodBad(goodLabel, good, badLabel, bad){
+                    ctx.font='12.5px sans-serif'; ctx.textAlign='center';
+                    ctx.fillStyle='#2ca02c'; y=wrapCenter(ctx, goodLabel+'：'+(good||'—'), cx, y+6, W-140, 19);
+                    ctx.fillStyle='#c0392b'; y=wrapCenter(ctx, badLabel+'：'+(bad||'—'), cx, y+2, W-140, 19);
+                }
+                function divider(){ y+=14; ctx.strokeStyle='#e2dcf0'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(90,y); ctx.lineTo(W-90,y); ctx.stroke(); y+=36; }
+                // ===== 1. 六星占術 =====
+                secHead('六星占術', '#8b6f47');
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
                 ctx.fillText(item.star, cx, y); y+=26;
                 if(item.isReigou){
@@ -2863,8 +2869,30 @@
                 } else {
                     traits(item.starClass, null);
                 }
-                y+=6;
-                ctx.strokeStyle='#eee'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(60,y); ctx.lineTo(W-60,y); ctx.stroke(); y+=8;
+                // 六星占術の相性（相性早見表の12タイプ表から。霊合星人は霊合の表から）
+                (function(){
+                    let good=[], bad=[];
+                    const tk=(typeof personToken==='function')?personToken(item):null;
+                    if(tk && tk.startsWith('R:') && typeof REIGOU_VS_NORMAL!=='undefined'){
+                        const row=REIGOU_VS_NORMAL[tk.slice(2)]||{};
+                        Object.keys(row).forEach(s=>{ if(row[s]>=2) good.push(s); else if(row[s]<=-2) bad.push(s); });
+                    } else if(tk && typeof TYPE12_COMPAT!=='undefined' && TYPE12_COMPAT[tk]){
+                        TYPE12.forEach(o=>{ const s=TYPE12_COMPAT[tk][o]; if(s==='◎+'||s==='◎') good.push(cmpDisp(o)); else if(s==='×') bad.push(cmpDisp(o)); });
+                    }
+                    goodBad('相性の良い相手', good.join('・'), 'あまり良くない相手', bad.join('・'));
+                })();
+                divider();
+                // ===== 2. 五星三心占い =====
+                if(typeof gogyoTypeOf==='function'){ const gg=gogyoTypeOf(item); if(gg){
+                    secHead('五星三心占い', '#b8860b');
+                    ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 22px sans-serif'; ctx.fillText(gg.name, cx, y); y+=26;
+                    if(gg.desc){ ctx.fillStyle='#666'; ctx.font='13px sans-serif'; y=wrapCenter(ctx, gg.desc, cx, y, W-150, 19); }
+                    const gi=(typeof gogyoInfoById==='function')?gogyoInfoById(gg.id):null;
+                    if(gi) goodBad('相性の良い相手', gi.good, 'あまり良くない相手', gi.bad);
+                    divider();
+                } }
+                // ===== 3. 橙花式カバラ数秘術（絵の上に見出し） =====
+                secHead('橙花式カバラ数秘術', '#7b2fbf'); y-=14;
                 function block(labelJp, sub, num, info, big){
                     const ch = KAB_CHAR[num] || ['✨','#c77dff'];
                     const r = big?64:46;
@@ -2890,6 +2918,13 @@
                 block('鍵の数','（運命数・人生のメイン）', kNum, kInf, true);
                 block('魂の数','（子ども時代・魂の本質）', sNum, sInf, false);
                 block('使命数','（人生で乗り越える課題）', mNum, mInf, false);
+                // カバラ数秘術の相性（運命数＝鍵の数どうし。橙花さんの本【表1】の ◎ と △）
+                if(typeof window.kcSym==='function' && window.KC_NUMS){
+                    const good=window.KC_NUMS.filter(n=>window.kcSym(kNum,n)==='◎'), bad=window.KC_NUMS.filter(n=>window.kcSym(kNum,n)==='△');
+                    y-=4;
+                    goodBad('相性の良い数（◎）', good.join('・'), 'あまり良くない数（△）', bad.join('・'));
+                    y+=6;
+                }
                 return y;
             }
             // 1) 高さを実測
@@ -3612,6 +3647,7 @@
         11:'△◎△◎〇△〇〇△〇◎〇', 22:'△△〇〇〇〇〇◎〇◎◎〇', 33:'◎◎〇◎△〇△△〇〇◎〇'
       };
       const sym = (a, b) => (ROWS[a] || '').charAt(NUMS.indexOf(+b)) || '';
+      window.kcSym = sym; window.KC_NUMS = NUMS;   // 人の画像（この人を画像で保存）でも相性を使う
       const PAGE = n => (n <= 3 ? 171 : n <= 6 ? 170 : n <= 9 ? 173 : 172);   // 相手の数が載っている本のページ
       const LBL = { '◎':'とても良い', '〇':'良い', '△':'工夫しだい' };
       const COL = { '◎':'#2e7d5b', '〇':'#3a6ea5', '△':'#8a7a2e' };
