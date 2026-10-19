@@ -3628,6 +3628,18 @@
       // ボタン：id → [元の早見表, 行き先]
       const BTN = { gg_to_six:['gogyo','six'], gg_to_kc:['gogyo','kc'], cmp_to_gogyo:['six','gogyo'], cmp_to_kc:['six','kc'], kc_to_six:['kc','six'], kc_to_gogyo:['kc','gogyo'] };
       Object.keys(BTN).forEach(id => { const b = $(id); if (b) b.addEventListener('click', () => go(BTN[id][0], BTN[id][1])); });
+      // 保存した履歴でちょうど2人にチェックしているときだけ、早見表を開くとその2人が入る（1人・3人以上なら今まで通り）
+      window.addEventListener('load', () => [['six', 'openCompat'], ['gogyo', 'openGogyo'], ['kc', 'openKc']].forEach(([k, fn]) => {
+        const orig = window[fn]; if (typeof orig !== 'function') return;
+        window[fn] = function () {
+          const r = orig.apply(this, arguments);
+          if (typeof imgSelect !== 'undefined' && imgSelect.size === 2) {
+            const ns = [...imgSelect].map(s => s.split('|')[0]);
+            if (ns[0] !== ns[1]) { ['self', 'other'].forEach((w, i) => pickPerson(CHART[k].ids(w), { g: '', n: ns[i] })); CHART[k].after(); }
+          }
+          return r;
+        };
+      }));
     })();
 
     // =============================================================
