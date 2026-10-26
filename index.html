@@ -2113,14 +2113,22 @@
             const pos = document.getElementById('detailPos');
             const snd = t => { if (typeof playSound === 'function') { try { playSound(t); } catch (e) {} } };
             // 一覧で今見えている順（絞り込み・並べ替えをそのまま使う）の、元の番号の並び
+            //   チェックを入れた人がいて、今の人もチェックしてあれば、チェックした人だけで前後に動く
+            function picked() {
+                if (typeof imgSelect === 'undefined' || !imgSelect.size) return null;
+                const raw = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'), cur = raw[currentDetailIndex];
+                if (!cur || !imgSelect.has(cur.name + '|' + cur.date)) return null;
+                return getSortedHistory(raw).filter(it => imgSelect.has(it.name + '|' + it.date)).map(it => it._origIdx);
+            }
             function order() {
+                const p = picked(); if (p) return p;
                 const raw = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
                 return getSortedHistory(raw).filter(isVisibleInFilter).map(it => it._origIdx);
             }
             function showPos() {
                 if (!pos) return;
                 const o = order(), i = o.indexOf(currentDetailIndex);
-                pos.textContent = (i >= 0 && o.length > 1) ? '‹ ' + (i + 1) + ' / ' + o.length + ' ›　左右にスワイプで前後の人' : '';
+                pos.textContent = (i >= 0 && o.length > 1) ? '‹ ' + (i + 1) + ' / ' + o.length + ' ›　左右にスワイプで' + (picked() ? 'チェックした人の' : '') + '前後の人' : '';
             }
             // 人の画面を開くたびに、何人目かを出す
             const orig = showDetail;
