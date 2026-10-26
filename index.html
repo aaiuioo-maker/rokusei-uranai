@@ -2067,6 +2067,11 @@
         function setSort(mode) {
             playSound('click');
             currentSort = mode;
+            if (mode === 'default' && sortDir !== 'asc') {   // 入力順を押したら、いつも新しく保存した人が一番上になるようにする
+                sortDir = 'asc';
+                const d = document.getElementById('sortDirBtn');
+                if (d) { d.textContent = '▲ 昇順'; d.classList.remove('active'); }
+            }
             ['Default','Star','Blood','Starblood','Num','Age'].forEach(s => {
                 document.getElementById('sortBtn' + s).classList.toggle('active', mode === s.toLowerCase());
             });
