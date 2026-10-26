@@ -806,6 +806,7 @@
                 <option value="11">11 直感のメッセンジャー</option>
                 <option value="22">22 カリスマ実現者</option>
                 <option value="33">33 無限の愛</option>
+                <option value="master2">✨ マスター（11・22・33）を2つ以上</option>
             </select>
         </div>
         <div class="filter-bar">
@@ -2241,8 +2242,10 @@
             }
             const okBlood = currentBloodFilter==='all' ? true : (currentBloodFilter==='未設定' ? !it.bloodType : it.bloodType===currentBloodFilter);
             // 11・22・33（マスターナンバー）は、運命数・魂の数・使命数のどれか1つに入っていれば出す
+            // master2：運命数・魂の数・使命数のうち、マスターナンバーが2つ以上ある人
             const nf = Number(currentNumFilter);
             const okNum = currentNumFilter==='all' ? true
+                : currentNumFilter==='master2' ? [itemKabNum(it), itemSoul(it), itemMission(it)].filter(n => isMaster(Number(n))).length >= 2
                 : ([11,22,33].indexOf(nf) >= 0 ? [itemKabNum(it), itemSoul(it), itemMission(it)].some(n => Number(n) === nf) : itemKabNum(it)===nf);
             const okZodiac = currentZodiacFilter==='all' ? true : (it.zodiac===currentZodiacFilter);
             let okGogyo = true;
