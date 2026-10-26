@@ -807,6 +807,7 @@
                 <option value="22">22 カリスマ実現者</option>
                 <option value="33">33 無限の愛</option>
                 <option value="master2">✨ マスター（11・22・33）を2つ以上</option>
+                <option value="same3">🎯 3つとも同じ数秘（運命数・魂の数・使命数）</option>
             </select>
         </div>
         <div class="filter-bar">
@@ -2242,9 +2243,11 @@
             }
             const okBlood = currentBloodFilter==='all' ? true : (currentBloodFilter==='未設定' ? !it.bloodType : it.bloodType===currentBloodFilter);
             // 11・22・33（マスターナンバー）は、運命数・魂の数・使命数のどれか1つに入っていれば出す
+            // same3：運命数・魂の数・使命数の3つがすべて同じ数の人
             // master2：運命数・魂の数・使命数のうち、マスターナンバーが2つ以上ある人
             const nf = Number(currentNumFilter);
             const okNum = currentNumFilter==='all' ? true
+                : currentNumFilter==='same3' ? (Number(itemKabNum(it)) === Number(itemSoul(it)) && Number(itemSoul(it)) === Number(itemMission(it)))
                 : currentNumFilter==='master2' ? [itemKabNum(it), itemSoul(it), itemMission(it)].filter(n => isMaster(Number(n))).length >= 2
                 : ([11,22,33].indexOf(nf) >= 0 ? [itemKabNum(it), itemSoul(it), itemMission(it)].some(n => Number(n) === nf) : itemKabNum(it)===nf);
             const okZodiac = currentZodiacFilter==='all' ? true : (it.zodiac===currentZodiacFilter);
