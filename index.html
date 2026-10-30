@@ -2673,9 +2673,18 @@
                 ctx.closePath(); ctx.fill(); ctx.stroke();
             } else if(num===2){ drawHeart(ctx,cx,topY-r*0.22,r*0.3,'#ff6f91');
             } else if(num===3){ drawStar(ctx,cx+r*0.85,cy-r*0.7,5,r*0.28,r*0.12,'#ffd23f'); drawStar(ctx,cx-r*0.8,cy-r*0.5,5,r*0.17,r*0.07,'#ffd23f');
-            } else if(num===4){ ctx.fillStyle='#ffca3a'; ctx.strokeStyle='#e0a800'; ctx.lineWidth=2;
+            } else if(num===4){ // 堅実家：すじの入ったヘルメットと、手に持ったレンガ
+                ctx.fillStyle='#ffca3a'; ctx.strokeStyle='#e0a800'; ctx.lineWidth=2;
                 ctx.beginPath(); ctx.arc(cx,cy-r*0.3,r*0.86,Math.PI,0); ctx.closePath(); ctx.fill(); ctx.stroke();
-                ctx.fillRect(cx-r*0.98,cy-r*0.36,r*1.96,r*0.13);
+                ctx.fillStyle='#ffe07a'; ctx.beginPath(); ctx.ellipse(cx-r*0.3,cy-r*0.78,r*0.22,r*0.1,-0.5,0,Math.PI*2); ctx.fill();   // つや
+                ctx.fillStyle='#f0b400'; ctx.fillRect(cx-r*0.1,cy-r*1.16,r*0.2,r*0.82); ctx.strokeRect(cx-r*0.1,cy-r*1.16,r*0.2,r*0.82);   // まん中のすじ
+                ctx.fillStyle='#f0b400'; roundRectPath(ctx,cx-r*1.02,cy-r*0.38,r*2.04,r*0.15,r*0.07); ctx.fill(); ctx.stroke();       // つば
+                const bx=cx+r*0.55, by=cy+r*0.42, bw=r*0.62, bh=r*0.36;                                                              // レンガ
+                ctx.fillStyle='#c8643c'; ctx.strokeStyle='#8a3f22'; ctx.lineWidth=2;
+                roundRectPath(ctx,bx,by,bw,bh,r*0.05); ctx.fill(); ctx.stroke();
+                ctx.lineWidth=1.5; ctx.beginPath(); ctx.moveTo(bx,by+bh/2); ctx.lineTo(bx+bw,by+bh/2);
+                ctx.moveTo(bx+bw*0.5,by); ctx.lineTo(bx+bw*0.5,by+bh/2); ctx.moveTo(bx+bw*0.25,by+bh/2); ctx.lineTo(bx+bw*0.25,by+bh);
+                ctx.moveTo(bx+bw*0.75,by+bh/2); ctx.lineTo(bx+bw*0.75,by+bh); ctx.stroke();
             } else if(num===5){ ctx.fillStyle='#ffffff'; ctx.strokeStyle='#57d9b0'; ctx.lineWidth=2;
                 [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(cx+s*r*1.02,cy,r*0.42,r*0.2,s*-0.3,0,Math.PI*2); ctx.fill(); ctx.stroke(); });
             } else if(num===6){ drawHeart(ctx,cx,topY-r*0.28,r*0.42,'#ff4d79');
@@ -2690,9 +2699,20 @@
                 ctx.fillStyle='#ffd23f'; ctx.beginPath(); ctx.moveTo(cx,topY-r*0.45);
                 ctx.bezierCurveTo(cx+r*0.2,topY-r*0.22,cx+r*0.15,topY+r*0.02,cx,topY);
                 ctx.bezierCurveTo(cx-r*0.15,topY+r*0.02,cx-r*0.2,topY-r*0.22,cx,topY-r*0.45); ctx.closePath(); ctx.fill();
-            } else if(num===9){ ctx.fillStyle='#7b5cff'; ctx.strokeStyle='#5a3fd0'; ctx.lineWidth=2;
-                ctx.beginPath(); ctx.moveTo(cx-r*0.7,topY+r*0.06); ctx.lineTo(cx+r*0.7,topY+r*0.06); ctx.lineTo(cx+r*0.1,topY-r*0.92); ctx.closePath(); ctx.fill(); ctx.stroke();
-                drawStar(ctx,cx-r*0.06,topY-r*0.28,5,r*0.15,r*0.06,'#ffd23f');
+            } else if(num===9){ // 賢者：深くかぶった三角帽子と、ひらいた本
+                ctx.fillStyle='#7b5cff'; ctx.strokeStyle='#5a3fd0'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(cx-r*0.78,topY+r*0.34); ctx.lineTo(cx+r*0.78,topY+r*0.34); ctx.lineTo(cx+r*0.12,topY-r*0.7); ctx.closePath(); ctx.fill(); ctx.stroke();
+                ctx.beginPath(); ctx.ellipse(cx,topY+r*0.34,r*0.9,r*0.12,0,0,Math.PI*2); ctx.fill(); ctx.stroke();   // つば
+                drawStar(ctx,cx-r*0.02,topY-r*0.02,5,r*0.15,r*0.06,'#ffd23f');
+                const bw=r*0.48, bh=r*0.36, by=cy+r*0.5;                                                         // ひらいた本
+                ctx.fillStyle='#8a5a2b'; ctx.strokeStyle='#5e3b1a'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.moveTo(cx,by+r*0.06); ctx.lineTo(cx-bw-r*0.05,by-r*0.03); ctx.lineTo(cx-bw-r*0.05,by+bh+r*0.04); ctx.lineTo(cx,by+bh+r*0.12);
+                ctx.lineTo(cx+bw+r*0.05,by+bh+r*0.04); ctx.lineTo(cx+bw+r*0.05,by-r*0.03); ctx.closePath(); ctx.fill(); ctx.stroke();
+                [-1,1].forEach(s=>{ ctx.fillStyle='#fffdf5'; ctx.strokeStyle='#c9b48a'; ctx.lineWidth=1.5;
+                    ctx.beginPath(); ctx.moveTo(cx,by+r*0.04); ctx.quadraticCurveTo(cx+s*bw*0.5,by-r*0.06,cx+s*bw,by); ctx.lineTo(cx+s*bw,by+bh);
+                    ctx.quadraticCurveTo(cx+s*bw*0.5,by+bh-r*0.06,cx,by+bh+r*0.04); ctx.closePath(); ctx.fill(); ctx.stroke();
+                    ctx.strokeStyle='#cfc2a6'; ctx.lineWidth=1; ctx.beginPath();
+                    for(let k=1;k<=3;k++){ const ly=by+bh*k/4.2; ctx.moveTo(cx+s*bw*0.18,ly); ctx.lineTo(cx+s*bw*0.82,ly); } ctx.stroke(); });
             } else if(num===11){ drawStar(ctx,cx,topY-r*0.22,4,r*0.3,r*0.1,'#c77dff'); drawStar(ctx,cx+r*0.8,cy-r*0.6,4,r*0.15,r*0.05,'#e0b3ff'); drawStar(ctx,cx-r*0.8,cy-r*0.42,4,r*0.13,r*0.05,'#e0b3ff');
             } else if(num===22){ [-0.55,0,0.55].forEach((o,i)=> drawStar(ctx,cx+o*r,topY-r*0.12-(i===1?r*0.16:0),5,i===1?r*0.23:r*0.17,r*0.08,'#f0c030'));
             } else if(num===33){ const cs=['#ff595e','#ff924c','#ffca3a','#8ac926','#4d96ff','#9b5de5'];
@@ -2803,12 +2823,28 @@
         // カバラのキャラクター：丸い体はみんな同じで、数ごとに表情（目・口・まゆ）と飾りを変える
         const KAB_FACE = {
             1:{eye:'dot',mouth:'smile',brow:'up'},     2:{eye:'happy',mouth:'smile'},          3:{eye:'wink',mouth:'open'},
-            4:{eye:'dot',mouth:'small',brow:'firm'},   5:{eye:'happy',mouth:'open'},           6:{eye:'happy',mouth:'smile',heart:true},
-            7:{eye:'side',mouth:'o'},                  8:{eye:'dot',mouth:'grin',brow:'firm'}, 9:{eye:'calm',mouth:'smile',beard:true},
-            11:{eye:'sparkle',mouth:'small'},          22:{eye:'dot',mouth:'open',brow:'up'},  33:{eye:'happy',mouth:'open',heart:true}
+            4:{eye:'dot',mouth:'small'},   5:{eye:'happy',mouth:'open'},           6:{eye:'happy',mouth:'smile',heart:true},
+            7:{eye:'side',mouth:'o'},                  8:{eye:'dot',mouth:'grin'}, 9:{eye:'calm',mouth:'smile'},
+            11:{eye:'sparkle',mouth:'small'},          22:{plain:true},  33:{plain:true}
         };
         function drawMascot(ctx,cx,cy,r,num,color){
             const f=KAB_FACE[num]||{eye:'dot',mouth:'smile'}, ink='#3a2b2b';
+            if(f.plain){   // 22・33 は最初の形のまま（足・影・つや・表情の変化なし）
+                const g=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,r*0.2,cx,cy,r);
+                g.addColorStop(0,'#ffffff'); g.addColorStop(1,color);
+                ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
+                ctx.lineWidth=3; ctx.strokeStyle='rgba(0,0,0,0.14)'; ctx.stroke();
+                ctx.fillStyle='rgba(255,130,160,0.45)';
+                ctx.beginPath(); ctx.arc(cx-r*0.45,cy+r*0.2,r*0.13,0,Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.arc(cx+r*0.45,cy+r*0.2,r*0.13,0,Math.PI*2); ctx.fill();
+                [-1,1].forEach(s=>{ const ex=cx+s*r*0.33;
+                    ctx.fillStyle=ink; ctx.beginPath(); ctx.arc(ex,cy-r*0.02,r*0.13,0,Math.PI*2); ctx.fill();
+                    ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(ex-r*0.04,cy-r*0.08,r*0.05,0,Math.PI*2); ctx.fill();
+                });
+                ctx.strokeStyle=ink; ctx.lineWidth=2.5; ctx.lineCap='round';
+                ctx.beginPath(); ctx.arc(cx,cy+r*0.16,r*0.16,0.15*Math.PI,0.85*Math.PI); ctx.stroke();
+                drawAccessory(ctx,cx,cy,r,num); return;
+            }
             ctx.save();
             // 足もとの影と、小さな足（体の後ろ）
             ctx.fillStyle='rgba(0,0,0,0.12)'; ctx.beginPath(); ctx.ellipse(cx,cy+r*1.04,r*0.7,r*0.12,0,0,Math.PI*2); ctx.fill();
@@ -2858,11 +2894,6 @@
             } else if(f.mouth==='o'){ ctx.beginPath(); ctx.ellipse(cx+r*0.05,my+r*0.05,r*0.06,r*0.08,0,0,Math.PI*2); ctx.stroke(); }
             else if(f.mouth==='small'){ ctx.beginPath(); ctx.arc(cx,my-r*0.02,r*0.09,0.2*Math.PI,0.8*Math.PI); ctx.stroke(); }
             else { ctx.beginPath(); ctx.arc(cx,my-r*0.04,r*0.16,0.15*Math.PI,0.85*Math.PI); ctx.stroke(); }
-            // 9（賢者）の白いひげ
-            if(f.beard){ ctx.fillStyle='#ffffff'; ctx.strokeStyle='rgba(0,0,0,0.15)'; ctx.lineWidth=1.5;
-                ctx.beginPath(); ctx.moveTo(cx-r*0.4,cy+r*0.33);
-                ctx.quadraticCurveTo(cx-r*0.3,cy+r*0.95,cx,cy+r*1.02); ctx.quadraticCurveTo(cx+r*0.3,cy+r*0.95,cx+r*0.4,cy+r*0.33);
-                ctx.quadraticCurveTo(cx,cy+r*0.48,cx-r*0.4,cy+r*0.33); ctx.closePath(); ctx.fill(); ctx.stroke(); }
             ctx.restore();
             drawAccessory(ctx,cx,cy,r,num);
         }
