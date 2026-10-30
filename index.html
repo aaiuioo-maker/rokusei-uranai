@@ -242,6 +242,10 @@
         .modal-content { background: white; padding: 20px; border-radius: 16px; width: 85%; text-align: center; }
         #exportedImage { max-width: 100%; max-height: 62vh; height: auto; margin: 10px 0; border-radius: 8px; border: 1px solid #ddd; }
         #imageModal .modal-content { max-height: 92vh; overflow-y: auto; }
+        /* 「この人を画像で表示」のときは、説明を出さずに画像を画面いっぱいに */
+        #imageModal.img-person .modal-content { width: 96%; max-width: 640px; max-height: 96vh; padding: 8px 6px 10px; }
+        #imageModal.img-person #imgTitle, #imageModal.img-person #imgHint, #imageModal.img-person #imgPos { display: none; }
+        #imageModal.img-person #exportedImage { width: 100%; max-height: none; margin: 4px 0; border: none; }
         /* 人の画面（詳細）の上の取っ手：下にスワイプで閉じられる目印 */
         .swipe-grab { width: 44px; height: 5px; border-radius: 3px; background: #d8d2c6; margin: -4px auto 6px; }
         .swipe-pos { text-align: center; font-size: 11px; color: #a39a8a; margin: -2px 0 4px; min-height: 1em; }
@@ -2202,6 +2206,7 @@
         function setImagePersonMode(idx) {
             imgPersonIdx = idx;
             const on = idx !== null, $ = id => document.getElementById(id);
+            document.getElementById('imageModal').classList.toggle('img-person', on);
             $('imgTitle').textContent = on ? 'この人の画像' : '書き出し完了';
             $('imgHint').textContent = on ? '保存するときは下のボタンを押してください（画像の長押しでも保存できます）' : '画像を長押しして保存';
             $('imgSaveBtn').style.display = on ? 'block' : 'none';
