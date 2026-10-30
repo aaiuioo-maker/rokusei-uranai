@@ -2892,6 +2892,8 @@
             roundRectPath(ctx, dx, dy, dw, dh, rad); ctx.lineWidth=2; ctx.strokeStyle='#d9b45aaa'; ctx.stroke();
         }
         // カバラのキャラクター：丸い体はみんな同じで、数ごとに表情（目・口・まゆ）と飾りを変える
+        // 頭のてっぺんから上に出る飾りの高さ（体の半径を1とした大きさ）。画像で上の文字と重ならないように使う
+        const KAB_TOP = { 1:0.56, 2:0.52, 3:0.14, 4:0.18, 5:0.1, 6:0.27, 7:0.4, 8:0.85, 9:0.72, 11:0.9, 22:0.52, 33:0.95 };
         const KAB_FACE = {
             1:{eye:'dot',mouth:'smile',brow:'up'},     2:{eye:'happy',mouth:'smile'},          3:{eye:'wink',mouth:'open'},
             4:{eye:'dot',mouth:'small'},   5:{eye:'happy',mouth:'open',kick:true},          6:{eye:'happy',mouth:'smile',heart:true},
@@ -3083,7 +3085,7 @@
                     if(noIllust){
                         y += big?26:20;
                     } else {
-                        y += Math.round(r*(big?1.35:1.25)) + 4;
+                        y += Math.round(r*(1.12 + (KAB_TOP[num]||0.3))) + 4;   // 頭の上の飾りの高さの分だけ、上の文字との間をあける
                         drawMascot(ctx, cx, y, r, num, ch[1]);
                         ctx.fillStyle=ch[1]; ctx.font=`bold ${big?22:18}px sans-serif`; ctx.textAlign='center';
                         ctx.beginPath(); ctx.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
