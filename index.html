@@ -2759,15 +2759,7 @@
                     ctx.strokeStyle='#cfc2a6'; ctx.lineWidth=1; ctx.beginPath();
                     for(let k=1;k<=3;k++){ const ly=by+bh*k/4.2; ctx.moveTo(cx+s*bw*0.18,ly); ctx.lineTo(cx+s*bw*0.82,ly); } ctx.stroke(); });
             } else if(num===11){ drawStar(ctx,cx,topY-r*0.22,4,r*0.3,r*0.1,'#c77dff'); drawStar(ctx,cx+r*0.8,cy-r*0.6,4,r*0.15,r*0.05,'#e0b3ff'); drawStar(ctx,cx-r*0.8,cy-r*0.42,4,r*0.13,r*0.05,'#e0b3ff');
-            } else if(num===22){ // カリスマ実現者：金のリボンのシルクハット
-                const hb=topY+r*0.22, hw=r*0.62, hh=r*0.72;
-                ctx.fillStyle='#2b2238'; ctx.strokeStyle='#120d18'; ctx.lineWidth=2;
-                ctx.beginPath(); ctx.ellipse(cx,hb,r*0.95,r*0.17,0,0,Math.PI*2); ctx.fill(); ctx.stroke();      // つば
-                roundRectPath(ctx,cx-hw/2*1.0,hb-hh,hw,hh,r*0.06); ctx.fill(); ctx.stroke();                       // 筒
-                ctx.beginPath(); ctx.ellipse(cx,hb-hh,hw/2,r*0.08,0,0,Math.PI*2); ctx.fill(); ctx.stroke();       // 上の面
-                ctx.fillStyle='#f0c030'; ctx.fillRect(cx-hw/2+1,hb-r*0.3,hw-2,r*0.14);                              // 金のリボン
-                drawStar(ctx,cx+hw*0.22,hb-r*0.23,5,r*0.12,r*0.05,'#fff3b0');
-                ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(cx-hw/2+r*0.08,hb-hh+r*0.08,r*0.08,hh-r*0.42);   // つや
+            } else if(num===22){ [-0.55,0,0.55].forEach((o,i)=> drawStar(ctx,cx+o*r,topY-r*0.12-(i===1?r*0.16:0),5,i===1?r*0.23:r*0.17,r*0.08,'#f0c030'));
             } else if(num===33){ const cs=['#ff595e','#ff924c','#ffca3a','#8ac926','#4d96ff','#9b5de5'];
                 cs.forEach((c,i)=>{ ctx.strokeStyle=c; ctx.lineWidth=r*0.09; ctx.beginPath(); ctx.arc(cx,topY+r*0.12,r*0.5+i*r*0.1,Math.PI,0); ctx.stroke(); });
             }
