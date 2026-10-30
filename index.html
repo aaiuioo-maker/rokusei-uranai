@@ -2677,7 +2677,10 @@
                     ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); ctx.lineTo(p[1][0],p[1][1]); ctx.lineTo(p[2][0],p[2][1]); ctx.stroke(); };
                 arm(r*0.3,'#e0607a'); arm(r*0.23,'#ffa3b5');
                 ctx.fillStyle='#ffa3b5'; ctx.strokeStyle='#e0607a'; ctx.lineWidth=2;
-                ctx.beginPath(); ctx.arc(p[2][0],p[2][1]-r*0.05,r*0.18,0,Math.PI*2); ctx.fill(); ctx.stroke();
+                const fx=p[2][0], fy=p[2][1]-r*0.05;   // 人差し指を立てた手
+                ctx.lineCap='round'; ctx.strokeStyle='#e0607a'; ctx.lineWidth=r*0.14; ctx.beginPath(); ctx.moveTo(fx-r*0.03,fy); ctx.lineTo(fx-r*0.03,fy-r*0.42); ctx.stroke();
+                ctx.strokeStyle='#ffa3b5'; ctx.lineWidth=r*0.08; ctx.beginPath(); ctx.moveTo(fx-r*0.03,fy); ctx.lineTo(fx-r*0.03,fy-r*0.42); ctx.stroke();
+                ctx.strokeStyle='#e0607a'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(fx,fy,r*0.17,0,Math.PI*2); ctx.fill(); ctx.stroke();
             } else if(num===2){ const hs=r*0.66, hy=topY+r*0.02;   // サポーター：大きめのハートに赤十字
                 drawHeart(ctx,cx,hy,hs,'#ffc2d1');
                 ctx.strokeStyle='#ff6f91'; ctx.lineWidth=2; ctx.stroke();
