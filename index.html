@@ -2671,14 +2671,21 @@
                 ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx,by-h*0.5); ctx.lineTo(bx+w*0.25,by-h*0.05);
                 ctx.lineTo(cx,by-h); ctx.lineTo(bx+w*0.75,by-h*0.05); ctx.lineTo(bx+w,by-h*0.5); ctx.lineTo(bx+w,by);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
+                // 右腕を突き上げる（こぶしを上に）
+                const p=[[cx+r*0.8,cy+r*0.12],[cx+r*1.12,cy-r*0.3],[cx+r*1.18,cy-r*0.78]];
+                const arm=(w,c)=>{ ctx.strokeStyle=c; ctx.lineWidth=w; ctx.lineCap='round'; ctx.lineJoin='round';
+                    ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); ctx.lineTo(p[1][0],p[1][1]); ctx.lineTo(p[2][0],p[2][1]); ctx.stroke(); };
+                arm(r*0.3,'#e0607a'); arm(r*0.23,'#ffa3b5');
+                ctx.fillStyle='#ffa3b5'; ctx.strokeStyle='#e0607a'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.arc(p[2][0],p[2][1]-r*0.05,r*0.18,0,Math.PI*2); ctx.fill(); ctx.stroke();
             } else if(num===2){ const hs=r*0.66, hy=topY+r*0.02;   // サポーター：大きめのハートに赤十字
                 drawHeart(ctx,cx,hy,hs,'#ffc2d1');
                 ctx.strokeStyle='#ff6f91'; ctx.lineWidth=2; ctx.stroke();
                 const t=hs*0.17, l=hs*0.3, my=hy-hs*0.2;
                 ctx.fillStyle='#e8303a'; ctx.fillRect(cx-t/2,my-l,t,l*2); ctx.fillRect(cx-l,my-t/2,l*2,t);
             } else if(num===3){ drawStar(ctx,cx+r*0.85,cy-r*0.7,5,r*0.28,r*0.12,'#ffd23f');
-                const nx=cx-r*0.9, ny=cy-r*0.5;   // 左上の明るい色の音符（2つつながった8分音符 ♫）
-                ctx.fillStyle='#ff4fa0'; ctx.strokeStyle='#ff4fa0'; ctx.lineWidth=Math.max(2,r*0.06); ctx.lineCap='round';
+                const nx=cx-r*0.9, ny=cy-r*0.5;   // 左上の青い音符（2つつながった8分音符 ♫）
+                ctx.fillStyle='#3a8dff'; ctx.strokeStyle='#3a8dff'; ctx.lineWidth=Math.max(2,r*0.06); ctx.lineCap='round';
                 [[0,0],[r*0.36,-r*0.1]].forEach(([dx,dy])=>{ ctx.beginPath(); ctx.ellipse(nx+dx,ny+dy,r*0.12,r*0.09,-0.45,0,Math.PI*2); ctx.fill();
                     ctx.beginPath(); ctx.moveTo(nx+dx+r*0.1,ny+dy-r*0.03); ctx.lineTo(nx+dx+r*0.1,ny+dy-r*0.46); ctx.stroke(); });
                 ctx.lineWidth=r*0.1; ctx.lineCap='butt'; ctx.beginPath(); ctx.moveTo(nx+r*0.1,ny-r*0.46); ctx.lineTo(nx+r*0.46,ny-r*0.56); ctx.stroke();
@@ -2759,6 +2766,10 @@
                     ctx.strokeStyle='#cfc2a6'; ctx.lineWidth=1; ctx.beginPath();
                     for(let k=1;k<=3;k++){ const ly=by+bh*k/4.2; ctx.moveTo(cx+s*bw*0.18,ly); ctx.lineTo(cx+s*bw*0.82,ly); } ctx.stroke(); });
             } else if(num===11){ drawStar(ctx,cx,topY-r*0.22,4,r*0.3,r*0.1,'#c77dff'); drawStar(ctx,cx+r*0.8,cy-r*0.6,4,r*0.15,r*0.05,'#e0b3ff'); drawStar(ctx,cx-r*0.8,cy-r*0.42,4,r*0.13,r*0.05,'#e0b3ff');
+                [-1,1].forEach(s=>{   // 頭の星から左右に出る電波
+                    for(let k=0;k<3;k++){ ctx.strokeStyle='rgba(199,125,255,'+(0.9-k*0.25)+')'; ctx.lineWidth=Math.max(2,r*0.06); ctx.lineCap='round';
+                        const a=s>0?-Math.PI*0.2:-Math.PI*0.8; ctx.beginPath(); ctx.arc(cx,topY-r*0.22,r*(0.42+k*0.18),a-0.38,a+0.38); ctx.stroke(); }
+                });
             } else if(num===22){ [-0.55,0,0.55].forEach((o,i)=> drawStar(ctx,cx+o*r,topY-r*0.12-(i===1?r*0.16:0),5,i===1?r*0.23:r*0.17,r*0.08,'#f0c030'));
             } else if(num===33){ const cs=['#ff595e','#ff924c','#ffca3a','#8ac926','#4d96ff','#9b5de5'];
                 cs.forEach((c,i)=>{ ctx.strokeStyle=c; ctx.lineWidth=r*0.09; ctx.beginPath(); ctx.arc(cx,topY+r*0.12,r*0.5+i*r*0.1,Math.PI,0); ctx.stroke(); });
