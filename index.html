@@ -2671,12 +2671,17 @@
                 ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx,by-h*0.5); ctx.lineTo(bx+w*0.25,by-h*0.05);
                 ctx.lineTo(cx,by-h); ctx.lineTo(bx+w*0.75,by-h*0.05); ctx.lineTo(bx+w,by-h*0.5); ctx.lineTo(bx+w,by);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
-            } else if(num===2){ const hs=r*0.66, hy=topY-r*0.14;   // サポーター：大きめのハートに赤十字
+            } else if(num===2){ const hs=r*0.66, hy=topY+r*0.02;   // サポーター：大きめのハートに赤十字
                 drawHeart(ctx,cx,hy,hs,'#ffc2d1');
                 ctx.strokeStyle='#ff6f91'; ctx.lineWidth=2; ctx.stroke();
                 const t=hs*0.17, l=hs*0.3, my=hy-hs*0.2;
                 ctx.fillStyle='#e8303a'; ctx.fillRect(cx-t/2,my-l,t,l*2); ctx.fillRect(cx-l,my-t/2,l*2,t);
-            } else if(num===3){ drawStar(ctx,cx+r*0.85,cy-r*0.7,5,r*0.28,r*0.12,'#ffd23f'); drawStar(ctx,cx-r*0.8,cy-r*0.5,5,r*0.17,r*0.07,'#ffd23f');
+            } else if(num===3){ drawStar(ctx,cx+r*0.85,cy-r*0.7,5,r*0.28,r*0.12,'#ffd23f');
+                const nx=cx-r*0.78, ny=cy-r*0.58;   // 左上の黒い音符（8分音符）
+                ctx.fillStyle='#222'; ctx.strokeStyle='#222'; ctx.lineWidth=Math.max(2,r*0.06); ctx.lineCap='round';
+                ctx.beginPath(); ctx.ellipse(nx,ny,r*0.13,r*0.095,-0.45,0,Math.PI*2); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(nx+r*0.11,ny-r*0.03); ctx.lineTo(nx+r*0.11,ny-r*0.5);
+                ctx.quadraticCurveTo(nx+r*0.16,ny-r*0.3,nx+r*0.34,ny-r*0.28); ctx.stroke();
             } else if(num===4){ // 堅実家：すじの入ったヘルメットと、手に持ったレンガ
                 ctx.fillStyle='#ffca3a'; ctx.strokeStyle='#e0a800'; ctx.lineWidth=2;
                 ctx.beginPath(); ctx.arc(cx,cy-r*0.3,r*0.86,Math.PI,0); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -2699,7 +2704,7 @@
             } else if(num===5){ ctx.fillStyle='#ffffff'; ctx.strokeStyle='#57d9b0'; ctx.lineWidth=2;
                 [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(cx+s*r*1.02,cy,r*0.42,r*0.2,s*-0.3,0,Math.PI*2); ctx.fill(); ctx.stroke(); });
             } else if(num===6){ drawHeart(ctx,cx,cy-r*0.91,r*0.42,'#ff4d79');   // 頭から半分ほど出るハート
-            } else if(num===7){ const gx=cx+r*0.72,gy=cy+r*0.72;
+            } else if(num===7){ const gx=cx+r*0.8,gy=cy+r*0.4;   // 大きめの虫めがねを、少し上に
                 // 探偵の帽子（前と後ろにつば、左右に耳あて、てっぺんにボタン、チェックの線）
                 const hb=topY+r*0.34, hr=r*0.66;
                 ctx.fillStyle='#a87b4f'; ctx.strokeStyle='#6e4a2a'; ctx.lineWidth=2;
@@ -2718,15 +2723,18 @@
                     ctx.beginPath(); ctx.moveTo(cx+s*r*0.54,cy-r*0.06); ctx.lineTo(cx+s*r*0.9,cy-r*0.14); ctx.stroke(); });
                 ctx.beginPath(); ctx.arc(cx,cy+r*0.02,r*0.13,1.2*Math.PI,1.8*Math.PI); ctx.stroke();
                 ctx.strokeStyle='#5a6acf'; ctx.lineCap='round'; ctx.lineWidth=r*0.13;
-                ctx.beginPath(); ctx.moveTo(gx+r*0.26,gy+r*0.26); ctx.lineTo(gx+r*0.55,gy+r*0.55); ctx.stroke();
-                ctx.lineWidth=3; ctx.beginPath(); ctx.arc(gx,gy,r*0.27,0,Math.PI*2); ctx.fillStyle='rgba(180,200,255,0.55)'; ctx.fill(); ctx.stroke();
-            } else if(num===8){ ctx.fillStyle='#ff7a33';
+                ctx.beginPath(); ctx.moveTo(gx+r*0.3,gy+r*0.3); ctx.lineTo(gx+r*0.66,gy+r*0.66); ctx.stroke();
+                ctx.lineWidth=3; ctx.beginPath(); ctx.arc(gx,gy,r*0.36,0,Math.PI*2); ctx.fillStyle='rgba(180,200,255,0.55)'; ctx.fill(); ctx.stroke();
+            } else if(num===8){ // パワーの人：大きめの炎を、頭に近づけて
+                ctx.save(); ctx.translate(cx,topY+r*0.22); ctx.scale(1.4,1.4); ctx.translate(-cx,-(topY+r*0.05));
+                ctx.fillStyle='#ff7a33';
                 ctx.beginPath(); ctx.moveTo(cx,topY-r*0.7);
                 ctx.bezierCurveTo(cx+r*0.4,topY-r*0.28,cx+r*0.3,topY+r*0.1,cx,topY+r*0.05);
                 ctx.bezierCurveTo(cx-r*0.3,topY+r*0.1,cx-r*0.4,topY-r*0.28,cx,topY-r*0.7); ctx.closePath(); ctx.fill();
                 ctx.fillStyle='#ffd23f'; ctx.beginPath(); ctx.moveTo(cx,topY-r*0.45);
                 ctx.bezierCurveTo(cx+r*0.2,topY-r*0.22,cx+r*0.15,topY+r*0.02,cx,topY);
                 ctx.bezierCurveTo(cx-r*0.15,topY+r*0.02,cx-r*0.2,topY-r*0.22,cx,topY-r*0.45); ctx.closePath(); ctx.fill();
+                ctx.restore();
             } else if(num===9){ // 賢者：深くかぶった三角帽子と、ひらいた本
                 ctx.fillStyle='#7b5cff'; ctx.strokeStyle='#5a3fd0'; ctx.lineWidth=2;
                 ctx.beginPath(); ctx.moveTo(cx-r*0.78,topY+r*0.34); ctx.lineTo(cx+r*0.78,topY+r*0.34); ctx.lineTo(cx+r*0.12,topY-r*0.7); ctx.closePath(); ctx.fill(); ctx.stroke();
@@ -2742,7 +2750,15 @@
                     ctx.strokeStyle='#cfc2a6'; ctx.lineWidth=1; ctx.beginPath();
                     for(let k=1;k<=3;k++){ const ly=by+bh*k/4.2; ctx.moveTo(cx+s*bw*0.18,ly); ctx.lineTo(cx+s*bw*0.82,ly); } ctx.stroke(); });
             } else if(num===11){ drawStar(ctx,cx,topY-r*0.22,4,r*0.3,r*0.1,'#c77dff'); drawStar(ctx,cx+r*0.8,cy-r*0.6,4,r*0.15,r*0.05,'#e0b3ff'); drawStar(ctx,cx-r*0.8,cy-r*0.42,4,r*0.13,r*0.05,'#e0b3ff');
-            } else if(num===22){ [-0.55,0,0.55].forEach((o,i)=> drawStar(ctx,cx+o*r,topY-r*0.12-(i===1?r*0.16:0),5,i===1?r*0.23:r*0.17,r*0.08,'#f0c030'));
+            } else if(num===22){ // カリスマ実現者：金のリボンのシルクハット
+                const hb=topY+r*0.22, hw=r*0.62, hh=r*0.72;
+                ctx.fillStyle='#2b2238'; ctx.strokeStyle='#120d18'; ctx.lineWidth=2;
+                ctx.beginPath(); ctx.ellipse(cx,hb,r*0.95,r*0.17,0,0,Math.PI*2); ctx.fill(); ctx.stroke();      // つば
+                roundRectPath(ctx,cx-hw/2*1.0,hb-hh,hw,hh,r*0.06); ctx.fill(); ctx.stroke();                       // 筒
+                ctx.beginPath(); ctx.ellipse(cx,hb-hh,hw/2,r*0.08,0,0,Math.PI*2); ctx.fill(); ctx.stroke();       // 上の面
+                ctx.fillStyle='#f0c030'; ctx.fillRect(cx-hw/2+1,hb-r*0.3,hw-2,r*0.14);                              // 金のリボン
+                drawStar(ctx,cx+hw*0.22,hb-r*0.23,5,r*0.12,r*0.05,'#fff3b0');
+                ctx.fillStyle='rgba(255,255,255,0.18)'; ctx.fillRect(cx-hw/2+r*0.08,hb-hh+r*0.08,r*0.08,hh-r*0.42);   // つや
             } else if(num===33){ const cs=['#ff595e','#ff924c','#ffca3a','#8ac926','#4d96ff','#9b5de5'];
                 cs.forEach((c,i)=>{ ctx.strokeStyle=c; ctx.lineWidth=r*0.09; ctx.beginPath(); ctx.arc(cx,topY+r*0.12,r*0.5+i*r*0.1,Math.PI,0); ctx.stroke(); });
             }
