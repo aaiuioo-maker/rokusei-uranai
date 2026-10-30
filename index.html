@@ -2726,6 +2726,15 @@
                 ctx.beginPath(); ctx.moveTo(gx+r*0.3,gy+r*0.3); ctx.lineTo(gx+r*0.66,gy+r*0.66); ctx.stroke();
                 ctx.lineWidth=3; ctx.beginPath(); ctx.arc(gx,gy,r*0.36,0,Math.PI*2); ctx.fillStyle='rgba(180,200,255,0.55)'; ctx.fill(); ctx.stroke();
             } else if(num===8){ // パワーの人：大きめの炎を、頭に近づけて
+                [-1,1].forEach(s=>{   // 力こぶを作った両腕（ひじを曲げて、こぶしを上に）
+                    const p=[[cx+s*r*0.82,cy+r*0.28],[cx+s*r*1.2,cy+r*0.2],[cx+s*r*1.24,cy-r*0.28]];
+                    const arm=(w,c)=>{ ctx.strokeStyle=c; ctx.lineWidth=w; ctx.lineCap='round'; ctx.lineJoin='round';
+                        ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); ctx.lineTo(p[1][0],p[1][1]); ctx.lineTo(p[2][0],p[2][1]); ctx.stroke(); };
+                    arm(r*0.27,'#d9652e'); arm(r*0.21,'#ff9a5e');
+                    ctx.fillStyle='#ff9a5e'; ctx.strokeStyle='#d9652e'; ctx.lineWidth=2;
+                    ctx.beginPath(); ctx.ellipse(cx+s*r*1.02,cy+r*0.12,r*0.17,r*0.13,0,Math.PI,0); ctx.fill(); ctx.stroke();   // 力こぶ
+                    ctx.beginPath(); ctx.arc(p[2][0],p[2][1]-r*0.04,r*0.15,0,Math.PI*2); ctx.fill(); ctx.stroke();               // こぶし
+                });
                 ctx.save(); ctx.translate(cx,topY+r*0.22); ctx.scale(1.4,1.4); ctx.translate(-cx,-(topY+r*0.05));
                 ctx.fillStyle='#ff7a33';
                 ctx.beginPath(); ctx.moveTo(cx,topY-r*0.7);
