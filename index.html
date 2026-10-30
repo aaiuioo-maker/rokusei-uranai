@@ -2671,7 +2671,11 @@
                 ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx,by-h*0.5); ctx.lineTo(bx+w*0.25,by-h*0.05);
                 ctx.lineTo(cx,by-h); ctx.lineTo(bx+w*0.75,by-h*0.05); ctx.lineTo(bx+w,by-h*0.5); ctx.lineTo(bx+w,by);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
-            } else if(num===2){ drawHeart(ctx,cx,topY-r*0.22,r*0.3,'#ff6f91');
+            } else if(num===2){ const hs=r*0.66, hy=topY-r*0.14;   // サポーター：大きめのハートに赤十字
+                drawHeart(ctx,cx,hy,hs,'#ffc2d1');
+                ctx.strokeStyle='#ff6f91'; ctx.lineWidth=2; ctx.stroke();
+                const t=hs*0.17, l=hs*0.3, my=hy-hs*0.2;
+                ctx.fillStyle='#e8303a'; ctx.fillRect(cx-t/2,my-l,t,l*2); ctx.fillRect(cx-l,my-t/2,l*2,t);
             } else if(num===3){ drawStar(ctx,cx+r*0.85,cy-r*0.7,5,r*0.28,r*0.12,'#ffd23f'); drawStar(ctx,cx-r*0.8,cy-r*0.5,5,r*0.17,r*0.07,'#ffd23f');
             } else if(num===4){ // 堅実家：すじの入ったヘルメットと、手に持ったレンガ
                 ctx.fillStyle='#ffca3a'; ctx.strokeStyle='#e0a800'; ctx.lineWidth=2;
@@ -2694,7 +2698,7 @@
                 ctx.fillStyle='rgba(255,255,255,0.8)'; ctx.beginPath(); ctx.arc(sx-r*0.025,sy-r*0.01,r*0.025,0,Math.PI*2); ctx.fill();
             } else if(num===5){ ctx.fillStyle='#ffffff'; ctx.strokeStyle='#57d9b0'; ctx.lineWidth=2;
                 [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(cx+s*r*1.02,cy,r*0.42,r*0.2,s*-0.3,0,Math.PI*2); ctx.fill(); ctx.stroke(); });
-            } else if(num===6){ drawHeart(ctx,cx,cy-r*0.5,r*0.42,'#ff4d79');   // おでこのハート
+            } else if(num===6){ drawHeart(ctx,cx,cy-r*0.91,r*0.42,'#ff4d79');   // 頭から半分ほど出るハート
             } else if(num===7){ const gx=cx+r*0.72,gy=cy+r*0.72;
                 // 探偵の帽子（前と後ろにつば、左右に耳あて、てっぺんにボタン、チェックの線）
                 const hb=topY+r*0.34, hr=r*0.66;
