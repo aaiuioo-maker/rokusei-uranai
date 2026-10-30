@@ -2732,14 +2732,14 @@
                 ctx.strokeStyle='#6e4a2a'; ctx.lineWidth=2;
                 ctx.fillStyle='#a87b4f'; [-1,1].forEach(s=>{ ctx.beginPath(); ctx.ellipse(cx+s*hr*0.86,hb+r*0.1,r*0.1,r*0.17,0,0,Math.PI*2); ctx.fill(); ctx.stroke(); });  // 耳あて
                 ctx.fillStyle='#6e4a2a'; ctx.beginPath(); ctx.arc(cx,hb-hr,r*0.07,0,Math.PI*2); ctx.fill();                                           // ボタン
-                // 柄（ななめ下へ）と、大きく見える目の入ったレンズ
+                // 柄（ななめ下へ）と、目の入ったレンズ
                 ctx.strokeStyle='#5a6acf'; ctx.lineCap='round'; ctx.lineWidth=r*0.13;
                 ctx.beginPath(); ctx.moveTo(gx+r*0.28,gy+r*0.28); ctx.lineTo(gx+r*0.66,gy+r*0.7); ctx.stroke();
                 ctx.save(); ctx.beginPath(); ctx.arc(gx,gy,r*0.34,0,Math.PI*2); ctx.clip();
                 ctx.fillStyle='rgba(225,235,255,0.95)'; ctx.fill();
-                ctx.fillStyle='#fff'; ctx.strokeStyle='#3a2b2b'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(gx,gy,r*0.24,0,Math.PI*2); ctx.fill(); ctx.stroke();   // 大きく見える目
-                ctx.fillStyle='#3a2b2b'; ctx.beginPath(); ctx.arc(gx+r*0.04,gy+r*0.02,r*0.14,0,Math.PI*2); ctx.fill();
-                ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(gx-r*0.01,gy-r*0.04,r*0.05,0,Math.PI*2); ctx.fill();
+                ctx.fillStyle='#fff'; ctx.strokeStyle='#3a2b2b'; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(gx,gy,r*0.15,0,Math.PI*2); ctx.fill(); ctx.stroke();   // レンズの中の目（もう片方と同じ大きさ）
+                ctx.fillStyle='#3a2b2b'; ctx.beginPath(); ctx.arc(gx+r*0.06,gy+r*0.01,r*0.09,0,Math.PI*2); ctx.fill();
+                ctx.fillStyle='#fff'; ctx.beginPath(); ctx.arc(gx+r*0.03,gy-r*0.03,r*0.03,0,Math.PI*2); ctx.fill();
                 ctx.fillStyle='rgba(255,255,255,0.55)'; ctx.beginPath(); ctx.ellipse(gx-r*0.15,gy-r*0.16,r*0.1,r*0.05,-0.7,0,Math.PI*2); ctx.fill();   // レンズの光
                 ctx.restore();
                 ctx.strokeStyle='#5a6acf'; ctx.lineWidth=Math.max(3,r*0.07); ctx.beginPath(); ctx.arc(gx,gy,r*0.34,0,Math.PI*2); ctx.stroke();
