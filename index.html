@@ -2671,8 +2671,8 @@
                 ctx.beginPath(); ctx.moveTo(bx,by); ctx.lineTo(bx,by-h*0.5); ctx.lineTo(bx+w*0.25,by-h*0.05);
                 ctx.lineTo(cx,by-h); ctx.lineTo(bx+w*0.75,by-h*0.05); ctx.lineTo(bx+w,by-h*0.5); ctx.lineTo(bx+w,by);
                 ctx.closePath(); ctx.fill(); ctx.stroke();
-                // 右腕を突き上げる（こぶしを上に）
-                const p=[[cx+r*0.8,cy+r*0.12],[cx+r*1.12,cy-r*0.3],[cx+r*1.18,cy-r*0.78]];
+                // 自分の右腕（絵では左側）をまっすぐ上げる
+                const p=[[cx-r*0.84,cy+r*0.02],[cx-r*1.02,cy-r*0.42],[cx-r*1.04,cy-r*0.86]];
                 const arm=(w,c)=>{ ctx.strokeStyle=c; ctx.lineWidth=w; ctx.lineCap='round'; ctx.lineJoin='round';
                     ctx.beginPath(); ctx.moveTo(p[0][0],p[0][1]); ctx.lineTo(p[1][0],p[1][1]); ctx.lineTo(p[2][0],p[2][1]); ctx.stroke(); };
                 arm(r*0.3,'#e0607a'); arm(r*0.23,'#ffa3b5');
@@ -2889,6 +2889,16 @@
         function drawMascot(ctx,cx,cy,r,num,color){
             const f=KAB_FACE[num]||{eye:'dot',mouth:'smile'}, ink='#3a2b2b';
             if(f.plain){   // 22・33 は最初の形のまま（足・影・つや・表情の変化なし）
+                if(num===22){   // カリスマ実現者：後ろから金色の光を放つ
+                    const gl=ctx.createRadialGradient(cx,cy,r*0.8,cx,cy,r*1.55);
+                    gl.addColorStop(0,'rgba(255,214,90,0.55)'); gl.addColorStop(1,'rgba(255,214,90,0)');
+                    ctx.fillStyle=gl; ctx.beginPath(); ctx.arc(cx,cy,r*1.55,0,Math.PI*2); ctx.fill();
+                    for(let k=0;k<16;k++){ const a=k*Math.PI/8; if(Math.sin(a)>0.3) continue;   // 下向きの光は出さない（下の文字にかからないように）
+                        const len=r*(k%2?1.32:1.5), wd=0.09;
+                        ctx.fillStyle=k%2?'rgba(255,220,110,0.75)':'rgba(240,180,30,0.85)';
+                        ctx.beginPath(); ctx.moveTo(cx+Math.cos(a-wd)*r*0.9,cy+Math.sin(a-wd)*r*0.9);
+                        ctx.lineTo(cx+Math.cos(a)*len,cy+Math.sin(a)*len); ctx.lineTo(cx+Math.cos(a+wd)*r*0.9,cy+Math.sin(a+wd)*r*0.9); ctx.closePath(); ctx.fill(); }
+                }
                 const g=ctx.createRadialGradient(cx-r*0.3,cy-r*0.3,r*0.2,cx,cy,r);
                 g.addColorStop(0,'#ffffff'); g.addColorStop(1,color);
                 ctx.beginPath(); ctx.arc(cx,cy,r,0,Math.PI*2); ctx.fillStyle=g; ctx.fill();
