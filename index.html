@@ -796,7 +796,7 @@
         </div>
         <div class="filter-bar">
             <span>数秘:</span>
-            <select id="numFilter" onchange="setNumFilter(this.value)">
+            <select id="numFilter" style="max-width:100%; min-width:0;" onchange="setNumFilter(this.value)">
                 <option value="all">すべて</option>
                 <option value="1">1 リーダー</option>
                 <option value="2">2 サポーター</option>
@@ -810,8 +810,9 @@
                 <option value="11">11 直感のメッセンジャー</option>
                 <option value="22">22 カリスマ実現者</option>
                 <option value="33">33 無限の愛</option>
-                <option value="master2">✨ マスター（11・22・33）を2つ以上</option>
-                <option value="same3">🎯 3つとも同じ数秘（運命数・魂の数・使命数）</option>
+                <option value="master1">✨ マスターが1つ以上</option>
+                <option value="master2">✨ マスターが2つ以上</option>
+                <option value="same3">🎯 3つとも同じ数</option>
             </select>
         </div>
         <div class="filter-bar">
@@ -2292,10 +2293,12 @@
             const okBlood = currentBloodFilter==='all' ? true : (currentBloodFilter==='未設定' ? !it.bloodType : it.bloodType===currentBloodFilter);
             // 1〜33（11・22・33 も）は、運命数（鍵の数）だけで探す
             // same3：運命数・魂の数・使命数の3つがすべて同じ数の人
+            // master1：運命数・魂の数・使命数のどれか1つ以上がマスターナンバー（11・22・33）の人
             // master2：運命数・魂の数・使命数のうち、マスターナンバーが2つ以上ある人
             const nf = Number(currentNumFilter);
             const okNum = currentNumFilter==='all' ? true
                 : currentNumFilter==='same3' ? (Number(itemKabNum(it)) === Number(itemSoul(it)) && Number(itemSoul(it)) === Number(itemMission(it)))
+                : currentNumFilter==='master1' ? [itemKabNum(it), itemSoul(it), itemMission(it)].some(n => isMaster(Number(n)))
                 : currentNumFilter==='master2' ? [itemKabNum(it), itemSoul(it), itemMission(it)].filter(n => isMaster(Number(n))).length >= 2
                 : Number(itemKabNum(it)) === nf;   // 1〜33 は鍵の数（運命数）だけで探す（魂の数・使命数は見ない）
             const okZodiac = currentZodiacFilter==='all' ? true : (it.zodiac===currentZodiacFilter);
