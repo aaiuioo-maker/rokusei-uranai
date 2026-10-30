@@ -245,7 +245,7 @@
         /* 「この人を画像で表示」のときは、説明を出さずに、画像を1画面に収まるいちばん大きな大きさで */
         #imageModal.img-person .modal-content { width: 96%; max-width: 640px; max-height: 96vh; padding: 8px 6px 10px; }
         #imageModal.img-person #imgTitle, #imageModal.img-person #imgHint, #imageModal.img-person #imgPos { display: none; }
-        #imageModal.img-person #exportedImage { width: auto; max-width: 100%; height: auto; max-height: calc(96vh - 112px); max-height: calc(96dvh - 112px); margin: 2px auto; display: block; border: none; }   /* 画像と紫の保存ボタンまでが1画面に収まる大きさ（下の「閉じる」は画面の外でもよい） */
+        #imageModal.img-person #exportedImage { width: calc(100% - 16px); height: auto; max-height: none; margin: 2px auto; display: block; border: none; }   /* 横幅いっぱいより少しあけた大きさ */
         /* 人の画面（詳細）の上の取っ手：下にスワイプで閉じられる目印 */
         .swipe-grab { width: 44px; height: 5px; border-radius: 3px; background: #d8d2c6; margin: -4px auto 6px; }
         .swipe-pos { text-align: center; font-size: 11px; color: #a39a8a; margin: -2px 0 4px; min-height: 1em; }
