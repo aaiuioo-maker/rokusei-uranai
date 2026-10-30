@@ -3085,7 +3085,7 @@
                     if(noIllust){
                         y += big?26:20;
                     } else {
-                        y += Math.round(r*(1.12 + (KAB_TOP[num]||0.3))) + 4;   // 頭の上の飾りの高さの分だけ、上の文字との間をあける
+                        y += Math.round(r*(1.3 + (KAB_TOP[num]||0.3))) + 10;   // 頭の上の飾りの高さの分だけ、上の文字との間をあける
                         drawMascot(ctx, cx, y, r, num, ch[1]);
                         ctx.fillStyle=ch[1]; ctx.font=`bold ${big?22:18}px sans-serif`; ctx.textAlign='center';
                         ctx.beginPath(); ctx.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
