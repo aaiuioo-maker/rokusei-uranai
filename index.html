@@ -1336,7 +1336,7 @@
             <div style="text-align:right; margin-bottom:6px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="document.getElementById('detailModal').style.display='none'">✕ 閉じる</button></div>
             <div id="detailBody"></div>
             <button class="image-btn" style="margin-top:14px; background:linear-gradient(135deg,#7bc47f,#4a8b6f);" onclick="renamePerson(currentDetailIndex)">✏️ 名前を変更</button>
-            <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で保存</button>
+            <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で表示</button>
             <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを保存</button>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; margin-top:8px; font-weight:bold;" onclick="document.getElementById('detailModal').style.display='none'">閉じる</button>
         </div>
@@ -1385,10 +1385,11 @@
     <div id="imageModal" class="modal-overlay">
         <div class="modal-content">
             <div style="text-align:right; margin-bottom:2px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="closeImageModal()">✕ 閉じる</button></div>
-            <p style="font-weight:bold;">書き出し完了</p>
-            <p style="font-size:11px; color:#666;">画像を長押しして保存</p>
+            <p id="imgTitle" style="font-weight:bold;">書き出し完了</p>
+            <p id="imgHint" style="font-size:11px; color:#666;">画像を長押しして保存</p>
+            <div id="imgPos" style="font-size:12px; color:#7b2fbf; font-weight:bold; margin:2px 0 6px;"></div>
             <img id="exportedImage">
-            <button style="width:100%; padding:10px; border:none; border-radius:10px; background:#f2f2f7;" onclick="closeImageModal()">閉じる</button>
+            <button id="imgSaveBtn" style="display:none; width:100%; padding:12px; margin:8px 0; border:none; border-radius:10px; background:linear-gradient(135deg,#a855f7,#7b2fbf); color:#fff; font-weight:bold; font-size:15px;" onclick="saveShownImage()">📥 この人を画像で保存</button>            <button style="width:100%; padding:10px; border:none; border-radius:10px; background:#f2f2f7;" onclick="closeImageModal()">閉じる</button>
         </div>
     </div>
     <script>
@@ -2127,6 +2128,7 @@
                 if (!cur || !imgSelect.has(cur.name + '|' + cur.date)) return null;
                 return getSortedHistory(raw).filter(it => imgSelect.has(it.name + '|' + it.date)).map(it => it._origIdx);
             }
+            window.detailOrder = () => order();   // 「この人を画像で表示」でも同じ順番を使う
             function order() {
                 const p = picked(); if (p) return p;
                 const raw = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
@@ -2193,8 +2195,49 @@
         function closeImageModal() {
             document.getElementById('imageModal').style.display = 'none';
             if (imageBackToDetail && currentDetailIndex >= 0) document.getElementById('detailModal').style.display = 'flex';
-            imageBackToDetail = false;
+            imageBackToDetail = false; setImagePersonMode(null);
         }
+        // 「この人を画像で表示」の画面：左右にスワイプで前後の人の画像、「この人を画像で保存」ボタン
+        let imgPersonIdx = null;
+        function setImagePersonMode(idx) {
+            imgPersonIdx = idx;
+            const on = idx !== null, $ = id => document.getElementById(id);
+            $('imgTitle').textContent = on ? 'この人の画像' : '書き出し完了';
+            $('imgHint').textContent = on ? '保存するときは下のボタンを押してください（画像の長押しでも保存できます）' : '画像を長押しして保存';
+            $('imgSaveBtn').style.display = on ? 'block' : 'none';
+            let pos = '';
+            if (on && typeof window.detailOrder === 'function') {
+                const o = window.detailOrder(), i = o.indexOf(idx);
+                if (i >= 0 && o.length > 1) pos = '‹ ' + (i + 1) + ' / ' + o.length + ' ›　左右にスワイプで前後の人';
+            }
+            $('imgPos').textContent = pos;
+        }
+        async function saveShownImage() {
+            const src = document.getElementById('exportedImage').src; if (!src) return;
+            const h = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'), it = h[imgPersonIdx] || {};
+            const name = ((it.name || '占い') + '_六星カバラ').replace(/[\/:*?"<>|\s]/g, '') + '.png';
+            try {
+                const blob = await (await fetch(src)).blob();
+                const file = new File([blob], name, { type: 'image/png' });
+                if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }   // iPhone：共有の画面から「画像を保存」
+            } catch (e) { if (e && e.name === 'AbortError') return; }
+            const a = document.createElement('a'); a.href = src; a.download = name; document.body.appendChild(a); a.click(); a.remove();
+        }
+        (function imageSwipe(){
+            const box = document.querySelector('#imageModal .modal-content'); if (!box) return;
+            let x0 = null, y0 = 0, t0 = 0;
+            box.addEventListener('touchstart', e => { if (imgPersonIdx === null || e.touches.length !== 1) { x0 = null; return; } x0 = e.touches[0].clientX; y0 = e.touches[0].clientY; t0 = Date.now(); }, { passive: true });
+            box.addEventListener('touchend', e => {
+                if (x0 === null) return;
+                const dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0; x0 = null;
+                if (Math.abs(dx) < Math.abs(dy) * 1.2 || !(Math.abs(dx) > 40 || (Math.abs(dx) > 18 && Date.now() - t0 < 300))) return;
+                const o = typeof window.detailOrder === 'function' ? window.detailOrder() : [], i = o.indexOf(imgPersonIdx), j = i + (dx < 0 ? 1 : -1);
+                if (i < 0 || j < 0 || j >= o.length) return;
+                if (typeof playSound === 'function') { try { playSound('click'); } catch (err) {} }
+                box.style.transition = 'opacity .12s'; box.style.opacity = '0.3';
+                setTimeout(() => { showDetail(o[j]); createPersonImage(o[j]); box.scrollTop = 0; box.style.opacity = ''; }, 120);
+            });
+        })();
         const imgSelect = new Set();
         function toggleImgSelect(idx){
             const h = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
@@ -3127,7 +3170,7 @@
             ctx.fillStyle='#bbb'; ctx.font='11px sans-serif'; ctx.textAlign='center';
             ctx.fillText('六星占術 × 橙花式カバラ数秘術 判定アプリ', cx, H-30);
             document.getElementById('exportedImage').src = cv.toDataURL();
-            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
+            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(index);
             document.getElementById('imageModal').style.display='flex';
         }
 
@@ -3250,7 +3293,7 @@
                 const cv=document.createElement('canvas'); cv.width=560; cv.height=700;
                 drawTarotCard(cv.getContext('2d'), item, kabOnly);
                 document.getElementById('exportedImage').src = cv.toDataURL();
-                document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
+                document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(null);
                 document.getElementById('imageModal').style.display='flex';
             }));
         }
@@ -3372,7 +3415,7 @@
             if(!gogyoTypeOf(it)){ alert('五星三心タイプを判定できませんでした。'); return; }
             const cv=document.createElement('canvas'); cv.width=560; cv.height=830;
             drawGogyoCard(cv.getContext('2d'), it);
-            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true;
+            document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(null);
             document.getElementById('exportedImage').src=cv.toDataURL();
             document.getElementById('imageModal').style.display='flex';
         }
