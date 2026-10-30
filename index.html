@@ -8969,6 +8969,22 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
 })();
 </script>
 <!-- 更新した日時（GitHub に反映した日時が自動で出る）。オープニングの「タップして…」の下にだけ小さく出す。オープニングがなければ出さない -->
+<script>
+// =============================================================
+// 保存した履歴の絞り込み：「すべて」以外を選んでいる欄は、背景を黄色にして目立たせる
+// =============================================================
+(function filterHighlight(){
+  const IDS = ['categoryFilter', 'starFilter', 'bloodFilter', 'numFilter', 'gogyoFilter', 'zodiacFilter'];
+  const st = document.createElement('style');
+  st.textContent = 'select.filter-on { background-color: #fff3a0 !important; border-color: #e0c000 !important; font-weight: bold; }';
+  document.head.appendChild(st);
+  function mark() { IDS.forEach(id => { const s = document.getElementById(id); if (s) s.classList.toggle('filter-on', s.value !== 'all'); }); }
+  IDS.forEach(id => { const s = document.getElementById(id); if (s) s.addEventListener('change', mark); });
+  // 一斉解除や、開いたときの読み込みのあとにも色をそろえる
+  if (typeof loadHistory === 'function') { const orig = loadHistory; loadHistory = function () { const r = orig.apply(this, arguments); mark(); return r; }; }
+  mark();
+})();
+</script>
 <script>(function(){var d=new Date(document.lastModified);if(isNaN(d)||Math.abs(Date.now()-d)<5000)return;function p(n){return('0'+n).slice(-2);}
 var e=document.createElement('div');e.id='appVer';e.textContent='更新 '+d.getFullYear()+'/'+p(d.getMonth()+1)+'/'+p(d.getDate())+' '+p(d.getHours())+':'+p(d.getMinutes());
 e.style.cssText='display:block;width:100%;text-align:center;font:11px/1.4 sans-serif;color:inherit;opacity:.6;margin-top:8px;pointer-events:none;';
