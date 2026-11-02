@@ -2432,10 +2432,20 @@
         function calculateDestiny() {
             const dateInput = document.getElementById('birthdateStr').value.trim();
             if (!/^\d{8}$/.test(dateInput)) { alert("生年月日は8桁の数字で入力してください"); return; }
-            playSound('click');
             const year  = parseInt(dateInput.substring(0,4),10);
             const month = parseInt(dateInput.substring(4,6),10);
             const day   = parseInt(dateInput.substring(6,8),10);
+            // ありえない日付（13月・32日・2月30日など）は占わない
+            const chk = new Date(Date.UTC(year, month-1, day));
+            if (year < 1 || chk.getUTCFullYear() !== year || chk.getUTCMonth() !== month-1 || chk.getUTCDate() !== day) {
+                alert(`${year}年${month}月${day}日 という日付はありません。\n生年月日をもう一度たしかめてください`); return;
+            }
+            // これから先の日付（まだ生まれていない日）は占わない
+            const now = new Date();
+            if (chk > new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()))) {
+                alert(`${year}年${month}月${day}日 はまだ来ていない日付です。\n生年月日をもう一度たしかめてください`); return;
+            }
+            playSound('click');
             const diff  = Math.floor((new Date(Date.UTC(year,month-1,day)) - new Date(Date.UTC(2000,0,1))) / 86400000);
             const sn    = ((54 + diff) % 60 + 60) % 60 + 1;
             let starType="", starClass="", oppositeType="";
