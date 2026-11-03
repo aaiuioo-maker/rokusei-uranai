@@ -875,8 +875,6 @@
         <button id="clearSelBtn" onclick="clearImgSelect()" style="width:100%; margin-top:8px; padding:11px; border:1px solid #ffc9c9; border-radius:10px; background:#fff0f0; color:var(--accent-red); font-weight:bold; font-size:14px; cursor:pointer;">✖ 選択をクリア（0）</button>
         <div style="text-align:center; margin-top:4px; font-size:11px; color:#aaa;">各行のチェックで選択できます</div>
         <button class="image-btn" id="groupImgBtn" style="background:linear-gradient(135deg,#7dc0ff,#c77dff); margin-top:8px;" onclick="createGroupImage(false)">🎴 選んだ人をまとめて画像化（0）</button>
-        <button class="image-btn" id="folderAddBtn" style="background:linear-gradient(135deg,#f7b267,#e07a5f); margin-top:8px;" onclick="openFolderSheet(null)">📁 選んだ人をフォルダに追加（0）</button>
-        <button class="image-btn" id="folderRemoveBtn" style="display:none; background:#fff; color:#c0563c; border:1.5px solid #f0b8a8; margin-top:8px;" onclick="removeSelectedFromFolder()">📤 選んだ人をこのフォルダから外す（0）</button>
         <div style="font-size:11px; color:#888; text-align:center; margin-top:8px;">まとめ画像の並び替え（押すとその順で作成）</div>
         <div class="sort-bar" style="margin-top:4px;">
             <button class="sort-btn active" id="gs_default"   onclick="makeGroupSorted('default')">📋入力順</button>
@@ -9149,23 +9147,6 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     refresh();
   }
 
-  // ---- このフォルダから外す（チェックした人） ----
-  window.removeSelectedFromFolder = function () {
-    const f = window.currentFolder; if (f === 'all') return;
-    const h = hist(), ks = selectedKeys();
-    let n = 0;
-    h.forEach(it => {
-      if (ks.has(it.name + '|' + it.date) && (it.folders || []).indexOf(f) >= 0) {
-        it.folders = it.folders.filter(x => x !== f); if (!it.folders.length) delete it.folders; n++;
-      }
-    });
-    if (!n) { alert('このフォルダの中で、チェックした人がいません。'); return; }
-    if (!confirm(`${n}人を「${f}」から外しますか？\n（保存した履歴からは消えません）`)) return;
-    saveHist(h); snd('clear');
-    showToast(`${n}人を「${f}」から外しました`);
-    refresh();
-  };
-
   // ---- フォルダを開く・名前を変える・消す ----
   function openFolder(f) { snd('click'); window.currentFolder = f; refresh(); }
   function renameFolder(old) {
@@ -9218,12 +9199,6 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     const act = bar.querySelector('.folder-chip.active');
     if (act && act.scrollIntoView && cur !== 'all') { const l = act.offsetLeft - bar.offsetLeft - 20; bar.scrollLeft = Math.max(0, l); }
   }
-  function updateFolderBtns() {
-    const n = selectedKeys().size;
-    const a = document.getElementById('folderAddBtn'); if (a) a.textContent = `📁 選んだ人をフォルダに追加（${n}）`;
-    const r = document.getElementById('folderRemoveBtn');
-    if (r) { r.style.display = window.currentFolder === 'all' ? 'none' : 'block'; r.textContent = `📤 選んだ人をこのフォルダから外す（${n}）`; }
-  }
   function refresh() {
     if (typeof loadHistory === 'function') loadHistory();
     const dm = document.getElementById('detailModal');
@@ -9246,9 +9221,7 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     return window.currentFolder === 'all' || ((it.folders || []).indexOf(window.currentFolder) >= 0);
   };
   const origLoad = loadHistory;
-  loadHistory = function () { renderBar(); const r = origLoad.apply(this, arguments); updateFolderBtns(); return r; };
-  const origGB = updateGroupBtn;
-  updateGroupBtn = function () { const r = origGB.apply(this, arguments); updateFolderBtns(); return r; };
+  loadHistory = function () { renderBar(); return origLoad.apply(this, arguments); };
   const origSA = updateSelectAllBtn;
   updateSelectAllBtn = function () {
     const r = origSA.apply(this, arguments);
@@ -9256,7 +9229,7 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     if (b && window.currentFolder !== 'all') b.textContent = '☑ 表示中（このフォルダ）を全て選択';
     return r;
   };
-  renderBar(); updateFolderBtns();
+  renderBar();
 })();
 </script>
 <script>(function(){var d=new Date(document.lastModified);if(isNaN(d)||Math.abs(Date.now()-d)<5000)return;function p(n){return('0'+n).slice(-2);}
