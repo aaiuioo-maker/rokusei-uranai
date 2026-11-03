@@ -715,7 +715,6 @@
         </div>
         <!-- フォルダ（iPhone の写真の「アルバム」と同じ感覚。人は一覧に残ったまま、いくつのフォルダにも入れられる） -->
         <div id="folderBar" class="folder-bar"></div>
-        <div id="folderInfo" class="folder-info" style="display:none;"></div>
         <div class="filter-bar" style="gap:6px;">
             <span>🔍 名前検索:</span>
             <input type="text" id="nameSearch" placeholder="名前の一部を入力" style="flex:1; min-width:0; padding:8px 10px; border:1px solid #d1cabb; border-radius:8px; font-size:14px; background:#faf8f4;" onkeydown="if(event.key==='Enter'){applyNameSearch();}">
@@ -9044,8 +9043,13 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     .folder-chip .n { font-weight:normal; opacity:.75; margin-left:3px; }
     .folder-chip.active { background:#e07a5f; border-color:#e07a5f; color:#fff; }
     .folder-chip.new { background:#fff; border-style:dashed; color:#888; border-color:#ccc; }
-    .folder-info { display:flex; align-items:center; flex-wrap:nowrap; gap:8px; background:#fff3e8; border:1px solid #f3d2b8; border-radius:10px; padding:8px; margin-bottom:10px; font-size:12px; color:#7a4a2a; }
-    .folder-info button { flex:1 1 0; font-family:inherit; font-size:12px; font-weight:bold; padding:8px 6px; border-radius:8px; border:1px solid #e8c2a6; background:#fff; color:#a0522d; cursor:pointer; white-space:nowrap; flex-shrink:0; }
+    .folder-chip.manage { background:#f2f2f7; border-color:#d1d1d6; color:#555; }
+    .fm-row { display:flex; align-items:center; gap:6px; padding:9px 8px; margin-bottom:6px; border-radius:12px; border:1px solid #eee; background:#fafafa; }
+    .fm-row .ic { font-size:20px; flex-shrink:0; }
+    .fm-row .nm { flex:1; min-width:0; font-size:14px; font-weight:bold; overflow-wrap:anywhere; }
+    .fm-row .ct { font-size:11px; font-weight:normal; color:#999; margin-left:6px; white-space:nowrap; }
+    .fm-btn { flex-shrink:0; font-family:inherit; font-size:12px; font-weight:bold; padding:7px 9px; border-radius:8px; border:1px solid #e8c2a6; background:#fff; color:#a0522d; cursor:pointer; white-space:nowrap; }
+    .fm-btn.del { border-color:#ffc9c9; color:#d63c3c; }
     .folder-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
     .folder-tag { font-size:10px; font-weight:bold; color:#a0522d; background:#fff3e8; border:1px solid #f3d2b8; border-radius:8px; padding:1px 6px; }
     .detail-ftags { justify-content:center; margin-top:8px; }
@@ -9164,44 +9168,55 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
 
   // ---- フォルダを開く・名前を変える・消す ----
   function openFolder(f) { snd('click'); window.currentFolder = f; refresh(); }
-  function renameFolder() {
-    const old = window.currentFolder; if (old === 'all') return;
-    const n = askName(old, old); if (n === null || n === old) return;
+  function renameFolder(old) {
+    const n = askName(old, old); if (n === null || n === old) return false;
     const a = folders().map(x => x === old ? n : x); saveFolders(a);
     const h = hist(); h.forEach(it => { if (it.folders) it.folders = it.folders.map(x => x === old ? n : x); }); saveHist(h);
-    window.currentFolder = n; snd('success'); refresh();
+    if (window.currentFolder === old) window.currentFolder = n;
+    snd('success'); showToast('「' + n + '」に名前を変えました'); refresh(); return true;
   }
-  function deleteFolder() {
-    const f = window.currentFolder; if (f === 'all') return;
-    if (!confirm(`フォルダ「${f}」を削除しますか？\n中の人は、保存した履歴に そのまま残ります。`)) return;
+  function deleteFolder(f) {
+    if (!confirm(`フォルダ「${f}」を削除しますか？\n中の人は、保存した履歴に そのまま残ります。`)) return false;
     saveFolders(folders().filter(x => x !== f));
     const h = hist(); h.forEach(it => { if (it.folders) { it.folders = it.folders.filter(x => x !== f); if (!it.folders.length) delete it.folders; } }); saveHist(h);
-    window.currentFolder = 'all'; snd('delete'); refresh();
+    if (window.currentFolder === f) window.currentFolder = 'all';
+    snd('delete'); showToast('「' + f + '」を削除しました'); refresh(); return true;
+  }
+  // ---- フォルダ管理・編集（名前を変える・削除する） ----
+  function openManage() { snd('click'); renderManage(); ov.style.display = 'flex'; }
+  function renderManage() {
+    const h = hist(), fs = folders();
+    const rows = fs.map((f, i) => `<div class="fm-row"><span class="ic">📁</span><span class="nm">${esc(f)}<span class="ct">${countIn(h, f)}人</span></span>
+        <button class="fm-btn" data-ren="${i}">✏️ 名前</button><button class="fm-btn del" data-del="${i}">🗑 削除</button></div>`).join('');
+    document.getElementById('fsBody').innerHTML =
+      `<div class="fs-title">⚙️ フォルダ管理・編集</div>
+       <div class="fs-sub">フォルダの名前を変えたり、削除したりできます。<br>フォルダを削除しても、中の人は保存した履歴に残ります。</div>
+       <button class="fs-row new" data-new="1"><span class="ic">＋</span><span class="nm">新しいフォルダを作る</span></button>
+       ${rows || '<div style="font-size:12px; color:#aaa; text-align:center; padding:10px;">まだフォルダがありません</div>'}`;
+    const body = document.getElementById('fsBody');
+    body.querySelector('[data-new]').addEventListener('click', () => { snd('click'); if (createFolder() !== null) { refresh(); renderManage(); } });
+    body.querySelectorAll('[data-ren]').forEach(b => b.addEventListener('click', () => { if (renameFolder(fs[Number(b.dataset.ren)])) renderManage(); }));
+    body.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => { if (deleteFolder(fs[Number(b.dataset.del)])) renderManage(); }));
   }
 
   function renderBar() {
-    const bar = document.getElementById('folderBar'), info = document.getElementById('folderInfo');
+    const bar = document.getElementById('folderBar');
     if (!bar) return;
     const h = hist(), fs = folders();
     if (window.currentFolder !== 'all' && fs.indexOf(window.currentFolder) < 0) window.currentFolder = 'all';
     const cur = window.currentFolder;
     bar.innerHTML = `<button class="folder-chip ${cur === 'all' ? 'active' : ''}" data-all="1">📚 すべて<span class="n">${h.length}</span></button>`
       + fs.map((f, i) => `<button class="folder-chip ${cur === f ? 'active' : ''}" data-i="${i}">📁 ${esc(f)}<span class="n">${countIn(h, f)}</span></button>`).join('')
-      + `<button class="folder-chip new" data-new="1">＋ 新しいフォルダ</button>`;
+      + `<button class="folder-chip new" data-new="1">＋ 新しいフォルダ</button>`
+      + `<button class="folder-chip manage" data-manage="1">⚙️ フォルダ管理・編集</button>`;
     bar.querySelectorAll('.folder-chip').forEach(b => b.addEventListener('click', () => {
       if (b.dataset.all) openFolder('all');
+      else if (b.dataset.manage) openManage();
       else if (b.dataset.new) { snd('click'); const n = createFolder(); if (n !== null) openFolder(n); }
       else openFolder(fs[Number(b.dataset.i)]);
     }));
     const act = bar.querySelector('.folder-chip.active');
     if (act && act.scrollIntoView && cur !== 'all') { const l = act.offsetLeft - bar.offsetLeft - 20; bar.scrollLeft = Math.max(0, l); }
-    if (cur === 'all') { info.style.display = 'none'; info.innerHTML = ''; }
-    else {
-      info.style.display = 'flex';
-      info.innerHTML = `<button data-a="ren">✏️ 名前を変える</button><button data-a="del">🗑 フォルダを削除</button>`;
-      info.querySelector('[data-a="ren"]').addEventListener('click', renameFolder);
-      info.querySelector('[data-a="del"]').addEventListener('click', deleteFolder);
-    }
   }
   function updateFolderBtns() {
     const n = selectedKeys().size;
