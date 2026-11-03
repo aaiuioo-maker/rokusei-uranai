@@ -1344,7 +1344,7 @@
             <div id="detailBody"></div>
             <button class="image-btn" style="margin-top:14px; background:linear-gradient(135deg,#7bc47f,#4a8b6f);" onclick="renamePerson(currentDetailIndex)">✏️ 名前を変更</button>
             <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で表示</button>
-            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを保存</button>
+            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを表示</button>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; margin-top:8px; font-weight:bold;" onclick="document.getElementById('detailModal').style.display='none'">閉じる</button>
         </div>
     </div>
@@ -2206,6 +2206,7 @@
         }
         // 「この人を画像で表示」の画面：左右にスワイプで前後の人の画像、「この人を画像で保存」ボタン
         let imgPersonIdx = null;
+        let imgPersonKind = 'person';   // 'person'＝この人を画像で表示 / 'illust'＝イメージイラスト（左右にスワイプしても同じ種類の画像で前後の人を出す）
         function setImagePersonMode(idx) {
             imgPersonIdx = idx;
             const on = idx !== null, $ = id => document.getElementById(id);
@@ -2223,7 +2224,7 @@
         async function saveShownImage() {
             const src = document.getElementById('exportedImage').src; if (!src) return;
             const h = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'), it = h[imgPersonIdx] || {};
-            const name = ((it.name || '占い') + '_六星カバラ').replace(/[\/:*?"<>|\s]/g, '') + '.png';
+            const name = ((it.name || '占い') + (imgPersonKind === 'illust' ? '_イメージイラスト' : '_六星カバラ')).replace(/[\/:*?"<>|\s]/g, '') + '.png';
             try {
                 const blob = await (await fetch(src)).blob();
                 const file = new File([blob], name, { type: 'image/png' });
@@ -2243,7 +2244,7 @@
                 if (i < 0 || j < 0 || j >= o.length) return;
                 if (typeof playSound === 'function') { try { playSound('click'); } catch (err) {} }
                 box.style.transition = 'opacity .12s'; box.style.opacity = '0.3';
-                setTimeout(() => { showDetail(o[j]); createPersonImage(o[j]); box.scrollTop = 0; box.style.opacity = ''; }, 120);
+                setTimeout(() => { showDetail(o[j]); if (imgPersonKind === 'illust') createPersonIllust(o[j]); else createPersonImage(o[j]); box.scrollTop = 0; box.style.opacity = ''; }, 120);
             });
         })();
         const imgSelect = new Set();
@@ -3065,7 +3066,7 @@
             return yy+lh;
         }
         function createPersonImage(index, noIllust){
-            playSound('success');
+            playSound('success'); imgPersonKind = 'person';
             const history = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
             const item = history[index]; if(!item){ return; }
             const kNum=itemKabNum(item), kInf=kabInfo(kNum);
@@ -3333,7 +3334,7 @@
                 const cv=document.createElement('canvas'); cv.width=560; cv.height=700;
                 drawTarotCard(cv.getContext('2d'), item, kabOnly);
                 document.getElementById('exportedImage').src = cv.toDataURL();
-                document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(null);
+                document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; imgPersonKind = 'illust'; setImagePersonMode(index);
                 document.getElementById('imageModal').style.display='flex';
             }));
         }
