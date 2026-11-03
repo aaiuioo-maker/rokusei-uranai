@@ -1343,7 +1343,6 @@
             <div style="text-align:right; margin-bottom:6px;"><button style="padding:6px 14px; border:none; border-radius:8px; background:#f2f2f7; font-weight:bold; cursor:pointer; font-size:13px;" onclick="document.getElementById('detailModal').style.display='none'">✕ 閉じる</button></div>
             <div id="detailBody"></div>
             <button class="image-btn" style="margin-top:14px; background:linear-gradient(135deg,#7bc47f,#4a8b6f);" onclick="renamePerson(currentDetailIndex)">✏️ 名前を変更</button>
-            <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#f7b267,#e07a5f);" onclick="openFolderSheet(currentDetailIndex)">📁 フォルダに追加・外す</button>
             <button class="image-btn" style="margin-top:8px;" onclick="createPersonImage(currentDetailIndex)">📸 この人を画像で表示</button>
             <button class="image-btn" style="margin-top:8px; background:linear-gradient(135deg,#ff9ec7,#c77dff);" onclick="createPersonIllust(currentDetailIndex)">🎨 イメージイラストを保存</button>
             <button style="width:100%; padding:11px; border:none; border-radius:10px; background:#f2f2f7; margin-top:8px; font-weight:bold;" onclick="document.getElementById('detailModal').style.display='none'">閉じる</button>
@@ -9042,12 +9041,21 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     .folder-chip.active { background:#e07a5f; border-color:#e07a5f; color:#fff; }
     .folder-chip.new { background:#fff; border-style:dashed; color:#888; border-color:#ccc; }
     .folder-chip.manage { background:#f2f2f7; border-color:#d1d1d6; color:#555; }
-    .fm-row { display:flex; align-items:center; gap:6px; padding:9px 8px; margin-bottom:6px; border-radius:12px; border:1px solid #eee; background:#fafafa; }
+    .fm-row { display:flex; flex-wrap:wrap; align-items:center; gap:6px; padding:9px 8px; margin-bottom:6px; border-radius:12px; border:1px solid #eee; background:#fafafa; }
     .fm-row .ic { font-size:20px; flex-shrink:0; }
-    .fm-row .nm { flex:1; min-width:0; font-size:14px; font-weight:bold; overflow-wrap:anywhere; }
+    .fm-row .nm { flex:1 1 calc(100% - 34px); min-width:0; font-size:14px; font-weight:bold; overflow-wrap:anywhere; }
     .fm-row .ct { font-size:11px; font-weight:normal; color:#999; margin-left:6px; white-space:nowrap; }
-    .fm-btn { flex-shrink:0; font-family:inherit; font-size:12px; font-weight:bold; padding:7px 9px; border-radius:8px; border:1px solid #e8c2a6; background:#fff; color:#a0522d; cursor:pointer; white-space:nowrap; }
+    .fm-btn { flex:1 1 0; text-align:center; font-family:inherit; font-size:12px; font-weight:bold; padding:7px 9px; border-radius:8px; border:1px solid #e8c2a6; background:#fff; color:#a0522d; cursor:pointer; white-space:nowrap; }
     .fm-btn.del { border-color:#ffc9c9; color:#d63c3c; }
+    .fm-btn.ppl { border-color:#b7d3f5; color:#2a6db5; }
+    .fp-search { width:100%; box-sizing:border-box; font-family:inherit; font-size:16px; padding:9px 12px; border:1px solid #d1cabb; border-radius:10px; background:#faf8f4; margin-bottom:8px; }
+    .fp-list { max-height:50vh; overflow-y:auto; border-top:1px solid #eee; border-bottom:1px solid #eee; margin-bottom:6px; }
+    .fp-row { display:flex; align-items:center; gap:10px; padding:10px 6px; border-bottom:1px solid #f2f2f7; cursor:pointer; }
+    .fp-row:last-child { border-bottom:none; }
+    .fp-row input { width:22px; height:22px; flex-shrink:0; accent-color:#e07a5f; }
+    .fp-row .nm { flex:1; min-width:0; font-size:14px; font-weight:bold; overflow-wrap:anywhere; }
+    .fp-row .dt { font-size:11px; color:#999; flex-shrink:0; }
+    .fp-back { font-family:inherit; font-size:13px; font-weight:bold; padding:6px 12px; border:none; border-radius:8px; background:#f2f2f7; cursor:pointer; margin-bottom:8px; }
     .folder-tags { display:flex; flex-wrap:wrap; gap:3px; margin-top:4px; }
     .folder-tag { font-size:10px; font-weight:bold; color:#a0522d; background:#fff3e8; border:1px solid #f3d2b8; border-radius:8px; padding:1px 6px; }
     .detail-ftags { justify-content:center; margin-top:8px; }
@@ -9168,16 +9176,45 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
   function renderManage() {
     const h = hist(), fs = folders();
     const rows = fs.map((f, i) => `<div class="fm-row"><span class="ic">📁</span><span class="nm">${esc(f)}<span class="ct">${countIn(h, f)}人</span></span>
-        <button class="fm-btn" data-ren="${i}">✏️ 名前</button><button class="fm-btn del" data-del="${i}">🗑 削除</button></div>`).join('');
+        <button class="fm-btn ppl" data-ppl="${i}">👤 人を選ぶ</button><button class="fm-btn" data-ren="${i}">✏️ 名前</button><button class="fm-btn del" data-del="${i}">🗑 削除</button></div>`).join('');
     document.getElementById('fsBody').innerHTML =
       `<div class="fs-title">⚙️ フォルダ管理・編集</div>
-       <div class="fs-sub">フォルダの名前を変えたり、削除したりできます。<br>フォルダを削除しても、中の人は保存した履歴に残ります。</div>
+       <div class="fs-sub">「👤 人を選ぶ」でフォルダに人を入れたり外したりできます。<br>フォルダを削除しても、中の人は保存した履歴に残ります。</div>
        <button class="fs-row new" data-new="1"><span class="ic">＋</span><span class="nm">新しいフォルダを作る</span></button>
        ${rows || '<div style="font-size:12px; color:#aaa; text-align:center; padding:10px;">まだフォルダがありません</div>'}`;
     const body = document.getElementById('fsBody');
     body.querySelector('[data-new]').addEventListener('click', () => { snd('click'); if (createFolder() !== null) { refresh(); renderManage(); } });
     body.querySelectorAll('[data-ren]').forEach(b => b.addEventListener('click', () => { if (renameFolder(fs[Number(b.dataset.ren)])) renderManage(); }));
     body.querySelectorAll('[data-del]').forEach(b => b.addEventListener('click', () => { if (deleteFolder(fs[Number(b.dataset.del)])) renderManage(); }));
+    body.querySelectorAll('[data-ppl]').forEach(b => b.addEventListener('click', () => { snd('click'); renderPeople(fs[Number(b.dataset.ppl)]); }));
+  }
+  // ---- フォルダに入れる人を選ぶ（チェックを入れると入る・外すと出る。保存した履歴からは消えない） ----
+  function renderPeople(f) {
+    const h = hist();
+    const body = document.getElementById('fsBody');
+    const rows = h.map((it, i) => `<label class="fp-row" data-q="${esc((it.name || '').toLowerCase())}"><input type="checkbox" data-k="${i}" ${(it.folders || []).indexOf(f) >= 0 ? 'checked' : ''}>
+        <span class="nm">${esc(it.name || '名前なし')}</span><span class="dt">${esc(it.date || '')}</span></label>`).join('');
+    body.innerHTML =
+      `<button class="fp-back" data-back="1">‹ フォルダ管理に戻る</button>
+       <div class="fs-title">📁 ${esc(f)}<span id="fpCount" style="font-size:13px; color:#999; font-weight:normal; margin-left:6px;">${countIn(h, f)}人</span></div>
+       <div class="fs-sub">チェックを入れた人が このフォルダに入ります。<br>チェックを外すと、フォルダから出ます（保存した履歴には残ります）。</div>
+       ${h.length ? '<input class="fp-search" type="search" placeholder="🔍 名前で探す">' : ''}
+       <div class="fp-list">${rows || '<div style="font-size:12px; color:#aaa; text-align:center; padding:14px;">まだ保存した人がいません</div>'}</div>`;
+    body.querySelector('[data-back]').addEventListener('click', () => { snd('click'); renderManage(); });
+    const q = body.querySelector('.fp-search');
+    if (q) q.addEventListener('input', () => {
+      const v = q.value.trim().toLowerCase();
+      body.querySelectorAll('.fp-row').forEach(r => { r.style.display = !v || r.dataset.q.indexOf(v) >= 0 ? '' : 'none'; });
+    });
+    body.querySelectorAll('.fp-row input').forEach(cb => cb.addEventListener('change', () => {
+      const hh = hist(), it = hh[Number(cb.dataset.k)]; if (!it) return;
+      const a = (it.folders || []).filter(x => x !== f);
+      if (cb.checked) a.push(f);
+      if (a.length) it.folders = a; else delete it.folders;
+      saveHist(hh); snd(cb.checked ? 'success' : 'clear');
+      const c = document.getElementById('fpCount'); if (c) c.textContent = countIn(hh, f) + '人';
+      refresh();
+    }));
   }
 
   function renderBar() {
