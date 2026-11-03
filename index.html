@@ -3291,9 +3291,20 @@
             ctx.restore();
             roundRectPath(ctx,px,py,pw,ph,16); ctx.lineWidth=2; ctx.strokeStyle=GOLD; ctx.stroke();
             let y=py+ph+38;
-            // 左の余白に、提供された元のタイルを正方形で配置（文字と重ならないよう上寄せ）
+            // 左の余白に、「この人を画像で表示」と同じ 鍵の数のキャラクター（探求者なら虫眼鏡で見ている子）と番号の丸を置く
             const iconR=44, iconCX=cX+92;
-            drawIconFromSheet(ctx, kNum, iconCX, py+ph+60, iconR);
+            {
+                const ch = KAB_CHAR[kNum] || ['✨','#c77dff'];
+                const mr = 30;                                            // キャラクターの体の半径
+                const top = (KAB_TOP[kNum]||0.3);                         // 頭の上の飾りの高さ
+                const my2 = py+ph+56 + Math.round(mr*(top-0.15)*0.5);    // 飾りと足をふくめて、前のタイルと同じあたりに収める
+                drawMascot(ctx, iconCX, my2, mr, kNum, ch[1]);
+                const bx = iconCX+mr*0.82, by = my2-mr*0.82, br = 13;
+                ctx.beginPath(); ctx.arc(bx, by, br, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+                ctx.lineWidth=2; ctx.strokeStyle=ch[1]; ctx.stroke();
+                ctx.fillStyle=ch[1]; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.textBaseline='middle';
+                ctx.fillText(String(kNum), bx, by+1); ctx.textBaseline='alphabetic';
+            }
             drawBloodIcon(ctx, item.bloodType, W-iconCX, py+ph+58, 42);   // 右側に血液型アイコン（左と対称）
             ctx.textAlign='center';
             let nfs=28; ctx.font='bold '+nfs+'px sans-serif';
