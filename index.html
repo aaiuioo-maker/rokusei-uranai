@@ -497,6 +497,8 @@
         /* ===== 芸能人プロフィール検索 ===== */
         .tl-panel { background:#fffaf2; border:1px solid #e6d8bf; border-radius:14px; padding:12px; margin-bottom:12px; display:none; }
         .tl-panel.open { display:block; }
+        .tl-inputs { display:none; }
+        .tl-inputs.open { display:block; }
         .tl-form { display:flex; gap:6px; }
         .tl-field { position:relative; flex:1; min-width:0; }
         .tl-field input { width:100%; box-sizing:border-box; font-family:inherit; font-size:16px; padding:10px 36px 10px 10px; border:1.5px solid #d1cabb; border-radius:10px; background:#fff; color:#000; -webkit-appearance:none; appearance:none; }
@@ -645,6 +647,8 @@
             <div class="tl-hist"><div class="tl-hist-t" id="tlHistTitle">例</div><div class="tl-chips" id="tlChips"></div></div>
             <div class="tl-note">Wikipedia（なければWikidata）から生年月日と血液型を取り出します。「この人で占う」を押すと下の欄に入って占い、「保存する」で血液型も一緒に記録されます。</div>
         </div>
+        <!-- 生年月日などの入力欄：はじめは隠しておき、「芸能人を検索して入力」を押すと 検索の欄といっしょに出る -->
+        <div id="tlInputs" class="tl-inputs">
         <div class="input-group">
             <label>生年月日（8桁の数字）</label>
             <input type="text" id="birthdateStr" inputmode="numeric" placeholder="例: 19670703" maxlength="8">
@@ -669,6 +673,7 @@
         <div class="btn-group">
             <button class="primary-btn" onclick="calculateDestiny()">占う</button>
             <button class="secondary-btn" onclick="clearInputs()">クリア</button>
+        </div>
         </div>
         <div id="result" class="result-area">
             <div id="subProfileDisplay" style="font-size:13px; color:var(--text-sub); font-weight:bold;"></div>
@@ -4363,8 +4368,9 @@
 
       window.tlToggle = function() {
         snd("click");
-        const p = $("tlPanel"); p.classList.toggle("open");
-        if (p.classList.contains("open")) { renderChips(); $("tlQ").focus(); }
+        const p = $("tlPanel"), open = p.classList.toggle("open");
+        $("tlInputs").classList.toggle("open", open);   // 生年月日などの入力欄も いっしょに出す・隠す
+        if (open) { renderChips(); $("tlQ").focus(); }
       };
     })();
     </script>
