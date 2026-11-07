@@ -560,6 +560,22 @@
 #ccMovie .ccm-box { width: 100%; max-width: 420px; display: grid; gap: 10px; }
 #ccMovie video { width: 100%; pointer-events: none; aspect-ratio: 1; background: #000; border: 3px double #f8f8f8; border-radius: 6px; }
 #ccMovie .ccm-close { padding: 11px; border-radius: 10px; border: none; background: #f8f8f8; color: #0b1120; font: 700 14px -apple-system, "Hiragino Sans", sans-serif; cursor: pointer; }
+        /* === 使い方（まお→まい→コハク→中2→るな→花音→桜音 の順番に声で説明。AivisSpeech の7人） === */
+        body.tut { padding-bottom: 200px; }
+        .hl { outline: 3px solid #d97757 !important; outline-offset: 3px; border-radius: 10px; box-shadow: 0 0 18px rgba(217,119,87,.6) !important; }
+        .tut-btn { background-color: #7b2fbf; color: #fff; }
+        #tut { position: fixed; left: 0; right: 0; bottom: 0; z-index: 3000; display: none; justify-content: center; padding: 0 10px calc(10px + env(safe-area-inset-bottom)); pointer-events: none; }
+        body.tut #tut { display: flex; }
+        #tut .box { pointer-events: auto; width: 100%; max-width: 480px; background: #1c1c1e; color: #fff; border: 2px solid #d97757; border-radius: 14px; padding: 10px 12px; box-shadow: 0 -4px 20px rgba(0,0,0,.35); font-family: inherit; }
+        #tut .row1 { display: flex; gap: 10px; align-items: center; }
+        #tut .who { flex: 0 0 auto; text-align: center; font-size: 11px; font-weight: 700; color: #ffd9a8; }
+        #tutFace { display: block; width: 42px; height: 51px; margin: 0 auto 2px; image-rendering: pixelated; }
+        #tutCap { flex: 1; font-size: 15px; line-height: 1.55; min-height: 3.1em; text-align: left; }
+        #tut .row2 { display: flex; gap: 6px; margin-top: 8px; align-items: center; }
+        #tut .row2 button { flex: 1; font-family: inherit; font-size: 13px; font-weight: 700; color: #fff; background: #2c2c2e; border: 1px solid #48484a; border-radius: 8px; padding: 7px 2px; cursor: pointer; }
+        #tut .row2 #tutEnd { flex: 0 0 auto; padding: 7px 10px; background: #d97757; border-color: #d97757; }
+        #tut .credit { font-size: 10px; color: #8e8e93; margin-top: 4px; text-align: right; }
+        #tut .row2 #tutNo { flex: 0 0 auto; font-size: 11px; color: #8e8e93; padding: 0 4px; }
 </style>
 </head>
 <body>
@@ -628,7 +644,9 @@
     <div class="container" id="mainContainer" style="display: none;">
         <div class="header-area">
             <h1>六星占術 × カバラ 判定</h1>
+            <div style="display:flex; gap:6px;"><button id="tutBtn" class="sound-toggle tut-btn" type="button">📖 使い方</button>
             <button id="soundToggleBtn" class="sound-toggle active" onclick="toggleSound()">🔊 音: ON</button>
+            </div>
         </div>
         <button class="compat-open-btn" style="background:linear-gradient(135deg,#b8567f,#5b4a33);" onclick="tlToggle()">🔍 芸能人を検索して入力</button>
         <div id="tlPanel" class="tl-panel">
@@ -11938,5 +11956,198 @@ e.style.cssText='display:block;width:100%;text-align:center;font:11px/1.4 sans-s
 var t=document.querySelector('#opgo,#op-press,#op-start,#tapHint,#opPressText,#startBtn,.op-press-text');
 if(t){t.insertAdjacentElement('afterend',e);return;}
 var o=document.querySelector('#opening,#openingScreen,#startBox');if(o)o.appendChild(e);})();</script>
+<!-- 使い方（7人が順番に声で説明する） -->
+<div id="tut" aria-live="polite">
+  <div class="box">
+    <div class="row1">
+      <div class="who"><canvas id="tutFace" width="56" height="68" aria-hidden="true"></canvas><span id="tutName"></span></div>
+      <div id="tutCap"></div>
+    </div>
+    <div class="row2">
+      <button id="tutPrev" type="button">◀ 前</button>
+      <button id="tutPlay" type="button">⏸ 止める</button>
+      <button id="tutNext" type="button">次 ▶</button>
+      <span id="tutNo"></span>
+      <button id="tutEnd" type="button">✕ おわる</button>
+    </div>
+    <div class="credit">声：AivisSpeech:まお・まい・コハク・中2・るな・花音・桜音</div>
+  </div>
+</div>
+<script>
+(function tutorial() {
+  const $ = id => document.getElementById(id);
+  const initAudio = () => { try { if (audioCtx.state === 'suspended') audioCtx.resume(); } catch (e) {} };
+  // 1文字＝1ドット（横14×縦16）。S＝はだ、E＝目
+    const SPK = [
+      { name: 'まお', pal: { H: '#f2a6c0', h: '#ffd0e0', R: '#ffffff', S: '#ffe2cc', E: '#c0507a', W: '#f8f0f4', P: '#e07aa0' }, map: [
+        '.HH..HHHH..HH.', '.HhHHHHHHHHhH.', '.HHHHHHHHHHHH.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', 'HH..SSSSSS..HH', 'HH.WWWPPWWW.HH',
+        '.H.WWWWWWWW.H.', '...WWWWWWWW...', '...PPPPPPPP...', '...WWWWWWWW...'] },
+      { name: 'まい', pal: { H: '#2a2438', h: '#4a4260', R: '#e04848', S: '#ffe2cc', E: '#6a4a8a', W: '#f4f4f4', N: '#2a3a6a' }, map: [
+        '....HHHHHH.RR.', '..HHHHHHHHHRR.', '.HHHHHhHHHHHH.', '.HHHHHHHHHHHH.',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', 'HH..SSSSSS..HH', 'HH.NWWRRWWN.HH',
+        'HH.NNWWWWNN.HH', 'HH.NNNNNNNN.HH', '...NNNNNNNN...', '...NNNNNNNN...'] },
+      { name: 'コハク', pal: { H: '#e8a840', h: '#ffd070', S: '#ffe2cc', E: '#c07a20', W: '#f8f4ec', G: '#d08a30', B: '#7a5a3a' }, map: [
+        '....HHHHHH....', '..HHHHhHHHHH..', '.HHHHHHHHHHHH.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', '.H..SSSSSS..H.', '...WWWGGWWW...',
+        '..BWWWWWWWWB..', '..BWWWWWWWWB..', '..BBWWWWWWBB..', '..BBWWWWWWBB..'] },
+      { name: '中2', pal: { H: '#1e1a2a', h: '#3a3450', S: '#ffe2cc', E: '#d03030', B: '#101018', R: '#c02a3a', K: '#1a1a24' }, map: [
+        '...HHHHHHHH...', '..HHHHhHHHHH..', '.HHHHHHHHHHHH.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHBBBBSSSSSSHH', 'HHBBBSSSSEESHH', 'HHSBBSSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', '.H..SSSSSS..H.', '...KKKRRKKK...',
+        '..KKKKRRKKKK..', '..KKKKKKKKKK..', '..KRKKKKKKRK..', '..KKKKKKKKKK..'] },
+      { name: 'るな', pal: { H: '#c8c0e8', h: '#ece6ff', Y: '#ffd84a', S: '#ffe2cc', E: '#6a5ab0', W: '#f4f2ff', N: '#3a3470' }, map: [
+        '....HHHHHH.YY.', '..HHHHHHHHHY..', '.HHHHhHHHHHYY.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', 'HH..SSSSSS..HH', 'HH.NNWWWWNN.HH',
+        'HH.NNNYYNNN.HH', '.H.NNNNNNNN.H.', '...NNNNNNNN...', '...NNNNNNNN...'] },
+      { name: '花音', pal: { H: '#f0a050', h: '#ffd090', F: '#ffffff', Y: '#ffd84a', S: '#ffe2cc', E: '#c06a30', W: '#fff8ec', G: '#7ac07a' }, map: [
+        '....HHHHHH.FYF', '..HHHHHHHHHFYF', '.HHHHhHHHHHHF.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', 'HH..SSSSSS..HH', 'HH.GWWWWWWG.HH',
+        'HH.GGWWWWGG.HH', '.H.GGGGGGGG.H.', '...GGGGGGGG...', '...GGGGGGGG...'] },
+      { name: '桜音', pal: { H: '#f6b8cc', h: '#ffe0ea', F: '#ffffff', P: '#e05a8a', S: '#ffe2cc', E: '#c0507a', W: '#fff4f8', K: '#e88aa8' }, map: [
+        '.FPF.HHHHHH...', '.PFPHHHHHHHH..', '.FPFHHhHHHHHH.', 'HHHHHHHHHHHHHH',
+        'HHHSSHSSHSSHHH', 'HHSSSSSSSSSSHH', 'HHSEESSSSEESHH', 'HHSEESSSSEESHH',
+        'HHSSSSSSSSSSHH', 'HH.SSSSSSSS.HH', 'HH..SSSSSS..HH', 'HH.WWWKKWWW.HH',
+        'HH.WWWWWWWW.HH', '.H.KKKKKKKK.H.', '...WWWWWWWW...', '...KKKKKKKK...'] },
+    ];
+  const q = sel => () => document.querySelector(sel);
+  // [字幕, 光らせる所（関数）, その場面でする操作]。i 番目は SPK[i % SPK.length] が読む（7人で順番に）
+  // 声は koe-tut/番号.mp3（AivisSpeech で作ったもの）。読めなかったときは 端末の声で読む
+  //   字幕を変えたら声も作り直すこと（KOE_V を1つ上げる）
+  const KOE_V = 1;
+  const COMPAT = ['openCompat()', 'openGogyo()', 'openKc()'];
+  const STEPS = [
+    ['こんにちは。六星占術とカバラ数秘術のアプリの使い方を説明します。', null],
+    ['「芸能人を検索して入力」を押して名前を入れると、生年月日を調べて入れてくれます。', q('#mainContainer > .compat-open-btn')],
+    ['自分で入れるときは、生年月日を8けたの数字で入れます。', () => $('birthdateStr').closest('.input-group'), () => typeIn('birthdateStr', '19670703')],
+    ['名前と、グループを入れておくと、あとで探しやすくなります。', () => $('personName').closest('.input-group'), () => typeIn('personName', '山田 花子（例）')],
+    ['「占う」を押すと、六星占術の星人と、カバラ数秘術の3つの数字が出ます。', q('.btn-group .primary-btn'), () => { $('birthdateStr').value = '19670703'; setTimeout(() => { if (tutOn && tutI === 4) showResult(); }, 1200); }],
+    ['結果を残したいときは「保存する」を押します。下の履歴に追加されます。', q('#result > button[onclick="saveRecord()"]'), showResult],
+    ['保存した人は「保存した履歴」に並びます。名前をタップすると、くわしい内容が開きます。', () => $('historyList')],
+    ['グループや星人、血液型、数秘などで絞り込めます。選んでいる所は、黄色になります。', () => $('starFilter').parentElement],
+    ['このボタンで、入力順や星人順、年齢順などに並べかえられます。', () => $('sortBtnDefault').parentElement],
+    ['チェックを入れた人は、まとめて画像にできます。', () => $('groupImgBtn')],
+    ['六星占術、五星三心、カバラ数秘術の、相性早見表も見られます。', null, () => COMPAT.forEach((c, k) => { const b = document.querySelector('.compat-open-btn[onclick="' + c + '"]'); if (!b) return; b.classList.add('hl'); if (!k) b.scrollIntoView({ behavior: 'smooth', block: 'center' }); })],
+    ['「バックアップ保存」でデータを書き出して、「データを復元」でもどせます。機種変更のときにも使えます。', q('.backup-area')],
+    ['いちばん下には、六星占術、五星三心、カバラ数秘術の解説があります。', () => $('starRefContainer')],
+    ['説明は以上です。ご利用ありがとうございました。', null],
+  ];
+  // 例の結果を出す（保存はしない）
+  function showResult() {
+    if ($('result').style.display === 'block' && $('birthdateStr').value === '19670703') return;
+    $('birthdateStr').value = '19670703';
+    const ps = window.playSound; window.playSound = () => {};
+    try { calculateDestiny(); } catch (e) {}
+    window.playSound = ps;
+  }
+  // 文字を1文字ずつ打ちこむ
+  function typeIn(id, text) {
+    const el = $(id); el.value = '';
+    [...text].forEach((ch, k) => setTimeout(() => { if (tutOn) el.value += ch; }, 250 + k * 110));
+  }
+
+  const koe = [];   // 声（デコード済み）。読めなかったときは端末の声で読む
+  function loadKoe() {
+    if (koe.length) return;
+    STEPS.forEach((st, i) => koe[i] = !KOE_V || typeof audioCtx === 'undefined' ? Promise.resolve(null) :
+      fetch('koe-tut/' + String(i).padStart(2, '0') + '.mp3?v=' + KOE_V)
+        .then(r => r.ok ? r.arrayBuffer() : null).catch(() => null)
+        .then(ab => ab && new Promise(res => { try { audioCtx.decodeAudioData(ab, b => res(b), () => res(null)); } catch (e) { res(null); } })));
+  }
+  // 端末の声は 7人で 高さを少しずつ変えて、だれが話しているか分かるようにする
+  const PITCH = [1.2, 1.35, 1.05, 1.15, 1.45, 1.25, 1.4];
+  let tutOn = false, tutI = 0, tutPlaying = false, tutToken = null, tutSrc = null, talking = false, saved = null;
+  function stopVoice() {
+    tutToken = null; talking = false;
+    if (tutSrc) { try { tutSrc.onended = null; tutSrc.stop(); } catch (e) {} tutSrc = null; }
+    try { speechSynthesis.cancel(); } catch (e) {}
+  }
+  function showStep(i) {
+    tutI = i;
+    const st = STEPS[i], sp = SPK[i % SPK.length];
+    $('tutCap').textContent = st[0];
+    $('tutName').textContent = sp.name;
+    $('tutNo').textContent = (i + 1) + '/' + STEPS.length;
+    document.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+    if (st[2]) st[2]();
+    const el = st[1] && st[1]();
+    if (el) { el.classList.add('hl'); el.scrollIntoView({ behavior: 'smooth', block: 'center' }); }
+    else if (!st[2]) window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  function playStep(i) {
+    stopVoice(); showStep(i);
+    if (!tutPlaying) return;
+    const token = tutToken = {};
+    const next = () => { if (tutToken !== token) return; talking = false;
+      setTimeout(() => { if (tutToken !== token) return; if (tutI < STEPS.length - 1) playStep(tutI + 1); else { tutPlaying = false; showPlay(); } }, 700); };
+    talking = true;
+    koe[i].then(b => {
+      if (tutToken !== token) return;
+      if (b) {
+        initAudio();
+        const s = audioCtx.createBufferSource(); s.buffer = b; s.connect(audioCtx.destination);
+        s.onended = next; tutSrc = s; s.start();
+      } else {
+        try {
+          const u = new SpeechSynthesisUtterance(STEPS[i][0].replace(/[「」]/g, ''));
+          u.lang = 'ja-JP'; u.pitch = PITCH[i % PITCH.length]; u.onend = next; u.onerror = next; speechSynthesis.speak(u);
+        } catch (e) { setTimeout(next, 3500); }
+      }
+    });
+  }
+  function showPlay() { $('tutPlay').textContent = tutPlaying ? '⏸ 止める' : '▶ 聞く'; }
+  // 入力欄と結果を覚えておく（おわったら もどす）
+  const FORM = ['birthdateStr', 'personName', 'personCategory'];
+  function startTut() {
+    if (tutOn) return;
+    initAudio(); try { playSound('click'); } catch (e) {} loadKoe();
+    saved = { form: FORM.map(f => $(f).value), result: $('result').style.display, html: $('result').innerHTML };
+    tutOn = true; tutPlaying = true; document.body.classList.add('tut'); showPlay();
+    playStep(0);
+  }
+  function endTut() {
+    stopVoice(); tutOn = false; tutPlaying = false;
+    document.body.classList.remove('tut');
+    document.querySelectorAll('.hl').forEach(e => e.classList.remove('hl'));
+    if (saved) {
+      FORM.forEach((f, k) => $(f).value = saved.form[k]);
+      if (saved.result !== 'block') $('result').style.display = saved.result;
+      else if (saved.form[0]) { const ps = window.playSound; window.playSound = () => {}; try { calculateDestiny(); } catch (e) {} window.playSound = ps; }
+    }
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+  $('tutBtn').onclick = startTut;
+  $('tutEnd').onclick = endTut;
+  $('tutPlay').onclick = () => { initAudio(); tutPlaying = !tutPlaying; showPlay(); if (tutPlaying) playStep(tutI); else stopVoice(); };
+  $('tutPrev').onclick = () => { if (tutI > 0) { tutPlaying ? playStep(tutI - 1) : showStep(tutI - 1); } };
+  $('tutNext').onclick = () => { if (tutI < STEPS.length - 1) { tutPlaying ? playStep(tutI + 1) : showStep(tutI + 1); } };
+  // 読んでいる人の顔（しゃべっている間は口がパクパク・体がはずむ）
+  (function face() {
+    const c = $('tutFace'), g = c.getContext('2d'), k = 4;
+    const P = (x, y, col) => { g.fillStyle = col; g.fillRect(x * k, y * k, k, k); };
+    function draw(now) {
+      requestAnimationFrame(draw);
+      if (!tutOn) return;
+      const t = now / 1000, sp = SPK[tutI % SPK.length];
+      const bob = talking && Math.floor(t * 4) % 2 ? -1 : 0, blink = (t % 3.2) > 3.05;
+      g.clearRect(0, 0, c.width, c.height);
+      sp.map.forEach((row, y) => [...row].forEach((ch, x) => {
+        if (ch === '.') return;
+        if (ch === 'E' && blink) { if (y === 7) P(x, y + bob + 1, '#5a3a3a'); return; }
+        P(x, y + bob + 1, sp.pal[ch]);
+      }));
+      const open = talking && Math.floor(t * 9) % 3 !== 0;
+      if (open) { P(6, 10 + bob, '#8a2a3a'); P(7, 10 + bob, '#8a2a3a'); P(6, 11 + bob, '#e07080'); P(7, 11 + bob, '#8a2a3a'); }
+      else { P(6, 10 + bob, '#c0505a'); P(7, 10 + bob, '#c0505a'); }
+    }
+    requestAnimationFrame(draw);
+  })();
+})();
+</script>
 </body>
 </html>
