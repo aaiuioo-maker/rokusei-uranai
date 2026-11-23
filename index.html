@@ -1554,6 +1554,15 @@
             'color-jupiter': '面倒見がよく包容力のある親分肌。人望が厚く筋を大切にし、情に厚い頼れるリーダー。',
             'color-mercury': '頭がよく堅実な現実派。貯蓄上手で世渡り上手、本音は慎重な家庭的・安定志向の人。'
         };
+        // 「この人の画像」で絵の下に出す一言（w=星人、p=プラス、m=マイナス）
+        const STAR_WORD = {
+            saturn:  { w:'忍耐強い努力家', p:'表に出る行動派', m:'我慢強い慎重派' },
+            venus:   { w:'明るい人気者',   p:'華やかな社交家', m:'優しい世話好き' },
+            mars:    { w:'自由な個性派',   p:'パワフルな行動派', m:'神秘的な内向派' },
+            uranus:  { w:'賢いバランス型', p:'軽やかな社交派', m:'クールな計算派' },
+            jupiter: { w:'頼れる親分肌',   p:'前に出るリーダー', m:'縁の下の支え役' },
+            mercury: { w:'堅実な現実派',   p:'愛想よい行動派', m:'家庭的な安定派' }
+        };
         // 星人の元素の漢字（印用）
         const STAR_KANJI = {
             'color-saturn':'土', 'color-venus':'金', 'color-mars':'火',
@@ -3137,7 +3146,7 @@
                 // ===== 1. 六星占術 =====
                 secHead('六星占術', '#8b6f47');
                 if(!noIllust){
-                    const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=160, h=w*138/120;
+                    const ks=_chibiKeys(item).filter(k=>_chibiCache[k]), imgs=ks.map(k=>_chibiCache[k]), w=160, h=w*138/120;
                     const lab=item.isReigou && imgs.length===2 ? 28 : 0;   // 霊合星人だけ、絵の上に「表」「裏」の札
                     imgs.forEach((im,i)=>{
                         const ix=cx+(i-(imgs.length-1)/2)*180;
@@ -3146,8 +3155,15 @@
                             ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.fillText(i?'裏':'表', ix, y+5);
                         }
                         ctx.drawImage(im, ix-w/2, y-14+lab, w, h);
+                        // 絵の下に、星人の一言と＋－の一言
+                        const kw=STAR_WORD[ks[i].slice(0,-1)], isP=ks[i].slice(-1)==='+';
+                        if(kw){
+                            ctx.textAlign='center';
+                            ctx.fillStyle='#3a342c'; ctx.font='bold 18px sans-serif'; ctx.fillText(kw.w, ix, y+h+10+lab);
+                            ctx.fillStyle=isP?'#e0672a':'#2a6fe0'; ctx.font='bold 16px sans-serif'; ctx.fillText((isP?'＋ ':'－ ')+(isP?kw.p:kw.m), ix, y+h+33+lab);
+                        }
                     });
-                    if(imgs.length) y+=h+18+lab;
+                    if(imgs.length) y+=h+18+lab+56;
                 }
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
                 ctx.fillText(item.star, cx, y); y+=26;
