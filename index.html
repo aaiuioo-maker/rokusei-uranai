@@ -3145,17 +3145,25 @@
                 function divider(){ y+=14; ctx.strokeStyle='#e2dcf0'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(90,y); ctx.lineTo(W-90,y); ctx.stroke(); y+=26; }
                 // ===== 1. 六星占術 =====
                 secHead('六星占術', '#8b6f47');
+                // 六星と五星三心の「絵＋一言」が真ん中に来るよう、一番長い一言の幅からずらす量を決める
+                const blockShift=(()=>{
+                    const g=typeof gogyoTypeOf==='function'?gogyoTypeOf(item):null, ws=[];
+                    _chibiKeys(item).forEach(k=>{ const o=STAR_WORD[k.slice(0,-1)]; if(o) ws.push(o.w, k.slice(-1)==='+'?o.p:o.m); });
+                    if(g) ws.push(GOGYO_WORD[g.base]||'', GOGYO_KIN_WORD[g.isGold]);
+                    ctx.font='bold 23px sans-serif';
+                    return 126-Math.max(0,...ws.map(t=>ctx.measureText(t).width))/2;
+                })();
                 if(!noIllust){
                     const ks=_chibiKeys(item).filter(k=>_chibiCache[k]), imgs=ks.map(k=>_chibiCache[k]), w=160, h=w*138/120;
                     const lab=item.isReigou && imgs.length===2 ? 28 : 0, rh=h+lab+4;   // 霊合星人だけ、絵の上に「表」「裏」の札（2人は縦に並べる）
                     imgs.forEach((im,i)=>{
-                        const ix=cx-150, ry=y+i*rh;   // 絵は左に寄せて、右に一言（五星三心と同じ並び）
+                        const ix=cx-150+blockShift, ry=y+i*rh;   // 絵は左に寄せて、右に一言（五星三心と同じ並び）
                         if(lab){
                             roundRectPath(ctx, ix-24, ry-12, 48, 24, 12); ctx.fillStyle=i?'#5a6b8c':'#af52de'; ctx.fill();
                             ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.fillText(i?'裏':'表', ix, ry+5);
                         }
                         ctx.drawImage(im, ix-w/2, ry-14+lab, w, h);
-                        const kw=STAR_WORD[ks[i].slice(0,-1)], isP=ks[i].slice(-1)==='+', tx=cx-57, c=ry-14+lab+h/2;
+                        const kw=STAR_WORD[ks[i].slice(0,-1)], isP=ks[i].slice(-1)==='+', tx=cx-57+blockShift, c=ry-14+lab+h/2;
                         if(kw){
                             ctx.textAlign='left';
                             ctx.fillStyle='#8a8070'; ctx.font='bold 13px sans-serif'; ctx.fillText((i?item.subStar:item.star).replace(/[(（].*/,''), tx, c-30);
@@ -3189,7 +3197,7 @@
                 if(typeof gogyoTypeOf==='function'){ const gg=gogyoTypeOf(item); if(gg){
                     secHead('五星三心占い', '#b8860b');
                     if(!noIllust){   // 五星三心の絵（紺の丸の中に金・銀で）
-                        const mx=cx-135, my=y+38, mr=52, mg=ctx.createRadialGradient(mx,my-14,6,mx,my,mr);   // 絵は左に寄せて、右に一言
+                        const mx=cx-135+blockShift, my=y+38, mr=52, mg=ctx.createRadialGradient(mx,my-14,6,mx,my,mr);   // 絵は左に寄せて、右に一言
                         mg.addColorStop(0,'#3d2566'); mg.addColorStop(1,'#1a0e2e');
                         ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
                         ctx.lineWidth=3; ctx.strokeStyle=gg.isGold?'#d4af37':'#aab4c8'; ctx.stroke();
