@@ -2256,7 +2256,7 @@
             for (const c of pal) o.push(c[0], c[1], c[2]);
             o.push(0x21, 0xFF, 11); for (const c of 'NETSCAPE2.0') o.push(c.charCodeAt(0)); o.push(3, 1, 0, 0, 0);
             frames.forEach(f => {
-                o.push(0x21, 0xF9, 4, 4); w16(delay); o.push(0, 0, 0x2C);
+                o.push(0x21, 0xF9, 4, f.tr ? 5 : 4); w16(delay); o.push(f.tr ? 255 : 0, 0, 0x2C);
                 w16(f.x); w16(f.y); w16(f.w); w16(f.h); o.push(0, 8);
                 const dict = new Map(); let next = 258, size = 9, cur = 0, bits = 0, blk = [];
                 const emit = c => { cur |= c << bits; bits += size; while (bits >= 8) { blk.push(cur & 255); cur >>>= 8; bits -= 8; if (blk.length === 255) { o.push(255); for (const b of blk) o.push(b); blk = []; } } };
@@ -2279,13 +2279,17 @@
         }
         function makePersonGif(g) {
             const W = g.cv.width, H = g.cv.height, N = 12;
-            const x0 = Math.max(0, Math.floor(Math.min(...g.pos.map(p => p.x))) - 14), y0 = Math.floor(Math.min(...g.pos.map(p => p.y))) - 10;
-            const x1 = Math.min(W, Math.ceil(Math.max(...g.pos.map(p => p.x + p.w))) + 14), y1 = Math.ceil(Math.max(...g.pos.map(p => p.y + p.h))) + 2;
-            const rw = x1 - x0, rh = y1 - y0;
+            // キャラごとの描きかえる範囲
+            const boxes = g.pos.map(p => { const x = Math.max(0, Math.floor(p.x) - 14), y = Math.floor(p.y) - 10; return { x, y, w: Math.min(W, Math.ceil(p.x + p.w) + 14) - x, h: Math.ceil(p.y + p.h) + 2 - y }; });
+            const x0 = Math.min(...boxes.map(b => b.x)), y0 = Math.min(...boxes.map(b => b.y));
+            const rw = Math.max(...boxes.map(b => b.x + b.w)) - x0, rh = Math.max(...boxes.map(b => b.y + b.h)) - y0;
+            const clean = document.createElement('canvas'); clean.width = rw; clean.height = rh;
+            const cc = clean.getContext('2d'); cc.drawImage(g.cv, -x0, -y0); cc.fillStyle = '#fff';
+            boxes.forEach(b => cc.fillRect(b.x - x0, b.y - y0, b.w, b.h));
             const sub = document.createElement('canvas'); sub.width = rw; sub.height = rh;
             const sc = sub.getContext('2d', { willReadFrequently: true });
             function pose(f) {
-                sc.fillStyle = '#fff'; sc.fillRect(0, 0, rw, rh);
+                sc.drawImage(clean, 0, 0);
                 g.pos.forEach((p, i) => {
                     const t = f / N * Math.PI * 2 + i * Math.PI / 2;
                     sc.save(); sc.translate(p.x - x0 + p.w / 2, p.y - y0 + p.h - Math.abs(Math.sin(t)) * 8); sc.rotate(Math.sin(t) * 0.07);
@@ -2296,14 +2300,15 @@
             const full = document.createElement('canvas'); full.width = W; full.height = H;
             const fc = full.getContext('2d', { willReadFrequently: true }); fc.drawImage(g.cv, 0, 0); fc.drawImage(sub, x0, y0);
             const d = fc.getImageData(0, 0, W, H).data;
-            // よく使う色を256色えらぶ（六星の絵の色を優先）
+            // よく使う色を255色えらぶ（キャラの色を優先。256番目は「変わらない所」の透明）
+            const mask = new Uint8Array(W * H);
+            boxes.forEach(b => { for (let y = b.y; y < b.y + b.h; y++) mask.fill(1, y * W + b.x, y * W + b.x + b.w); });
             const cnt = new Float64Array(32768), sr = new Float64Array(32768), sg = new Float64Array(32768), sb = new Float64Array(32768);
             for (let i = 0, n = 0; i < d.length; i += 4, n++) {
-                const k = (d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | d[i + 2] >> 3, py = n / W | 0, px = n - py * W;
-                const w = px >= x0 && px < x1 && py >= y0 && py < y1 ? 24 : 1;
+                const k = (d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | d[i + 2] >> 3, w = mask[n] ? 24 : 1;
                 cnt[k] += w; sr[k] += d[i] * w; sg[k] += d[i + 1] * w; sb[k] += d[i + 2] * w;
             }
-            const top = [...cnt.keys()].filter(k => cnt[k]).sort((a, b) => cnt[b] - cnt[a]).slice(0, 256);
+            const top = [...cnt.keys()].filter(k => cnt[k]).sort((a, b) => cnt[b] - cnt[a]).slice(0, 255);
             const pal = top.map(k => [Math.round(sr[k] / cnt[k]), Math.round(sg[k] / cnt[k]), Math.round(sb[k] / cnt[k])]);
             while (pal.length < 256) pal.push([255, 255, 255]);
             const map = new Int16Array(32768).fill(-1);
@@ -2312,12 +2317,18 @@
                 if (map[k] >= 0) return map[k];
                 if (cnt[k]) { r = sr[k] / cnt[k]; gr = sg[k] / cnt[k]; b = sb[k] / cnt[k]; }   // 似た色のまとまりの平均で選ぶ（白が別の色にならないように）
                 let best = 0, bd = Infinity;
-                pal.forEach((c, i) => { const e = (c[0] - r) ** 2 + (c[1] - gr) ** 2 + (c[2] - b) ** 2; if (e < bd) { bd = e; best = i; } });
+                for (let i = 0; i < 255; i++) { const c = pal[i], e = (c[0] - r) ** 2 + (c[1] - gr) ** 2 + (c[2] - b) ** 2; if (e < bd) { bd = e; best = i; } }
                 return map[k] = best;
             }
             const toPx = a => { const px = new Uint8Array(a.length / 4); for (let i = 0, n = 0; i < a.length; i += 4, n++) px[n] = index(a[i], a[i + 1], a[i + 2]); return px; };
             const frames = [{ x: 0, y: 0, w: W, h: H, px: toPx(d) }];
-            for (let f = 1; f < N; f++) { pose(f); frames.push({ x: x0, y: y0, w: rw, h: rh, px: toPx(sc.getImageData(0, 0, rw, rh).data) }); }
+            let prev = toPx(sc.getImageData(0, 0, rw, rh).data);
+            for (let f = 1; f < N; f++) {
+                pose(f);
+                const cur = toPx(sc.getImageData(0, 0, rw, rh).data), px = new Uint8Array(cur.length);
+                for (let i = 0; i < cur.length; i++) px[i] = cur[i] === prev[i] ? 255 : cur[i];
+                frames.push({ x: x0, y: y0, w: rw, h: rh, px, tr: true }); prev = cur;
+            }
             return encodeGif(W, H, frames, pal, 9);
         }
         async function saveShownGif() {
@@ -3192,9 +3203,10 @@
             const starColors={"color-saturn":"#8e6e46","color-mars":"#e63946","color-venus":"#d4af37","color-uranus":"#00b4d8","color-jupiter":"#2ca02c","color-mercury":"#005bb5"};
             const W=640, cx=W/2;
             const plusSign = item.star.indexOf('＋')>=0;
-            let chibiPos=[];   // 六星の絵の位置（動くGIFで使う）
+            let chibiPos=[], kabPos=[];   // 六星の絵の位置（動くGIFで使う）
             // 内容を描画し、最後のy座標を返す（高さ実測に使う）
             function drawContent(ctx){
+                kabPos=[];
                 let y=58;
                 // タイトル
                 ctx.fillStyle='#7b2fbf'; ctx.font='bold 21px sans-serif'; ctx.textAlign='center';
@@ -3283,11 +3295,19 @@
                         y += big?26:20;
                     } else {
                         y += Math.round(r*(1.3 + (KAB_TOP[num]||0.3))) + 10;   // 頭の上の飾りの高さの分だけ、上の文字との間をあける
-                        drawMascot(ctx, cx, y, r, num, ch[1]);
-                        ctx.fillStyle=ch[1]; ctx.font=`bold ${big?22:18}px sans-serif`; ctx.textAlign='center';
-                        ctx.beginPath(); ctx.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
-                        ctx.lineWidth=2; ctx.strokeStyle=ch[1]; ctx.stroke(); ctx.fillStyle=ch[1];
-                        ctx.fillText(String(num), cx+r*0.78, y-r*0.78+(big?7:6));
+                        const paint = c => {
+                            drawMascot(c, cx, y, r, num, ch[1]);
+                            c.fillStyle=ch[1]; c.font=`bold ${big?22:18}px sans-serif`; c.textAlign='center';
+                            c.beginPath(); c.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); c.fillStyle='#fff'; c.fill();
+                            c.lineWidth=2; c.strokeStyle=ch[1]; c.stroke(); c.fillStyle=ch[1];
+                            c.fillText(String(num), cx+r*0.78, y-r*0.78+(big?7:6));
+                        };
+                        paint(ctx);
+                        // 動くGIF用に、キャラだけの絵を別に作っておく
+                        const sp=document.createElement('canvas'), spX=Math.round(cx-r*1.7), spY=Math.round(y-r*(1+(KAB_TOP[num]||0.3)))-2;
+                        sp.width=Math.ceil(r*3.4); sp.height=Math.ceil(y+r*1.15)-spY;
+                        const spc=sp.getContext('2d'); spc.translate(-spX,-spY); paint(spc);
+                        kabPos.push({im:sp,x:spX,y:spY,w:sp.width,h:sp.height});
                         y += Math.round(r*1.15) + 20;   // 足と影の分、下の文字との間をあける
                     }
                     ctx.fillStyle='#7b2fbf'; ctx.font='bold 15px sans-serif';
@@ -3323,7 +3343,7 @@
             drawContent(ctx);
             ctx.fillStyle='#bbb'; ctx.font='11px sans-serif'; ctx.textAlign='center';
             ctx.fillText('六星占術 × 橙花式カバラ数秘術 判定アプリ', cx, H-30);
-            window._personGif = chibiPos.length ? { cv, pos: chibiPos, png: cv.toDataURL(), idx: index } : null;
+            window._personGif = chibiPos.length + kabPos.length ? { cv, pos: chibiPos.concat(kabPos), png: cv.toDataURL(), idx: index } : null;
             document.getElementById('exportedImage').src = cv.toDataURL();
             document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(index);
             document.getElementById('imageModal').style.display='flex';
