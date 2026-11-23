@@ -2084,6 +2084,9 @@
             true: 'コツコツ積み上げるより、勢いと行動力で運を開く「攻め」のタイプ。',
             false: 'じっくり慎重に進める、堅実で「守り」に強いタイプ。'
         };
+        // 「この人の画像」でアイコンの横に出す一言
+        const GOGYO_WORD = { compass:'真面目な努力家', indian:'自由で陽気な子ども心', phoenix:'一途な情熱家', clock:'人情に厚い世話好き', chameleon:'知的な学び上手', dolphin:'明るいムードメーカー' };
+        const GOGYO_KIN_WORD = { true:'攻めの行動派', false:'守りの堅実派' };
         function gogyoTypeOf(item){
             if(!item) return null;
             const base = GOGYO_BASE[item.starClass]; if(!base) return null;
@@ -3186,15 +3189,21 @@
                 if(typeof gogyoTypeOf==='function'){ const gg=gogyoTypeOf(item); if(gg){
                     secHead('五星三心占い', '#b8860b');
                     if(!noIllust){   // 五星三心の絵（紺の丸の中に金・銀で）
-                        const my=y+38, mr=52, mg=ctx.createRadialGradient(cx,my-14,6,cx,my,mr);
+                        const mx=cx-135, my=y+38, mr=52, mg=ctx.createRadialGradient(mx,my-14,6,mx,my,mr);   // 絵は左に寄せて、右に一言
                         mg.addColorStop(0,'#3d2566'); mg.addColorStop(1,'#1a0e2e');
-                        ctx.beginPath(); ctx.arc(cx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
+                        ctx.beginPath(); ctx.arc(mx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
                         ctx.lineWidth=3; ctx.strokeStyle=gg.isGold?'#d4af37':'#aab4c8'; ctx.stroke();
-                        drawGogyoEmblem(ctx, gg.base, cx, my, 34, gg.isGold?'#f5d76e':'#d7deeb');
-                        ctx.beginPath(); ctx.arc(cx+38,my-38,17,0,Math.PI*2); ctx.fillStyle=gg.isGold?'#f5d76e':'#e6ebf3'; ctx.fill();   // 右上に「金」「銀」の札
+                        drawGogyoEmblem(ctx, gg.base, mx, my, 34, gg.isGold?'#f5d76e':'#d7deeb');
+                        ctx.beginPath(); ctx.arc(mx+38,my-38,17,0,Math.PI*2); ctx.fillStyle=gg.isGold?'#f5d76e':'#e6ebf3'; ctx.fill();   // 右上に「金」「銀」の札
                         ctx.lineWidth=2.5; ctx.strokeStyle=gg.isGold?'#b8860b':'#8a94a6'; ctx.stroke();
-                        ctx.fillStyle=gg.isGold?'#6b4a00':'#4a5568'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.fillText(gg.isGold?'金':'銀', cx+38, my-31);
-                        ctx.textAlign='center'; y+=116;
+                        ctx.fillStyle=gg.isGold?'#6b4a00':'#4a5568'; ctx.font='bold 20px sans-serif'; ctx.textAlign='center'; ctx.fillText(gg.isGold?'金':'銀', mx+38, my-31);
+                        const tx=mx+78;   // 座の一言と、金銀の一言
+                        ctx.textAlign='left';
+                        ctx.fillStyle='#8a8070'; ctx.font='bold 13px sans-serif'; ctx.fillText(gg.group, tx, my-30);
+                        ctx.fillStyle='#3a342c'; ctx.font='bold 23px sans-serif'; ctx.fillText(GOGYO_WORD[gg.base]||'', tx, my-6);
+                        ctx.fillStyle='#8a8070'; ctx.font='bold 13px sans-serif'; ctx.fillText(gg.isGold?'金のタイプ':'銀のタイプ', tx, my+20);
+                        ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 23px sans-serif'; ctx.fillText(GOGYO_KIN_WORD[gg.isGold], tx, my+44);
+                        ctx.textAlign='center'; y+=128;
                     }
                     ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 22px sans-serif'; ctx.fillText(gg.name, cx, y); y+=26;
                     if(gg.desc){ ctx.fillStyle='#666'; ctx.font='13px sans-serif'; y=wrapCenter(ctx, gg.desc, cx, y, W-150, 19); }
