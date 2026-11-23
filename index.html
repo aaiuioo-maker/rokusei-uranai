@@ -3134,8 +3134,16 @@
                 secHead('六星占術', '#8b6f47');
                 if(!noIllust){
                     const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=160, h=w*138/120;
-                    imgs.forEach((im,i)=>ctx.drawImage(im, cx+(i-(imgs.length-1)/2)*180-w/2, y-14, w, h));
-                    if(imgs.length) y+=h+18;
+                    const lab=item.isReigou && imgs.length===2 ? 28 : 0;   // 霊合星人だけ、絵の上に「表」「裏」の札
+                    imgs.forEach((im,i)=>{
+                        const ix=cx+(i-(imgs.length-1)/2)*180;
+                        if(lab){
+                            roundRectPath(ctx, ix-24, y-12, 48, 24, 12); ctx.fillStyle=i?'#5a6b8c':'#af52de'; ctx.fill();
+                            ctx.fillStyle='#fff'; ctx.font='bold 15px sans-serif'; ctx.textAlign='center'; ctx.fillText(i?'裏':'表', ix, y+5);
+                        }
+                        ctx.drawImage(im, ix-w/2, y-14+lab, w, h);
+                    });
+                    if(imgs.length) y+=h+18+lab;
                 }
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
                 ctx.fillText(item.star, cx, y); y+=26;
