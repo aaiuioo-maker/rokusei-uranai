@@ -2231,6 +2231,7 @@
         }
         // 「この人を画像で表示」の画面：左右にスワイプで前後の人の画像、「この人を画像で保存」ボタン
         let imgPersonIdx = null;
+        let imgSwipeQuiet = false;   // 左右スワイプで画像を作り直すときは完成音を鳴らさない
         let imgPersonKind = 'person';   // 'person'＝この人を画像で表示 / 'illust'＝イメージイラスト（左右にスワイプしても同じ種類の画像で前後の人を出す）
         function setImagePersonMode(idx) {
             imgPersonIdx = idx;
@@ -2267,9 +2268,9 @@
                 if (Math.abs(dx) < Math.abs(dy) * 1.2 || !(Math.abs(dx) > 40 || (Math.abs(dx) > 18 && Date.now() - t0 < 300))) return;
                 const o = typeof window.detailOrder === 'function' ? window.detailOrder() : [], i = o.indexOf(imgPersonIdx), j = i + (dx < 0 ? 1 : -1);
                 if (i < 0 || j < 0 || j >= o.length) return;
-                if (typeof playSound === 'function') { try { playSound('click'); } catch (err) {} }
                 box.style.transition = 'opacity .12s'; box.style.opacity = '0.3';
-                setTimeout(() => { showDetail(o[j]); if (imgPersonKind === 'illust') createPersonIllust(o[j]); else createPersonImage(o[j]); box.scrollTop = 0; box.style.opacity = ''; }, 120);
+                // 音は showDetail のピコッ1回だけ（人の画面のスライドと同じ）。画像を作るときの完成音は鳴らさない
+                setTimeout(() => { showDetail(o[j]); imgSwipeQuiet = true; try { if (imgPersonKind === 'illust') createPersonIllust(o[j]); else createPersonImage(o[j]); } finally { imgSwipeQuiet = false; } box.scrollTop = 0; box.style.opacity = ''; }, 120);
             });
         })();
         const imgSelect = new Set();
@@ -3091,7 +3092,7 @@
             return yy+lh;
         }
         function createPersonImage(index, noIllust, chibiReady){
-            if(!chibiReady) playSound('success'); imgPersonKind = 'person';
+            if(!chibiReady && !imgSwipeQuiet) playSound('success'); imgPersonKind = 'person';
             const history = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
             const item = history[index]; if(!item){ return; }
             // 六星の絵（イメージイラストと同じ絵）を読み込んでから描く
@@ -3378,7 +3379,7 @@
             ctx.fillText(kabOnly ? '橙花式カバラ数秘術' : '六星占術 × 橙花式カバラ数秘術', cx, cY+cH-18);
         }
         function createPersonIllust(index, kabOnly){
-            playSound('success');
+            if(!imgSwipeQuiet) playSound('success');
             const history = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
             const item = history[index]; if(!item){ return; }
             iconsReady(()=> preloadChibis(_chibiKeys(item), ()=>{
