@@ -1422,7 +1422,6 @@
             <div id="imgPos" style="font-size:12px; color:#7b2fbf; font-weight:bold; margin:2px 0 6px;"></div>
             <img id="exportedImage">
             <button id="imgSaveBtn" style="display:none; width:100%; padding:12px; margin:8px 0; border:none; border-radius:10px; background:linear-gradient(135deg,#a855f7,#7b2fbf); color:#fff; font-weight:bold; font-size:15px;" onclick="saveShownImage()">📥 この人を画像で保存</button>            <button style="width:100%; padding:10px; border:none; border-radius:10px; background:#f2f2f7;" onclick="closeImageModal()">閉じる</button>
-            <button id="imgGifBtn" style="display:none; width:100%; padding:12px; margin:0 0 8px; border:none; border-radius:10px; background:linear-gradient(135deg,#ff9ec7,#c77dff); color:#fff; font-weight:bold; font-size:15px;" onclick="saveShownGif()">🎞️ キャラが動くGIFで保存</button>
         </div>
     </div>
     <script>
@@ -2240,7 +2239,6 @@
             $('imgTitle').textContent = on ? 'この人の画像' : '書き出し完了';
             $('imgHint').textContent = on ? '保存するときは下のボタンを押してください（画像の長押しでも保存できます）' : '画像を長押しして保存';
             $('imgSaveBtn').style.display = on ? 'block' : 'none';
-            $('imgGifBtn').style.display = on && imgPersonKind === 'person' && window._personGif ? 'block' : 'none';
             let pos = '';
             if (on && typeof window.detailOrder === 'function') {
                 const o = window.detailOrder(), i = o.indexOf(idx);
@@ -2248,107 +2246,8 @@
             }
             $('imgPos').textContent = pos;
         }
-        // 動くGIF：1枚目は画像全体、2枚目からは六星の絵のまわりだけを描きかえる（ファイルを小さくするため）
-        function encodeGif(W, H, frames, pal, delay) {
-            const o = [], w16 = v => o.push(v & 255, v >> 8 & 255);
-            for (const c of 'GIF89a') o.push(c.charCodeAt(0));
-            w16(W); w16(H); o.push(0xF7, 0, 0);
-            for (const c of pal) o.push(c[0], c[1], c[2]);
-            o.push(0x21, 0xFF, 11); for (const c of 'NETSCAPE2.0') o.push(c.charCodeAt(0)); o.push(3, 1, 0, 0, 0);
-            frames.forEach(f => {
-                o.push(0x21, 0xF9, 4, f.tr ? 5 : 4); w16(delay); o.push(f.tr ? 255 : 0, 0, 0x2C);
-                w16(f.x); w16(f.y); w16(f.w); w16(f.h); o.push(0, 8);
-                const dict = new Map(); let next = 258, size = 9, cur = 0, bits = 0, blk = [];
-                const emit = c => { cur |= c << bits; bits += size; while (bits >= 8) { blk.push(cur & 255); cur >>>= 8; bits -= 8; if (blk.length === 255) { o.push(255); for (const b of blk) o.push(b); blk = []; } } };
-                emit(256); let p = f.px[0];
-                for (let i = 1; i < f.px.length; i++) {
-                    const k = f.px[i], key = p << 8 | k, v = dict.get(key);
-                    if (v !== undefined) { p = v; continue; }
-                    emit(p);
-                    if (next < 4096) { dict.set(key, next++); if (next > (1 << size) && size < 12) size++; }
-                    else { emit(256); dict.clear(); next = 258; size = 9; }
-                    p = k;
-                }
-                emit(p); emit(257);
-                if (bits > 0) blk.push(cur & 255);
-                if (blk.length) { o.push(blk.length); for (const b of blk) o.push(b); }
-                o.push(0);
-            });
-            o.push(0x3B);
-            return new Blob([new Uint8Array(o)], { type: 'image/gif' });
-        }
-        function makePersonGif(g) {
-            const W = g.cv.width, H = g.cv.height, N = 12;
-            // キャラごとの描きかえる範囲
-            const boxes = g.pos.map(p => { const x = Math.max(0, Math.floor(p.x) - 14), y = Math.floor(p.y) - 10; return { x, y, w: Math.min(W, Math.ceil(p.x + p.w) + 14) - x, h: Math.ceil(p.y + p.h) + 2 - y }; });
-            const x0 = Math.min(...boxes.map(b => b.x)), y0 = Math.min(...boxes.map(b => b.y));
-            const rw = Math.max(...boxes.map(b => b.x + b.w)) - x0, rh = Math.max(...boxes.map(b => b.y + b.h)) - y0;
-            const clean = document.createElement('canvas'); clean.width = rw; clean.height = rh;
-            const cc = clean.getContext('2d'); cc.drawImage(g.cv, -x0, -y0); cc.fillStyle = '#fff';
-            boxes.forEach(b => cc.fillRect(b.x - x0, b.y - y0, b.w, b.h));
-            const sub = document.createElement('canvas'); sub.width = rw; sub.height = rh;
-            const sc = sub.getContext('2d', { willReadFrequently: true });
-            function pose(f) {
-                sc.drawImage(clean, 0, 0);
-                g.pos.forEach((p, i) => {
-                    const t = f / N * Math.PI * 2 + i * Math.PI / 2;
-                    sc.save(); sc.translate(p.x - x0 + p.w / 2, p.y - y0 + p.h - Math.abs(Math.sin(t)) * 8); sc.rotate(Math.sin(t) * 0.07);
-                    sc.drawImage(p.im, -p.w / 2, -p.h, p.w, p.h); sc.restore();
-                });
-            }
-            pose(0);
-            const full = document.createElement('canvas'); full.width = W; full.height = H;
-            const fc = full.getContext('2d', { willReadFrequently: true }); fc.drawImage(g.cv, 0, 0); fc.drawImage(sub, x0, y0);
-            const d = fc.getImageData(0, 0, W, H).data;
-            // よく使う色を255色えらぶ（キャラの色を優先。256番目は「変わらない所」の透明）
-            const mask = new Uint8Array(W * H);
-            boxes.forEach(b => { for (let y = b.y; y < b.y + b.h; y++) mask.fill(1, y * W + b.x, y * W + b.x + b.w); });
-            const cnt = new Float64Array(32768), sr = new Float64Array(32768), sg = new Float64Array(32768), sb = new Float64Array(32768);
-            for (let i = 0, n = 0; i < d.length; i += 4, n++) {
-                const k = (d[i] >> 3) << 10 | (d[i + 1] >> 3) << 5 | d[i + 2] >> 3, w = mask[n] ? 24 : 1;
-                cnt[k] += w; sr[k] += d[i] * w; sg[k] += d[i + 1] * w; sb[k] += d[i + 2] * w;
-            }
-            const top = [...cnt.keys()].filter(k => cnt[k]).sort((a, b) => cnt[b] - cnt[a]).slice(0, 255);
-            const pal = top.map(k => [Math.round(sr[k] / cnt[k]), Math.round(sg[k] / cnt[k]), Math.round(sb[k] / cnt[k])]);
-            while (pal.length < 256) pal.push([255, 255, 255]);
-            const map = new Int16Array(32768).fill(-1);
-            function index(r, gr, b) {
-                const k = (r >> 3) << 10 | (gr >> 3) << 5 | b >> 3;
-                if (map[k] >= 0) return map[k];
-                if (cnt[k]) { r = sr[k] / cnt[k]; gr = sg[k] / cnt[k]; b = sb[k] / cnt[k]; }   // 似た色のまとまりの平均で選ぶ（白が別の色にならないように）
-                let best = 0, bd = Infinity;
-                for (let i = 0; i < 255; i++) { const c = pal[i], e = (c[0] - r) ** 2 + (c[1] - gr) ** 2 + (c[2] - b) ** 2; if (e < bd) { bd = e; best = i; } }
-                return map[k] = best;
-            }
-            const toPx = a => { const px = new Uint8Array(a.length / 4); for (let i = 0, n = 0; i < a.length; i += 4, n++) px[n] = index(a[i], a[i + 1], a[i + 2]); return px; };
-            const frames = [{ x: 0, y: 0, w: W, h: H, px: toPx(d) }];
-            let prev = toPx(sc.getImageData(0, 0, rw, rh).data);
-            for (let f = 1; f < N; f++) {
-                pose(f);
-                const cur = toPx(sc.getImageData(0, 0, rw, rh).data), px = new Uint8Array(cur.length);
-                for (let i = 0; i < cur.length; i++) px[i] = cur[i] === prev[i] ? 255 : cur[i];
-                frames.push({ x: x0, y: y0, w: rw, h: rh, px, tr: true }); prev = cur;
-            }
-            return encodeGif(W, H, frames, pal, 9);
-        }
-        async function saveShownGif() {
-            const g = window._personGif, btn = document.getElementById('imgGifBtn'); if (!g || btn.disabled) return;
-            const label = btn.textContent; btn.disabled = true; btn.textContent = 'GIFを作っています…';
-            await new Promise(r => setTimeout(r, 30));
-            try {
-                const blob = makePersonGif(g), url = URL.createObjectURL(blob);
-                document.getElementById('exportedImage').src = url;   // 動く画像を見せる（長押しでも保存できる）
-                const h = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'), it = h[g.idx] || {};
-                const name = ((it.name || '占い') + '_六星カバラ').replace(/[\/:*?"<>|\s]/g, '') + '.gif';
-                try {
-                    const file = new File([blob], name, { type: 'image/gif' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) { await navigator.share({ files: [file] }); return; }
-                } catch (e) { if (e && e.name === 'AbortError') return; }
-                const a = document.createElement('a'); a.href = url; a.download = name; document.body.appendChild(a); a.click(); a.remove();
-            } finally { btn.disabled = false; btn.textContent = label; }
-        }
         async function saveShownImage() {
-            const g = window._personGif, src = (imgPersonKind === 'person' && g && g.png) || document.getElementById('exportedImage').src; if (!src) return;
+            const src = document.getElementById('exportedImage').src; if (!src) return;
             const h = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]'), it = h[imgPersonIdx] || {};
             const name = ((it.name || '占い') + (imgPersonKind === 'illust' ? '_イメージイラスト' : '_六星カバラ')).replace(/[\/:*?"<>|\s]/g, '') + '.png';
             try {
@@ -3203,10 +3102,8 @@
             const starColors={"color-saturn":"#8e6e46","color-mars":"#e63946","color-venus":"#d4af37","color-uranus":"#00b4d8","color-jupiter":"#2ca02c","color-mercury":"#005bb5"};
             const W=640, cx=W/2;
             const plusSign = item.star.indexOf('＋')>=0;
-            let chibiPos=[], kabPos=[];   // 六星の絵の位置（動くGIFで使う）
             // 内容を描画し、最後のy座標を返す（高さ実測に使う）
             function drawContent(ctx){
-                kabPos=[];
                 let y=58;
                 // タイトル
                 ctx.fillStyle='#7b2fbf'; ctx.font='bold 21px sans-serif'; ctx.textAlign='center';
@@ -3237,8 +3134,7 @@
                 secHead('六星占術', '#8b6f47');
                 if(!noIllust){
                     const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=112, h=w*138/120;
-                    chibiPos=imgs.map((im,i)=>({im,x:cx+(i-(imgs.length-1)/2)*136-w/2,y:y-14,w,h}));
-                    chibiPos.forEach(p=>ctx.drawImage(p.im,p.x,p.y,p.w,p.h));
+                    imgs.forEach((im,i)=>ctx.drawImage(im, cx+(i-(imgs.length-1)/2)*136-w/2, y-14, w, h));
                     if(imgs.length) y+=h+18;
                 }
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
@@ -3280,6 +3176,14 @@
                 // ===== 2. 五星三心占い =====
                 if(typeof gogyoTypeOf==='function'){ const gg=gogyoTypeOf(item); if(gg){
                     secHead('五星三心占い', '#b8860b');
+                    if(!noIllust){   // 五星三心の絵（紺の丸の中に金・銀で）
+                        const my=y+38, mr=52, mg=ctx.createRadialGradient(cx,my-14,6,cx,my,mr);
+                        mg.addColorStop(0,'#3d2566'); mg.addColorStop(1,'#1a0e2e');
+                        ctx.beginPath(); ctx.arc(cx,my,mr,0,Math.PI*2); ctx.fillStyle=mg; ctx.fill();
+                        ctx.lineWidth=3; ctx.strokeStyle=gg.isGold?'#d4af37':'#aab4c8'; ctx.stroke();
+                        drawGogyoEmblem(ctx, gg.base, cx, my, 34, gg.isGold?'#f5d76e':'#d7deeb');
+                        ctx.textAlign='center'; y+=116;
+                    }
                     ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 22px sans-serif'; ctx.fillText(gg.name, cx, y); y+=26;
                     if(gg.desc){ ctx.fillStyle='#666'; ctx.font='13px sans-serif'; y=wrapCenter(ctx, gg.desc, cx, y, W-150, 19); }
                     const gi=(typeof gogyoInfoById==='function')?gogyoInfoById(gg.id):null;
@@ -3295,19 +3199,11 @@
                         y += big?26:20;
                     } else {
                         y += Math.round(r*(1.3 + (KAB_TOP[num]||0.3))) + 10;   // 頭の上の飾りの高さの分だけ、上の文字との間をあける
-                        const paint = c => {
-                            drawMascot(c, cx, y, r, num, ch[1]);
-                            c.fillStyle=ch[1]; c.font=`bold ${big?22:18}px sans-serif`; c.textAlign='center';
-                            c.beginPath(); c.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); c.fillStyle='#fff'; c.fill();
-                            c.lineWidth=2; c.strokeStyle=ch[1]; c.stroke(); c.fillStyle=ch[1];
-                            c.fillText(String(num), cx+r*0.78, y-r*0.78+(big?7:6));
-                        };
-                        paint(ctx);
-                        // 動くGIF用に、キャラだけの絵を別に作っておく
-                        const sp=document.createElement('canvas'), spX=Math.round(cx-r*1.7), spY=Math.round(y-r*(1+(KAB_TOP[num]||0.3)))-2;
-                        sp.width=Math.ceil(r*3.4); sp.height=Math.ceil(y+r*1.15)-spY;
-                        const spc=sp.getContext('2d'); spc.translate(-spX,-spY); paint(spc);
-                        kabPos.push({im:sp,x:spX,y:spY,w:sp.width,h:sp.height});
+                        drawMascot(ctx, cx, y, r, num, ch[1]);
+                        ctx.fillStyle=ch[1]; ctx.font=`bold ${big?22:18}px sans-serif`; ctx.textAlign='center';
+                        ctx.beginPath(); ctx.arc(cx+r*0.78, y-r*0.78, big?20:16, 0, Math.PI*2); ctx.fillStyle='#fff'; ctx.fill();
+                        ctx.lineWidth=2; ctx.strokeStyle=ch[1]; ctx.stroke(); ctx.fillStyle=ch[1];
+                        ctx.fillText(String(num), cx+r*0.78, y-r*0.78+(big?7:6));
                         y += Math.round(r*1.15) + 20;   // 足と影の分、下の文字との間をあける
                     }
                     ctx.fillStyle='#7b2fbf'; ctx.font='bold 15px sans-serif';
@@ -3343,7 +3239,6 @@
             drawContent(ctx);
             ctx.fillStyle='#bbb'; ctx.font='11px sans-serif'; ctx.textAlign='center';
             ctx.fillText('六星占術 × 橙花式カバラ数秘術 判定アプリ', cx, H-30);
-            window._personGif = chibiPos.length + kabPos.length ? { cv, pos: chibiPos.concat(kabPos), png: cv.toDataURL(), idx: index } : null;
             document.getElementById('exportedImage').src = cv.toDataURL();
             document.getElementById('detailModal').style.display='none'; imageBackToDetail = true; setImagePersonMode(index);
             document.getElementById('imageModal').style.display='flex';
