@@ -3090,10 +3090,12 @@
             if(line) ctx.fillText(line,cx,yy);
             return yy+lh;
         }
-        function createPersonImage(index, noIllust){
-            playSound('success'); imgPersonKind = 'person';
+        function createPersonImage(index, noIllust, chibiReady){
+            if(!chibiReady) playSound('success'); imgPersonKind = 'person';
             const history = JSON.parse(localStorage.getItem('rokuseiHistory')||'[]');
             const item = history[index]; if(!item){ return; }
+            // 六星の絵（イメージイラストと同じ絵）を読み込んでから描く
+            if(!chibiReady && !noIllust){ preloadChibis(_chibiKeys(item), ()=>createPersonImage(index, noIllust, true)); return; }
             const kNum=itemKabNum(item), kInf=kabInfo(kNum);
             const sNum=itemSoul(item),   sInf=kabInfo(sNum);
             const mNum=itemMission(item), mInf=kabInfo(mNum);
@@ -3130,6 +3132,11 @@
                 function divider(){ y+=14; ctx.strokeStyle='#e2dcf0'; ctx.lineWidth=1; ctx.beginPath(); ctx.moveTo(90,y); ctx.lineTo(W-90,y); ctx.stroke(); y+=26; }
                 // ===== 1. 六星占術 =====
                 secHead('六星占術', '#8b6f47');
+                if(!noIllust){
+                    const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=112, h=w*138/120;
+                    imgs.forEach((im,i)=>ctx.drawImage(im, cx+(i-(imgs.length-1)/2)*136-w/2, y-14, w, h));
+                    if(imgs.length) y+=h+18;
+                }
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
                 ctx.fillText(item.star, cx, y); y+=26;
                 if(item.isReigou){
