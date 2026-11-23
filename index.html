@@ -3174,12 +3174,6 @@
                 function traits(sc, headLabel){
                     if(headLabel){ ctx.fillStyle='#333'; ctx.font='bold 14px sans-serif'; ctx.fillText(headLabel, cx, y); y+=22; }
                     if(STAR_DESC[sc]){ ctx.fillStyle='#666'; ctx.font='14px sans-serif'; y = wrapCenter(ctx, STAR_DESC[sc], cx, y+2, W-130, 21); }
-                    const pmObj = STAR_PM[sc];
-                    if(pmObj){
-                        ctx.fillStyle = plusSign ? '#e0672a' : '#2a6fe0'; ctx.font='bold 13px sans-serif';
-                        const pm = (plusSign ? '＋（プラス）… ' : '－（マイナス）… ') + (plusSign ? pmObj.plus : pmObj.minus);
-                        y = wrapCenter(ctx, pm, cx, y+4, W-120, 20);
-                    }
                 }
                 if(item.isReigou){
                     traits(item.starClass, `【表】${item.star}`);
@@ -3222,7 +3216,6 @@
                         ctx.textAlign='center'; y+=128;
                     }
                     ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 22px sans-serif'; ctx.fillText(gg.name, cx, y); y+=26;
-                    if(gg.desc){ ctx.fillStyle='#666'; ctx.font='13px sans-serif'; y=wrapCenter(ctx, gg.desc, cx, y, W-150, 19); }
                     const gi=(typeof gogyoInfoById==='function')?gogyoInfoById(gg.id):null;
                     if(gi) goodBad('相性の良い相手', gi.good, 'あまり良くない相手', gi.bad);
                     divider();
