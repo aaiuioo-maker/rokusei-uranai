@@ -3203,7 +3203,7 @@
                         ctx.fillStyle='#222'; ctx.font='bold 23px sans-serif'; ctx.fillText(GOGYO_KIN_WORD[gg.isGold], tx, my+44);
                         ctx.textAlign='center'; y+=134;
                     }
-                    ctx.fillStyle=gg.isGold?'#b8860b':'#5a6b8c'; ctx.font='bold 30px sans-serif'; ctx.fillText(gg.name, cx, y); y+=30;
+                    ctx.fillStyle='#222'; ctx.font='bold 30px sans-serif'; ctx.fillText(gg.name, cx, y); y+=30;
                     const gi=(typeof gogyoInfoById==='function')?gogyoInfoById(gg.id):null;
                     if(gi) goodBad('相性の良い相手', gi.good, 'あまり良くない相手', gi.bad);
                     divider();
