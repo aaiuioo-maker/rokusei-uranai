@@ -3171,17 +3171,6 @@
                     ctx.fillStyle='#af52de'; ctx.font='bold 15px sans-serif'; ctx.fillText(`霊合星人 (サブ: ${item.subStar})`, cx, y); y+=22;
                     ctx.fillStyle='#9b59b6'; ctx.font='13px sans-serif'; y = wrapCenter(ctx, REIGOU_DESC, cx, y+2, W-130, 20);
                 }
-                function traits(sc, headLabel){
-                    if(headLabel){ ctx.fillStyle='#333'; ctx.font='bold 14px sans-serif'; ctx.fillText(headLabel, cx, y); y+=22; }
-                    if(STAR_DESC[sc]){ ctx.fillStyle='#666'; ctx.font='14px sans-serif'; y = wrapCenter(ctx, STAR_DESC[sc], cx, y+2, W-130, 21); }
-                }
-                if(item.isReigou){
-                    traits(item.starClass, `【表】${item.star}`);
-                    y += 8;
-                    traits(starClassFromName(item.subStar), `【裏】${item.subStar}`);
-                } else {
-                    traits(item.starClass, null);
-                }
                 // 六星占術の相性（相性早見表の12タイプ表から。霊合星人は霊合の表から）
                 (function(){
                     let good=[], bad=[];
