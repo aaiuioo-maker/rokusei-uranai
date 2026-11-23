@@ -3133,8 +3133,8 @@
                 // ===== 1. 六星占術 =====
                 secHead('六星占術', '#8b6f47');
                 if(!noIllust){
-                    const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=112, h=w*138/120;
-                    imgs.forEach((im,i)=>ctx.drawImage(im, cx+(i-(imgs.length-1)/2)*136-w/2, y-14, w, h));
+                    const imgs=_chibiKeys(item).map(k=>_chibiCache[k]).filter(Boolean), w=160, h=w*138/120;
+                    imgs.forEach((im,i)=>ctx.drawImage(im, cx+(i-(imgs.length-1)/2)*180-w/2, y-14, w, h));
                     if(imgs.length) y+=h+18;
                 }
                 ctx.fillStyle=starColors[item.starClass]||'#333'; ctx.font='bold 30px sans-serif';
