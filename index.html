@@ -2550,6 +2550,8 @@
             const name = document.getElementById('personName').value.trim() || "名前なし";
             currentResultData.name = name;
             currentResultData.category = document.getElementById('personCategory').value || '';
+            delete currentResultData.folders;
+            if (window.groupToFolder) window.groupToFolder(currentResultData);   // グループと同じ名前のフォルダに自動で入れる
             if (window.tlPending && window.tlPending.blood && window.tlPending.date === currentResultData.date) currentResultData.bloodType = window.tlPending.blood;
             let history = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
             history.unshift(currentResultData);
@@ -2629,6 +2631,7 @@
             playSound('click');
             let history = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
             history[index].category = val;
+            if (window.groupToFolder) window.groupToFolder(history[index]);   // グループと同じ名前のフォルダに自動で入れる
             localStorage.setItem('rokuseiHistory', JSON.stringify(history));
             loadHistory();
         }
@@ -11821,7 +11824,23 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
   function createFolder() {
     const n = askName(''); if (n === null) return null;
     const a = folders(); a.push(n); saveFolders(a);
+    fillFromGroup(n);
     return n;
+  }
+  // グループと同じ名前のフォルダがあれば、その人を自動で入れる（フォルダを勝手に作ることはしない）
+  function addToGroupFolder(it, fs) {
+    const c = it && it.category;
+    if (!c || fs.indexOf(c) < 0) return false;
+    const a = it.folders || [];
+    if (a.indexOf(c) >= 0) return false;
+    a.push(c); it.folders = a;
+    return true;
+  }
+  window.groupToFolder = it => addToGroupFolder(it, folders());
+  // 新しく作った・名前を変えたフォルダに、同じ名前のグループの人を入れる
+  function fillFromGroup(n) {
+    const h = hist();
+    if (h.map(it => addToGroupFolder(it, [n])).some(Boolean)) saveHist(h);
   }
 
   let sheetTarget = null;     // null＝チェックした人たち / 数字＝人の画面の その1人
@@ -11885,6 +11904,7 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     const n = askName(old, old); if (n === null || n === old) return false;
     const a = folders().map(x => x === old ? n : x); saveFolders(a);
     const h = hist(); h.forEach(it => { if (it.folders) it.folders = it.folders.map(x => x === old ? n : x); }); saveHist(h);
+    fillFromGroup(n);
     if (window.currentFolder === old) window.currentFolder = n;
     snd('success'); showToast('「' + n + '」に名前を変えました'); refresh(); return true;
   }
@@ -11990,6 +12010,15 @@ window.CC_EXTRA = window.CC_EXTRA_ALL.filter((_, i) => !HIDE.length || i + 1 < H
     if (b && window.currentFolder !== 'all') b.textContent = '☑ 表示中（このフォルダ）を全て選択';
     return r;
   };
+  // 今まで保存した人も、最初の1回だけ同じ名前のフォルダに入れる（あとで手で外した人は戻さない）
+  try {
+    const DONE = 'rokuseiGroupFolderSynced';
+    if (!localStorage.getItem(DONE)) {
+      const h = hist(), fs = folders();
+      if (h.map(it => addToGroupFolder(it, fs)).some(Boolean)) { saveHist(h); loadHistory(); }
+      localStorage.setItem(DONE, '1');
+    }
+  } catch (e) {}
   renderBar();
 })();
 </script>
