@@ -2630,6 +2630,11 @@
         function updateCategory(index, val) {
             playSound('click');
             let history = JSON.parse(localStorage.getItem('rokuseiHistory') || '[]');
+            const oldCat = history[index].category, oldFolders = history[index].folders;
+            if (oldCat && oldCat !== val && oldFolders) {   // グループを変えたら、前のグループと同じ名前のフォルダから外す
+                history[index].folders = oldFolders.filter(f => f !== oldCat);
+                if (!history[index].folders.length) delete history[index].folders;
+            }
             history[index].category = val;
             if (window.groupToFolder) window.groupToFolder(history[index]);   // グループと同じ名前のフォルダに自動で入れる
             localStorage.setItem('rokuseiHistory', JSON.stringify(history));
